@@ -1,0 +1,10 @@
+.headerContainer {
+    background-color: rgb(215, 215, 215);
+    box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+
+}
+
+.logo {
+    font-family: "Lobster", sans-serif;
+    letter-spacing: 2px;
+}

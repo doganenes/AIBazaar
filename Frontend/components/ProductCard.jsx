@@ -1,20 +1,18 @@
-import React from 'react'
-import {Card} from 'react-bootstrap'
+import React from 'react';
 
 function ProductCard() {
   return (
-    <div>
-        <Card style={{ width: '18rem' }}>
-      <Card.Img variant="top" src='public/project.png' style={{width:"200px"}}/>
-      <Card.Body>
-        <Card.Title>Card Title</Card.Title>
-        <Card.Text>
-          This is a simple card component using Bootstrap and React.
-        </Card.Text>
-      </Card.Body>
-    </Card>
+    <div className="card" style={{ width: '18rem' }}>
+      <img src="https://via.placeholder.com/286x180" className="card-img-top" alt="..." />
+      <div className="card-body">
+        <h5 className="card-title">Card title</h5>
+        <p className="card-text">
+          Some quick example text to build on the card title and make up the bulk of the card's content.
+        </p>
+        <a href="#" className="btn btn-primary">Go somewhere</a>
+      </div>
     </div>
-  )
+  );
 }
 
-export default ProductCard
+export default ProductCard;
