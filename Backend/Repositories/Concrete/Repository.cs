@@ -71,7 +71,5 @@ namespace Backend.Repositories.Concrete
         {
             return _dbSet.Where(condition).ToList();
         }
-
-
     }
 }
