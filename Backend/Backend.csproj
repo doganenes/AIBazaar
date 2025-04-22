@@ -23,7 +23,6 @@
 
   <ItemGroup>
     <Folder Include="Data\Source\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
   <ItemGroup>
