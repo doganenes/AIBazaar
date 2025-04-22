@@ -9,45 +9,50 @@ options = webdriver.ChromeOptions()
 options.add_argument("--disable-blink-features=AutomationControlled")
 driver = webdriver.Chrome(options=options)
 
-driver.get("https://www.akakce.com/vitamin-mineral/en-ucuz-ligone-melatonin-3-mg-90-cigneme-tableti-fiyati,166840700.html")
+driver.get(
+    "https://www.akakce.com/vitamin-mineral/en-ucuz-ligone-melatonin-3-mg-90-cigneme-tableti-fiyati,166840700.html"
+)
 
 wait = WebDriverWait(driver, 15)
 
 canvas = wait.until(EC.presence_of_element_located((By.ID, "PG_C")))
 tooltip = wait.until(EC.presence_of_element_located((By.ID, "tooltip")))
 
+driver.execute_script("arguments[0].scrollIntoView();", canvas)
 
-canvas_width = canvas.size['width']//2
-canvas_height = canvas.size['height']//2
+canvas_width = canvas.size["width"]
+canvas_height = canvas.size["height"]
 canvas_center_y = canvas_height // 2
 
-start_x = 54
-end_x = canvas_width
-step = 10  # daha sık tarama yapılabilir
+print(f"Canvas genişliği: {canvas_width}px")
+
+start_x = 1  # 0 yerine 1, çünkü 0 bazen erişim hatası verebilir
+end_x = canvas_width - 1
+step = 10
 
 prices = []
-driver.execute_script(
-    "arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", canvas
-)
-time.sleep(1)
-element = driver.find_element(By.XPATH, "//label[@data-len='365']")
-driver.execute_script("arguments[0].click();", element)
+
 for x in range(start_x, end_x, step):
     try:
-        ActionChains(driver).move_to_element_with_offset(canvas, x, canvas_center_y).perform()
-        time.sleep(1)
+        ActionChains(driver).move_to_element_with_offset(
+            canvas, x, canvas_center_y
+        ).perform()
+        time.sleep(0.5)
 
-        if tooltip.text:
-            prices.append((x, tooltip.text))
-            print(f"x={x}px → {tooltip.text}")
+        tooltip_text = tooltip.get_attribute("textContent").strip()
+        if tooltip_text:
+            prices.append((x, tooltip_text))
+            print(f"x={x}px → {tooltip_text}")
         else:
             prices.append((x, "Boş/Tooltip çıkmadı"))
             print(f"x={x}px → ⚠️ Boş tooltip")
+
     except Exception as e:
         print(f"x={x}px → ❌ Hata: {e}")
-
+        prices.append((x, "Hata"))
 
 driver.quit()
+
 print("\n🎯 Toplanan Veriler:")
 for x, p in prices:
     print(f"{x}px → {p}")
