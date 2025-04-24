@@ -9,6 +9,7 @@ import csv
 # Tarama yapılacak ürün linkleri
 product_urls = [
     "https://www.akakce.com/vitamin-mineral/en-ucuz-ligone-melatonin-3-mg-90-cigneme-tableti-fiyati,166840700.html",
+    "https://www.akakce.com/cep-telefonu/en-ucuz-iphone-15-fiyati,1745758198.html"
 ]
 
 options = webdriver.ChromeOptions()
@@ -35,7 +36,7 @@ for url in product_urls:
     canvas_height = canvas.size['height'] // 2
     canvas_center_y = canvas_height // 2
 
-    start_x = 54
+    start_x = -100
     end_x = canvas_width
     step = 30
 
@@ -70,9 +71,9 @@ for url in product_urls:
 driver.quit()
 
 # CSV'ye yaz
-with open("product_data.csv", mode="w", newline="", encoding="utf-8") as file:
+with open("product_data.csv", mode="w", newline="", encoding="utf-8-sig") as file:
     writer = csv.writer(file)
-    writer.writerow(["Ürün Adı", "Tarih", "Fiyat"])
+    writer.writerow(["Product Name", "Date", "Price"])
     writer.writerows(all_data)
 
 print("\n✅ Veriler 'product_data.csv' dosyasına yazıldı.")

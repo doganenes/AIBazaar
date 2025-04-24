@@ -21,7 +21,7 @@ namespace Backend.Controllers
 
 
         [HttpPost("register")]
-        public IActionResult Register([FromQuery] UserDto dto)
+        public IActionResult Register([FromBody] UserDto dto)
         {
             if (_authService.CheckEmailExists(dto.Email))
             {
@@ -40,7 +40,7 @@ namespace Backend.Controllers
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromQuery] LoginDto loginDto)
+        public IActionResult Login([FromBody] LoginDto loginDto)
         {
             try
             {
@@ -49,9 +49,10 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { Message = ex.Message });
+                return BadRequest(new { Message = ex.Message, StackTrace = ex.StackTrace });
             }
         }
+
         [HttpGet("getIdFromToken")]
         public IActionResult getInfo(string t)
         {

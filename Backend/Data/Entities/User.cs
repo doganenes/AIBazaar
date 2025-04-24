@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace Backend.Data.Entities
 {
@@ -10,5 +11,6 @@ namespace Backend.Data.Entities
         public string? LastName { get; set; }
         public string? Email { get; set; }
         public string? Password { get; set; }
+        public ICollection<FavoriteProduct> FavoriteProducts { get; set; } = new Collection<FavoriteProduct>();
     }
 }

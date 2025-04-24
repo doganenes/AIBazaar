@@ -148,3 +148,4 @@ C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\Backend\obj\Debug\net
 C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\Backend\obj\Debug\net8.0\Backend.pdb
 C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\Backend\obj\Debug\net8.0\Backend.genruntimeconfig.cache
 C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\Backend\obj\Debug\net8.0\ref\Backend.dll
+C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\Backend\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
