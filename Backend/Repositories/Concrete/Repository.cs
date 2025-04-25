@@ -52,7 +52,7 @@ namespace Backend.Repositories.Concrete
             return _dbSet.FirstOrDefault(condition);
         }
 
-        public T GetById(string id)
+        public T GetById(object id)
         {
             return _dbSet.Find(id);
         }

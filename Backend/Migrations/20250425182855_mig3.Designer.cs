@@ -4,6 +4,7 @@ using Backend.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ProjectContext))]
-    partial class ProjectContextModelSnapshot : ModelSnapshot
+    [Migration("20250425182855_mig3")]
+    partial class mig3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -108,15 +111,15 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("FavoriteProductUser", b =>
                 {
-                    b.Property<int>("FavoriteProductId")
+                    b.Property<int>("FavoriteProductsFavoriteProductID")
                         .HasColumnType("int");
 
-                    b.Property<string>("UserId")
+                    b.Property<string>("UsersUserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("FavoriteProductId", "UserId");
+                    b.HasKey("FavoriteProductsFavoriteProductID", "UsersUserId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UsersUserId");
 
                     b.ToTable("FavoriteProductUser");
                 });
@@ -125,17 +128,15 @@ namespace Backend.Migrations
                 {
                     b.HasOne("Backend.Data.Entities.FavoriteProduct", null)
                         .WithMany()
-                        .HasForeignKey("FavoriteProductId")
+                        .HasForeignKey("FavoriteProductsFavoriteProductID")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_FavoriteProductUser_FavoriteProducts_FavoriteProductId");
+                        .IsRequired();
 
                     b.HasOne("Backend.Data.Entities.User", null)
                         .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("UsersUserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_FavoriteProductUser_Users_UserId");
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

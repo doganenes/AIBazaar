@@ -35,7 +35,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 });
 
 builder.Services.AddScoped(typeof(IRepository<User>), typeof(Repository<User>));
+builder.Services.AddScoped(typeof(IRepository<Product>), typeof(Repository<Product>));
+builder.Services.AddScoped(typeof(IRepository<FavoriteProduct>), typeof(Repository<FavoriteProduct>));
+
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<FavoriteProductService>();
+builder.Services.AddScoped<ProductService>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

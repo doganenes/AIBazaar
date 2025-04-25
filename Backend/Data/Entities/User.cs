@@ -11,6 +11,6 @@ namespace Backend.Data.Entities
         public string? LastName { get; set; }
         public string? Email { get; set; }
         public string? Password { get; set; }
-        public ICollection<FavoriteProduct> FavoriteProducts { get; set; } = new Collection<FavoriteProduct>();
+        public ICollection<Product> FavoriteProducts { get; set; } = new Collection<Product>();
     }
 }
