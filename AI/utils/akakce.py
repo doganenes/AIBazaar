@@ -15,6 +15,7 @@ from selenium.webdriver.common.keys import Keys
 
 options = webdriver.ChromeOptions()
 options.add_argument("--disable-blink-features=AutomationControlled")
+options.add_argument("--window-size=1920,1080")
 driver = webdriver.Chrome(options=options)
 
 # all_data = []
@@ -77,102 +78,107 @@ driver = webdriver.Chrome(options=options)
 #     writer.writerow(["Product Name", "Date", "Price"])
 #     writer.writerows(all_data)
 
+
 def price_runner():
 
-    driver.get("https://www.pricerunner.com/")  # doğru URL'yi buraya koyman lazım
+    driver.get("https://www.pricerunner.com/deals")  # doğru URL'yi buraya koyman lazım
 
     wait = WebDriverWait(driver, 10)
     time.sleep(4)
-    # 1. Arama inputuna yaz ve Enter'a bas
+    try:
+        accept_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.ID, "onetrust-accept-btn-handler"))
+        )
+        accept_button.click()
+        print("Accept butonuna tıklandı.")
+    except Exception as e:
+        print("Accept butonu bulunamadı veya tıklanamadı:", e)
+    
     search_input = wait.until(EC.presence_of_element_located((By.NAME, "q")))
     search_input.clear()
     search_input.send_keys("iphone 14")
     search_input.send_keys(Keys.ENTER)
     print("Arama yapıldı.")
 
-    # 2. Ürünler yüklenene kadar bekle ve ilk ürünü tıkla
-    first_product = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, ".pr-13k6084-ProductList-grid > div")))
+    first_product = wait.until(
+        EC.presence_of_element_located(
+            (By.CSS_SELECTOR, ".pr-13k6084-ProductList-grid > div")
+        )
+    )
     first_product.click()
     print("İlk ürün tıklandı.")
     time.sleep(2)
-    # 3. Sayfa yüklenmesini bekle
-    page_height = driver.execute_script("return document.body.scrollHeight")
-
-    # 2. Sayfayı yarıya kadar kaydır
-    driver.execute_script(f"window.scrollTo(0, {page_height / 1.1});")
-
+  
     time.sleep(3)
-    
+
     try:
         # Butonu bul
-        price_history_button = driver.find_element(By.CSS_SELECTOR, ".pr-wyywe-Tabs-item")
-
-        # Tıklamayı dene
+        price_history_button = driver.find_element(
+            By.XPATH, '//*[@id="product-listing-navigation"]/div/div/button[3]'
+        )
+        price_history_button.click()
+        print("Price history butonuna tıklandı.")
+    except:
         try:
-            price_history_button.click()
+            driver.execute_script("arguments[0].click();", price_history_button)
         except:
-            try:
-                driver.execute_script("arguments[0].click();", price_history_button)
-            except:
-                actions = ActionChains(driver)
-                actions.move_to_element(price_history_button).click().perform()
-
-        print("history btn doğru çalışıyor")
-    except Exception as e:
-        print(f"price history hata nedeni: {e}")
-
-    # 4. Popularity sekmesine tıkla
+            actions = ActionChains(driver)
+            actions.move_to_element(price_history_button).click().perform()
     try:
-        popularity_tab = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "pr-1hs0xe7-Tabs-content")))
-        popularity_tab.click()
-        print("Popularity sekmesine tıklandı.")
+        popularity_button = wait.until(
+            EC.element_to_be_clickable(
+                (By.XPATH, '//*[@id="pricegraph"]/div[3]/div/button[2]')
+            )
+        )
+        popularity_button.click()
     except Exception as e:
-        print(f"Popularity hatası: {e}" )
-
-    # 5. 12 months seçimi
-    month_selector = wait.until(EC.element_to_be_clickable((By.XPATH, "//span[contains(@class,'Selector-button')]")))
-    month_selector.click()
-    print("Ay seçimi açıldı.")
-
-    # 12 months seçeneğini seç
+        print(f"Popülerlik butonuna tıklanamadı: {e}")
+        
     try:
-        twelve_months_option = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "pr-o7x5sf-Selector-button")))
-        twelve_months_option.click()
-        print("12 months seçildi.")
+        month_element = wait.until(
+            EC.element_to_be_clickable(
+                (By.XPATH, '//*[@id="pricegraph"]/div[6]/div/div/div/label[3]/span')
+            )
+        )
+
+        month_element.click()
 
     except Exception as e:
-        print(f"12 ay hatası: {e}" )
-  
-    # 6. Chart içine mouse hareket ettirme
-    time.sleep(3)  # Grafik tam yüklensin
+        print(f"12 ay hatası: {e}")
 
-    # Chart alanını bul
-    chart_div = wait.until(EC.presence_of_element_located((By.XPATH, "//div[starts-with(@id, 'highcharts-')]")))
+    time.sleep(3) 
 
-    # ActionChains ile mouse hareket ettir
+    chart = driver.find_element(By.CLASS_NAME, "highcharts-series")
     actions = ActionChains(driver)
 
-    chart_width = chart_div.size['width']
-    chart_height = chart_div.size['height']
+    start_x = -100
+    end_x = 700
+    step = 30
+    fixed_y = 50  
+    tooltip_prices = []
 
-    start_x = chart_div.location['x']
-    start_y = chart_div.location['y'] + chart_height // 2
-
-    # x ekseninde 10 adımda hareket ettir
-    for i in range(0, chart_width, 30):  # 30 piksellik adımlarla
-        actions.move_to_element_with_offset(chart_div, i, chart_height // 2).perform()
-        time.sleep(0.5)  # Tooltip değişimini bekle
-
+    for x_offset in range(start_x, end_x, step):
+        actions.move_to_element_with_offset(chart, x_offset, fixed_y).perform()
+        time.sleep(0.3)         
         try:
-            price_tooltip = driver.find_element(By.CLASS_NAME, "highchart-tooltip__price")
-            print(f"Tooltip Price: {price_tooltip.text}")
-        except:
-            print("Tooltip bulunamadı.")
+            tooltip_price_element = WebDriverWait(driver, 2).until(
+                EC.visibility_of_element_located((By.CLASS_NAME, "highchart-tooltip__price"))
+            )
+            tooltip_date=WebDriverWait(driver, 2).until(
+                EC.visibility_of_element_located((By.CLASS_NAME, "highchart-tooltip__date"))
+            )
+            tooltip_date = tooltip_date.text
+            tooltip_price = tooltip_price_element.text
+            print(f"Offset {x_offset}: Tooltip Price = {tooltip_price} | Date = {tooltip_date}")
+            tooltip_prices.append((x_offset, tooltip_price))
+        except Exception as e:
+            print(f"Offset {x_offset}: Tooltip bulunamadı.")
 
-    # İşlem bittiğinde tarayıcıyı kapat
     driver.quit()
 
-    print("\n✅ Veriler 'product_data.csv' dosyasına yazıldı.")
+    print("\nToplanan Tüm Tooltip Değerleri:")
+    for offset, price in tooltip_prices:
+        print(f"Offset {offset}: {price}")
 
 
 price_runner()
