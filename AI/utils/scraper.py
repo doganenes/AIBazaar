@@ -81,18 +81,20 @@ driver = webdriver.Chrome(options=options)
 
 def price_runner():
 
-    driver.get("https://www.pricerunner.com/deals")  # doğru URL'yi buraya koyman lazım
+    driver.get("https://www.pricerunner.com")
 
     wait = WebDriverWait(driver, 10)
     time.sleep(4)
+
     try:
-        accept_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.ID, "onetrust-accept-btn-handler"))
+        reject_button = wait.until(
+            EC.element_to_be_clickable((By.ID, "onetrust-reject-all-handler"))
         )
-        accept_button.click()
-        print("Accept butonuna tıklandı.")
+        reject_button.click()
+        print("✅ Reject All butonuna tıklandı.")
     except Exception as e:
-        print("Accept butonu bulunamadı veya tıklanamadı:", e)
+        print("⚠️ Reject All butonu bulunamadı veya tıklanamadı:", e)
+
     
     search_input = wait.until(EC.presence_of_element_located((By.NAME, "q")))
     search_input.clear()
@@ -173,7 +175,6 @@ def price_runner():
             tooltip_prices.append((x_offset, tooltip_price))
         except Exception as e:
             print(f"Offset {x_offset}: Tooltip bulunamadı.")
-
     driver.quit()
 
     print("\nToplanan Tüm Tooltip Değerleri:")
