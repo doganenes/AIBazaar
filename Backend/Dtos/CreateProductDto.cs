@@ -1,8 +1,7 @@
 ﻿namespace Backend.Dtos
 {
-    public class ProductDto
+    public class CreateProductDto
     {
-        public int ProductID { get; set; }
         public string ProductName { get; set; }
         public DateTime SaleDate { get; set; }
         public double Price { get; set; }

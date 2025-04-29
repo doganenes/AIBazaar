@@ -1,19 +1,23 @@
 ﻿using Backend.Data.Context;
 using Backend.Data.Entities;
+using Backend.Repositories.Abstract;
 
 namespace Backend.Services
 {
     public class ProductService
     {
         private readonly ProjectContext _context;
-        public ProductService(ProjectContext context)
+        private readonly IRepository<Product> _productRepository;
+        public ProductService(ProjectContext context, IRepository<Product> repository)
         {
             _context = context;
+            _productRepository = repository;
         }
         public List<Product> GetAllProducts()
         {
-            return _context.Products.ToList();
+            return _productRepository.GetAll().ToList();
         }
+
         public Product GetProductById(int id)
         {
             return _context.Products.FirstOrDefault(p => p.ProductID == id);
