@@ -182,4 +182,82 @@ def price_runner():
         print(f"Offset {offset}: {price}")
 
 
-price_runner()
+# price_runner()
+
+def scraping_description_and_image(product_list):
+    driver.get("https://www.trendyol.com/")
+    wait = WebDriverWait(driver, 10)
+    time.sleep(4)
+
+    results = []
+
+    for product_name in product_list:
+        try:
+            # Arama kutusunu temizle ve tekrar bul
+            search_input = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[data-testid="suggestion"]')))
+            search_input.clear()
+            search_input.send_keys(product_name)
+            search_input.send_keys(Keys.ENTER)
+
+            # Ürün listesini bekle
+            wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '.prdct-cntnr-wrppr .p-card-wrppr')))
+            time.sleep(3)
+
+            # İlk ürüne tıkla
+            first_product = driver.find_element(By.CSS_SELECTOR, '.prdct-cntnr-wrppr .p-card-wrppr')
+            main_window = driver.current_window_handle
+            first_product.click()
+
+            # Yeni sekmeye geç
+            driver.switch_to.window(driver.window_handles[1])
+            time.sleep(3)
+
+            # Ürün puanı
+            try:
+                rating_element = driver.find_element(By.CSS_SELECTOR, '.product-rating-score .value')
+                rating_value = rating_element.text.strip()
+            except:
+                rating_value = None
+
+            # Ürün görseli
+            image_element = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '.base-product-image img')))
+            image_src = image_element.get_attribute("src")
+
+            # Ürün özellikleri
+            product_details = {}
+            try:
+                feature_elements = driver.find_elements(By.CSS_SELECTOR, '.detail-attr-container li.detail-attr-item')
+                for item in feature_elements:
+                    try:
+                        key = item.find_element(By.CSS_SELECTOR, '.attr-name.attr-key-name-w').text.strip()
+                        value = item.find_element(By.CSS_SELECTOR, '.attr-value-name-w').text.strip()
+                        product_details[key] = value
+                    except:
+                        continue
+            except:
+                pass
+
+            results.append({
+                "product": product_name,
+                "image": image_src,
+                "details": product_details,
+                "rating": rating_value
+            })
+
+            # Ürün sekmesini kapat ve ana sekmeye dön
+            driver.close()
+            driver.switch_to.window(main_window)
+            time.sleep(2)
+
+        except Exception as e:
+            print(f"Hata oluştu: {product_name} -> {e}")
+            continue
+
+    driver.quit()
+    return results
+
+
+# Örnek kullanım
+product_lists = ["iPhone 15", "Samsung Galaxy S24", "Xiaomi 13"]
+a = scraping_description_and_image(product_lists)
+print(a)
