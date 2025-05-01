@@ -275,10 +275,10 @@ def scraping_description_and_image(product_list):
 
             results.append(
                 {
-                    "product": product_name,
-                    "image": image_src,
-                    "details": product_details,
-                    "rating": rating_value,
+                    "Product Name": product_name,
+                    "Image": image_src,
+                    "Description": product_details,
+                    "Rating": rating_value,
                 }
             )
 
@@ -292,7 +292,11 @@ def scraping_description_and_image(product_list):
             continue
 
     driver.quit()
-    return results
+    with open("trendyol.csv", mode="w", newline="", encoding="utf-8-sig") as file:
+        writer = csv.writer(file)
+        writer.writerow(["Product Name ", "Image" , "Description" , "Rating"])
+        writer.writerows(product_details)
+
 
 
 # Örnek kullanım
