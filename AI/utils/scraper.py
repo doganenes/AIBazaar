@@ -14,71 +14,107 @@ options.add_argument("--window-size=1920,1080")
 global driver 
 
 product_lists = [
-    "Motorola Fold",
-    "Google Pixel 9 Pro",
-    "Xiaomi 13 256GB",
-    "Iphone 15",
-
-    # Akıllı Telefonlar
-    "iPhone 16 Pro",
-    "Samsung Galaxy S24 Ultra",
-    "Huawei Mate XT Ultimate Design",
-    "vivo X200 Pro",
-    "HONOR Magic6 Pro",
-    "Xiaomi 14 Pro",
-    "OPPO Find X7 Pro",
-    "OnePlus 12",
-
-    # Dizüstü Bilgisayarlar
-    "Apple MacBook Pro 14 inç M3 Pro",
-    "ASUS Zenbook S14",
-    "ASUS Zenbook S16",
-    "Lenovo Şeffaf Ekranlı Laptop",
-    "Dell XPS 15 2024",
-    "HP Spectre x360 14",
-    "Razer Blade 16 2024",
-    "MSI Stealth 17 Studio",
-    "Acer Swift Edge 16",
-    "Samsung Galaxy Book4 Ultra",
-    "Microsoft Surface Laptop 6",
-
-    # Giyilebilir Teknolojiler
-    "Samsung Galaxy Ring",
-    "Apple Watch Ultra AI",
-    "Fitbit AI 2",
-    "Garmin AI Runners",
-    "Huawei Watch GT 4",
-    "Xiaomi Smart Band 8 Pro",
-    "OPPO Wearable Band",
-    "Withings ScanWatch 2",
-    "Amazfit Balance",
-    "Montblanc Summit 3",
-
-    # Sanal ve Artırılmış Gerçeklik
-    "Apple Vision XR",
-    "Oculus Quest 4 Pro",
-    "Sony PlayStation AR Kit",
-    "Meta Quest Vision",
-    "HTC Vive XR Elite",
-    "Lenovo ThinkReality A3",
-    "Magic Leap 2",
-    "Nreal Air 2",
-    "Pico 4 Enterprise",
-    "Xiaomi Wireless AR Glass Discovery Edition",
-
-    # Ses Aksesuarları
-    "ANKER Space One Bluetooth Kulaklık",
-    "Sennheiser Momentum 4 True Wireless",
-    "JBL Tour Pro 2",
-    "Sony WF-1000XM5",
-    "Bose QuietComfort Ultra Earbuds",
-    "Apple AirPods Pro 2",
-    "Samsung Galaxy Buds 3 Pro",
-    "Beats Studio Buds+",
-    "Nothing Ear (2)",
-    "Google Pixel Buds Pro"
+    "Samsung Galaxy M13 64GB",
+    "Samsung Galaxy S24 Ultra 256GB",
+    "Samsung Galaxy S25 Ultra 512GB",
+    "Samsung Galaxy S25 Ultra 256GB",
+    "Samsung Galaxy A56 5G 256GB",
+    "Samsung Galaxy A55 5G 128GB",
+    "Samsung Galaxy A16 5G 128GB",
+    "Samsung Galaxy S24 Ultra 512GB",
+    "Samsung Galaxy Z Fold6 256GB",
+    "Samsung Galaxy S25 Ultra 1TB",
+    "Samsung Galaxy S24 FE 256GB",
+    "Samsung Galaxy S24 FE 128GB",
+    "Samsung Galaxy S25 256GB",
+    "Samsung Galaxy A54 5G 128GB",
+    "Samsung Galaxy M14 5G 64GB",
+    "Samsung Galaxy S23 128GB",
+    "Samsung Galaxy A34 5G 128GB",
+    "Samsung Galaxy A14 64GB",
+    "Samsung Galaxy A04s 64GB",
+    "Samsung Galaxy A03 32GB",
+    "Apple iPhone 15 Pro Max 256GB",
+    "Apple iPhone 15 Pro 128GB",
+    "Apple iPhone 15 128GB",
+    "Apple iPhone 14 Pro Max 256GB",
+    "Apple iPhone 14 128GB",
+    "Apple iPhone 13 128GB",
+    "Apple iPhone SE (2022) 64GB",
+    "Apple iPhone 12 64GB",
+    "Apple iPhone 11 64GB",
+    "Apple iPhone XR 64GB",
+    "Apple iPhone XS 64GB",
+    "Apple iPhone X 64GB",
+    "Apple iPhone 8 64GB",
+    "Apple iPhone 7 32GB",
+    "Apple iPhone 6s 32GB",
+    "Apple iPhone 6 16GB",
+    "Apple iPhone 5s 16GB",
+    "Apple iPhone 5 16GB",
+    "Apple iPhone 4s 8GB",
+    "Apple iPhone 4 8GB",
+    "Nokia 3210 4G 2024 128MB",
+    "Nokia 235 4G 128MB",
+    "Nokia G42 5G 128GB",
+    "Nokia 5710 XA 128MB",
+    "Nokia 225 4G 2024 128MB",
+    "Nokia G22 64GB",
+    "Nokia C32 64GB",
+    "Nokia 105 2G 2023",
+    "Nokia C02 32GB",
+    "Nokia C12 64GB",
+    "Nokia 105 2019",
+    "Nokia 110 4G",
+    "Nokia 150 2020",
+    "Nokia 6300 4G",
+    "Nokia 800 Tough",
+    "Nokia 2720 Flip",
+    "Nokia 8110 4G",
+    "Nokia 3310 3G",
+    "Nokia 230 Dual SIM",
+    "Nokia 216 Dual SIM",
+    "Oppo Find X5 Pro 256GB",
+    "Oppo Reno8 Pro 256GB",
+    "Oppo A96 128GB",
+    "Oppo A57 64GB",
+    "Oppo A16s 64GB",
+    "Oppo A15 32GB",
+    "Oppo A74 128GB",
+    "Oppo A54 64GB",
+    "Oppo A53s 128GB",
+    "Oppo A52 64GB",
+    "Oppo A31 64GB",
+    "Oppo A12 32GB",
+    "Oppo A11k 32GB",
+    "Oppo A5 2020 64GB",
+    "Oppo A3s 32GB",
+    "Oppo A1k 32GB",
+    "Oppo F17 Pro 128GB",
+    "Oppo F15 128GB",
+    "Oppo F11 Pro 64GB",
+    "Oppo F9 64GB",
+    "Motorola Edge 30 Pro 256GB",
+    "Motorola Moto G200 5G 128GB",
+    "Motorola Moto G100 128GB",
+    "Motorola Moto G82 5G 128GB",
+    "Motorola Moto G71 5G 128GB",
+    "Motorola Moto G60 128GB",
+    "Motorola Moto G51 5G 64GB",
+    "Motorola Moto G50 5G 64GB",
+    "Motorola Moto G40 Fusion 64GB",
+    "Motorola Moto G30 64GB",
+    "Motorola Moto G20 64GB",
+    "Motorola Moto G10 64GB",
+    "Motorola Moto E40 64GB",
+    "Motorola Moto E30 32GB",
+    "Motorola Moto E20 32GB",
+    "Motorola Moto E7 Power 32GB",
+    "Motorola Moto E6s 32GB",
+    "Motorola Moto E5 Plus 32GB",
+    "Motorola Moto E4 Plus 16GB",
+    "Motorola Moto C Plus 16GB"
 ]
-
 
 
 def scraping_prices(product_list):
@@ -180,12 +216,17 @@ def price_runner(product_list):
         print("⚠️ Reject All butonu bulunamadı veya tıklanamadı:", e)
 
     for product_name in product_list:
-        search_input = wait.until(EC.presence_of_element_located((By.NAME, "q")))
-        search_input.clear()
-        search_input.send_keys(product_name)
-        search_input.send_keys(Keys.ENTER)
-        search_input.clear()
-        print("Arama yapıldı.")
+        driver.get("https://www.pricerunner.com")  # Ana sayfaya dön
+        time.sleep(3)  # Sayfanın tam yüklenmesini bekle
+        try: 
+            search_input = wait.until(EC.presence_of_element_located((By.NAME, "q")))
+            search_input.clear()
+            search_input.send_keys(product_name)
+            search_input.send_keys(Keys.ENTER)
+            print(f"Arama yapıldı.{product_name}")
+        except:
+            print(f"❌ Arama kutusu bulunamadı: {e}")
+            continue
 
         first_product = wait.until(
             EC.presence_of_element_located(
@@ -253,11 +294,9 @@ def price_runner(product_list):
             print(f"12 ay hatası: {e}")
 
         time.sleep(3)
-    try:
+   
         chart = driver.find_element(By.CLASS_NAME, "highcharts-series")
         actions = ActionChains(driver)
-    except:
-        pass
         start_x = -100
         end_x = 700
         step = 30
@@ -398,7 +437,7 @@ import threading
 threads = []
 
 # Fonksiyonları thread'lere referans olarak ekleyip çalıştırıyoruz
-threads.append(threading.Thread(target=scraping_prices, args=(product_lists,)))
+# threads.append(threading.Thread(target=scraping_prices, args=(product_lists,)))
 threads.append(threading.Thread(target=price_runner, args=(product_lists,)))
 # threads.append(
 #     threading.Thread(target=scraping_description_and_image, args=(product_lists,))
