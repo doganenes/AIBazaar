@@ -14,7 +14,7 @@ options.add_argument("--window-size=1920,1080")
 global driver 
 
 product_lists = [
-    "Samsung Galaxy M13 64GB",
+    # Samsung (12)
     "Samsung Galaxy S24 Ultra 256GB",
     "Samsung Galaxy S25 Ultra 512GB",
     "Samsung Galaxy S25 Ultra 256GB",
@@ -27,13 +27,8 @@ product_lists = [
     "Samsung Galaxy S24 FE 256GB",
     "Samsung Galaxy S24 FE 128GB",
     "Samsung Galaxy S25 256GB",
-    "Samsung Galaxy A54 5G 128GB",
-    "Samsung Galaxy M14 5G 64GB",
-    "Samsung Galaxy S23 128GB",
-    "Samsung Galaxy A34 5G 128GB",
-    "Samsung Galaxy A14 64GB",
-    "Samsung Galaxy A04s 64GB",
-    "Samsung Galaxy A03 32GB",
+
+    # Apple (12)
     "Apple iPhone 15 Pro Max 256GB",
     "Apple iPhone 15 Pro 128GB",
     "Apple iPhone 15 128GB",
@@ -46,76 +41,32 @@ product_lists = [
     "Apple iPhone XR 64GB",
     "Apple iPhone XS 64GB",
     "Apple iPhone X 64GB",
-    "Apple iPhone 8 64GB",
-    "Apple iPhone 7 32GB",
-    "Apple iPhone 6s 32GB",
-    "Apple iPhone 6 16GB",
-    "Apple iPhone 5s 16GB",
-    "Apple iPhone 5 16GB",
-    "Apple iPhone 4s 8GB",
-    "Apple iPhone 4 8GB",
+
+    # Nokia (2)
     "Nokia 3210 4G 2024 128MB",
     "Nokia 235 4G 128MB",
-    "Nokia G42 5G 128GB",
-    "Nokia 5710 XA 128MB",
-    "Nokia 225 4G 2024 128MB",
-    "Nokia G22 64GB",
-    "Nokia C32 64GB",
-    "Nokia 105 2G 2023",
-    "Nokia C02 32GB",
-    "Nokia C12 64GB",
-    "Nokia 105 2019",
-    "Nokia 110 4G",
-    "Nokia 150 2020",
-    "Nokia 6300 4G",
-    "Nokia 800 Tough",
-    "Nokia 2720 Flip",
-    "Nokia 8110 4G",
-    "Nokia 3310 3G",
-    "Nokia 230 Dual SIM",
-    "Nokia 216 Dual SIM",
-    "Oppo Find X5 Pro 256GB",
-    "Oppo Reno8 Pro 256GB",
-    "Oppo A96 128GB",
-    "Oppo A57 64GB",
-    "Oppo A16s 64GB",
-    "Oppo A15 32GB",
-    "Oppo A74 128GB",
-    "Oppo A54 64GB",
-    "Oppo A53s 128GB",
-    "Oppo A52 64GB",
-    "Oppo A31 64GB",
-    "Oppo A12 32GB",
-    "Oppo A11k 32GB",
-    "Oppo A5 2020 64GB",
-    "Oppo A3s 32GB",
-    "Oppo A1k 32GB",
-    "Oppo F17 Pro 128GB",
-    "Oppo F15 128GB",
-    "Oppo F11 Pro 64GB",
-    "Oppo F9 64GB",
-    "Motorola Edge 30 Pro 256GB",
-    "Motorola Moto G200 5G 128GB",
-    "Motorola Moto G100 128GB",
-    "Motorola Moto G82 5G 128GB",
-    "Motorola Moto G71 5G 128GB",
-    "Motorola Moto G60 128GB",
-    "Motorola Moto G51 5G 64GB",
-    "Motorola Moto G50 5G 64GB",
-    "Motorola Moto G40 Fusion 64GB",
-    "Motorola Moto G30 64GB",
-    "Motorola Moto G20 64GB",
-    "Motorola Moto G10 64GB",
-    "Motorola Moto E40 64GB",
-    "Motorola Moto E30 32GB",
-    "Motorola Moto E20 32GB",
-    "Motorola Moto E7 Power 32GB",
-    "Motorola Moto E6s 32GB",
-    "Motorola Moto E5 Plus 32GB",
-    "Motorola Moto E4 Plus 16GB",
-    "Motorola Moto C Plus 16GB"
-]
 
+    # Oppo (8)
+    "Oppo Find X5 Pro 256GB",
+    "Oppo A80 5G 256GB",
+    "Oppo Reno12 Pro 512GB",
+    "Oppo Reno12 F 5G 8GB RAM 256GB",
+    "Oppo Find X8 Pro 16GB RAM 1TB",
+    "Oppo A60 256GB",
+    "Oppo Reno 11 F 256GB",
+    "Oppo A18 128GB",
+
+    # Xiaomi (16)
+    "Xiaomi 14 Ultra 512GB",
+    "Xiaomi 14 Pro 512GB",
+    "Xiaomi 13T Pro 512GB",
+    "Xiaomi 13T 256GB",
+    "Xiaomi Redmi Note 13 Pro+ 512GB",
+    "Xiaomi Redmi Note 13 Pro 256GB",
+    "Xiaomi Redmi Note 13 5G 128GB",
+    "Xiaomi Redmi 13C 128GB",
+    "Xiaomi Redmi A3 64GB",
+]
 
 def scraping_prices(product_list):
     driver = webdriver.Chrome(options=options)
@@ -215,6 +166,7 @@ def price_runner(product_list):
     except Exception as e:
         print("⚠️ Reject All butonu bulunamadı veya tıklanamadı:", e)
 
+    tooltip_popularities = []
     for product_name in product_list:
         driver.get("https://www.pricerunner.com")  # Ana sayfaya dön
         time.sleep(3)  # Sayfanın tam yüklenmesini bekle
@@ -297,11 +249,10 @@ def price_runner(product_list):
    
         chart = driver.find_element(By.CLASS_NAME, "highcharts-series")
         actions = ActionChains(driver)
-        start_x = -100
-        end_x = 700
+        start_x = -50
+        end_x = 400
         step = 30
         fixed_y = 50
-        tooltip_popularities = []
 
         for x_offset in range(start_x, end_x, step):
             actions.move_to_element_with_offset(chart, x_offset, fixed_y).perform()
@@ -312,14 +263,15 @@ def price_runner(product_list):
                         (By.CLASS_NAME, "highchart-tooltip__price")
                     )
                 )
-
                 tooltip_popularity = tooltip_popularity_element.text
-                print(f"Offset {x_offset}: Tooltip Price = {tooltip_popularity}")
+                print(f"Offset {x_offset}: Tooltip Popularity = {tooltip_popularity}")
+
+                # ✅ Sadece veri varsa ekle
                 tooltip_popularities.append((product_name, tooltip_popularity))
+
             except Exception as e:
                 print(f"Offset {x_offset}: Tooltip bulunamadı.")
-        driver.get("https://www.pricerunner.com")
-    driver.quit()
+
 
     with open("./csv/price_runner.csv", mode="w", newline="", encoding="utf-8") as file:
         writer = csv.writer(file)
