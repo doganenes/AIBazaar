@@ -82,14 +82,14 @@ def scraping_prices(product_list):
     driver.quit()
 
     # CSV'ye yaz
-    with open("product_data.csv", mode="w", newline="", encoding="utf-8-sig") as file:
+    with open("akakce.csv", mode="w", newline="", encoding="utf-8-sig") as file:
         writer = csv.writer(file)
         writer.writerow(["Product Name", "Date", "Price"])
         writer.writerows(all_data)
 
-scraping_prices(product_lists)
+# scraping_prices(product_lists)
 
-def price_runner():
+def price_runner(product_list):
 
     driver.get("https://www.pricerunner.com")
 
@@ -106,93 +106,96 @@ def price_runner():
         print("⚠️ Reject All butonu bulunamadı veya tıklanamadı:", e)
 
     
-    search_input = wait.until(EC.presence_of_element_located((By.NAME, "q")))
-    search_input.clear()
-    search_input.send_keys("iphone 14")
-    search_input.send_keys(Keys.ENTER)
-    print("Arama yapıldı.")
+    for product_name in product_list:
+            search_input = wait.until(EC.presence_of_element_located((By.NAME, "q")))
+            search_input.clear()
 
-    first_product = wait.until(
-        EC.presence_of_element_located(
-            (By.CSS_SELECTOR, ".pr-13k6084-ProductList-grid > div")
-        )
-    )
-    first_product.click()
-    print("İlk ürün tıklandı.")
-    time.sleep(2)
-  
-    time.sleep(3)
+            search_input.send_keys(product_name)
+            search_input.send_keys(Keys.ENTER)
+            print("Arama yapıldı.")
 
-    try:
-        # Butonu bul
-        price_history_button = driver.find_element(
-            By.XPATH, '//*[@id="product-listing-navigation"]/div/div/button[3]'
-        )
-        price_history_button.click()
-        print("Price history butonuna tıklandı.")
-    except:
-        try:
-            driver.execute_script("arguments[0].click();", price_history_button)
-        except:
-            actions = ActionChains(driver)
-            actions.move_to_element(price_history_button).click().perform()
-    try:
-        popularity_button = wait.until(
-            EC.element_to_be_clickable(
-                (By.XPATH, '//*[@id="pricegraph"]/div[3]/div/button[2]')
+            first_product = wait.until(
+                EC.presence_of_element_located(
+                    (By.CSS_SELECTOR, ".pr-13k6084-ProductList-grid > div")
+                )
             )
-        )
-        popularity_button.click()
-    except Exception as e:
-        print(f"Popülerlik butonuna tıklanamadı: {e}")
+            first_product.click()
+            print("İlk ürün tıklandı.")
+            time.sleep(2)
         
-    try:
-        month_element = wait.until(
-            EC.element_to_be_clickable(
-                (By.XPATH, '//*[@id="pricegraph"]/div[6]/div/div/div/label[3]/span')
-            )
-        )
+            time.sleep(3)
 
-        month_element.click()
+            try:
+                # Butonu bul
+                price_history_button = driver.find_element(
+                    By.XPATH, '//*[@id="product-listing-navigation"]/div/div/button[3]'
+                )
+                price_history_button.click()
+                print("Price history butonuna tıklandı.")
+            except:
+                try:
+                    driver.execute_script("arguments[0].click();", price_history_button)
+                except:
+                    actions = ActionChains(driver)
+                    actions.move_to_element(price_history_button).click().perform()
+            try:
+                time.sleep(1)
+                popularity_button = wait.until(
+                    EC.element_to_be_clickable(
+                        (By.CSS_SELECTOR, 'pr-wyywe-Tabs-item')
+                    )
+                )
+                time.sleep(1)
+                popularity_button.click()
+            except Exception as e:
+                print(f"Popülerlik butonuna tıklanamadı: {e}")
+                
+            try:
+                month_element = wait.until(
+                    EC.element_to_be_clickable(
+                        (By.XPATH, '//*[@id="pricegraph"]/div[6]/div/div/div/label[3]/span')
+                    )
+                )
 
-    except Exception as e:
-        print(f"12 ay hatası: {e}")
+                month_element.click()
 
-    time.sleep(3) 
+            except Exception as e:
+                print(f"12 ay hatası: {e}")
 
-    chart = driver.find_element(By.CLASS_NAME, "highcharts-series")
-    actions = ActionChains(driver)
+            time.sleep(3) 
 
-    start_x = -100
-    end_x = 700
-    step = 30
-    fixed_y = 50  
-    tooltip_prices = []
+            chart = driver.find_element(By.CLASS_NAME, "highcharts-series")
+            actions = ActionChains(driver)
 
-    for x_offset in range(start_x, end_x, step):
-        actions.move_to_element_with_offset(chart, x_offset, fixed_y).perform()
-        time.sleep(0.3)         
-        try:
-            tooltip_price_element = WebDriverWait(driver, 2).until(
-                EC.visibility_of_element_located((By.CLASS_NAME, "highchart-tooltip__price"))
-            )
-            tooltip_date=WebDriverWait(driver, 2).until(
-                EC.visibility_of_element_located((By.CLASS_NAME, "highchart-tooltip__date"))
-            )
-            tooltip_date = tooltip_date.text
-            tooltip_price = tooltip_price_element.text
-            print(f"Offset {x_offset}: Tooltip Price = {tooltip_price} | Date = {tooltip_date}")
-            tooltip_prices.append((x_offset, tooltip_price))
-        except Exception as e:
-            print(f"Offset {x_offset}: Tooltip bulunamadı.")
+            start_x = -100
+            end_x = 700
+            step = 30
+            fixed_y = 50  
+            tooltip_popularities = []
+
+            for x_offset in range(start_x, end_x, step):
+                actions.move_to_element_with_offset(chart, x_offset, fixed_y).perform()
+                time.sleep(0.3)         
+                try:
+                    tooltip_popularity_element = WebDriverWait(driver, 2).until(
+                        EC.visibility_of_element_located((By.CLASS_NAME, "highchart-tooltip__price"))
+                    )
+                
+                    tooltip_popularity = tooltip_popularity_element.text
+                    print(f"Offset {x_offset}: Tooltip Price = {tooltip_popularity}")
+                    tooltip_popularities.append((product_name,tooltip_popularity))
+                except Exception as e:
+                    print(f"Offset {x_offset}: Tooltip bulunamadı.")
+            driver.get("https://www.pricerunner.com")
     driver.quit()
 
-    print("\nToplanan Tüm Tooltip Değerleri:")
-    for offset, price in tooltip_prices:
-        print(f"Offset {offset}: {price}")
+    with open("price_runner.csv", mode="w", newline="", encoding="utf-8") as file:
+        writer = csv.writer(file)
+        writer.writerow(["Product Name ", "Popularity"])
+        writer.writerows(tooltip_popularities)
 
 
-# price_runner()
+price_runner(product_lists)
 
 def scraping_description_and_image(product_list):
     driver.get("https://www.trendyol.com/")
