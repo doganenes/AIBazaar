@@ -28,7 +28,7 @@ product_lists = [
     "Samsung Galaxy S24 FE 128GB",
     "Samsung Galaxy S25 256GB",
 
-    # Apple (12)
+    # # Apple (12)
     "Apple iPhone 15 Pro Max 256GB",
     "Apple iPhone 15 Pro 128GB",
     "Apple iPhone 15 128GB",
@@ -84,20 +84,18 @@ def scraping_prices(product_list):
         )
 
         try:
-        # ActionChains ile tıkla
             actions = ActionChains(driver)
             actions.move_to_element(first_product_link).click().perform()
             canvas = wait.until(EC.presence_of_element_located((By.ID, "PG_C")))
             tooltip = wait.until(EC.presence_of_element_located((By.ID, "tooltip")))
         except:
             continue
-        # Ürün adını al
+
         try:
             product_name = driver.find_element(By.TAG_NAME, "h1").text.strip()
         except:
             product_name = "Bilinmeyen Ürün"
 
-        # Gerekli kaydırma ve seçim işlemleri
         canvas_width = canvas.size["width"] // 2
         canvas_height = canvas.size["height"] // 2
         canvas_center_y = canvas_height // 2
@@ -140,7 +138,6 @@ def scraping_prices(product_list):
 
     driver.quit()
 
-    # CSV'ye yaz
     with open("./csv/akakce.csv", mode="w", newline="", encoding="utf-8-sig") as file:
         writer = csv.writer(file)
         writer.writerow(["Product Name", "Date", "Price"])
@@ -168,8 +165,8 @@ def price_runner(product_list):
 
     tooltip_popularities = []
     for product_name in product_list:
-        driver.get("https://www.pricerunner.com")  # Ana sayfaya dön
-        time.sleep(3)  # Sayfanın tam yüklenmesini bekle
+        driver.get("https://www.pricerunner.com")  
+        time.sleep(3)
         try: 
             search_input = wait.until(EC.presence_of_element_located((By.NAME, "q")))
             search_input.clear()
@@ -266,7 +263,6 @@ def price_runner(product_list):
                 tooltip_popularity = tooltip_popularity_element.text
                 print(f"Offset {x_offset}: Tooltip Popularity = {tooltip_popularity}")
 
-                # ✅ Sadece veri varsa ekle
                 tooltip_popularities.append((product_name, tooltip_popularity))
 
             except Exception as e:
@@ -292,7 +288,6 @@ def scraping_description_and_image(product_list):
 
     for product_name in product_list:
         try:
-            # Arama kutusunu temizle ve tekrar bul
             search_input = wait.until(
                 EC.presence_of_element_located(
                     (By.CSS_SELECTOR, 'input[data-testid="suggestion"]')
@@ -302,7 +297,6 @@ def scraping_description_and_image(product_list):
             search_input.send_keys(product_name)
             search_input.send_keys(Keys.ENTER)
 
-            # Ürün listesini bekle
             wait.until(
                 EC.presence_of_element_located(
                     (By.CSS_SELECTOR, ".prdct-cntnr-wrppr .p-card-wrppr")
@@ -310,18 +304,15 @@ def scraping_description_and_image(product_list):
             )
             time.sleep(3)
 
-            # İlk ürüne tıkla
             first_product = driver.find_element(
                 By.CSS_SELECTOR, ".prdct-cntnr-wrppr .p-card-wrppr"
             )
             main_window = driver.current_window_handle
             first_product.click()
 
-            # Yeni sekmeye geç
             driver.switch_to.window(driver.window_handles[1])
             time.sleep(3)
 
-            # Ürün puanı
             try:
                 rating_element = driver.find_element(
                     By.CSS_SELECTOR, ".product-rating-score .value"
@@ -330,7 +321,6 @@ def scraping_description_and_image(product_list):
             except:
                 rating_value = None
 
-            # Ürün görseli
             image_element = wait.until(
                 EC.presence_of_element_located(
                     (By.CSS_SELECTOR, ".base-product-image img")
@@ -338,7 +328,6 @@ def scraping_description_and_image(product_list):
             )
             image_src = image_element.get_attribute("src")
 
-            # Ürün özellikleri
             product_details = {}
             try:
                 feature_elements = driver.find_elements(
@@ -362,7 +351,6 @@ def scraping_description_and_image(product_list):
             except:
                 pass
 
-            # Ürün sekmesini kapat ve ana sekmeye dön
             driver.close()
             driver.switch_to.window(main_window)
             time.sleep(2)
@@ -379,7 +367,6 @@ def scraping_description_and_image(product_list):
 
 
 
-# Örnek kullanım
 # a = scraping_description_and_image(product_lists)
 # print(a)
 threads = []
@@ -388,17 +375,14 @@ import threading
 
 threads = []
 
-# Fonksiyonları thread'lere referans olarak ekleyip çalıştırıyoruz
-# threads.append(threading.Thread(target=scraping_prices, args=(product_lists,)))
+threads.append(threading.Thread(target=scraping_prices, args=(product_lists,)))
 threads.append(threading.Thread(target=price_runner, args=(product_lists,)))
-# threads.append(
-#     threading.Thread(target=scraping_description_and_image, args=(product_lists,))
-# )
+threads.append(
+    threading.Thread(target=scraping_description_and_image, args=(product_lists,))
+)
 
-# Thread'leri başlat
 for t in threads:
     t.start()
 
-# Tüm thread'lerin bitmesini bekle
 for t in threads:
     t.join()
