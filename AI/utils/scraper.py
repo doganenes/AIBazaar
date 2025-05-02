@@ -42,10 +42,6 @@ product_lists = [
     "Apple iPhone XS 64GB",
     "Apple iPhone X 64GB",
 
-    # Nokia (2)
-    "Nokia 3210 4G 2024 128MB",
-    "Nokia 235 4G 128MB",
-
     # Oppo (8)
     "Oppo Find X5 Pro 256GB",
     "Oppo A80 5G 256GB",
