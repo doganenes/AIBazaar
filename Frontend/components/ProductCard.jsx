@@ -2,8 +2,8 @@ import React from 'react';
 
 function ProductCard() {
   return (
-    <div className="card">
-      <img src="project.png" className="card-img-top" alt="..." />
+    <div className="card mt-3">
+      <img src="project.jpg" className="card-img-top" alt="..." />
       <div className="card-body">
         <h5 className="card-title">Card title</h5>
         <p className="card-text">
