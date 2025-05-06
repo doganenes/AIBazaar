@@ -14,54 +14,7 @@ options.add_argument("--window-size=1920,1080")
 global driver 
 
 product_lists = [
-    # Samsung (12)
-    "Samsung Galaxy S24 Ultra 256GB",
-    "Samsung Galaxy S25 Ultra 512GB",
-    "Samsung Galaxy S25 Ultra 256GB",
-    "Samsung Galaxy A56 5G 256GB",
-    "Samsung Galaxy A55 5G 128GB",
-    "Samsung Galaxy A16 5G 128GB",
-    "Samsung Galaxy S24 Ultra 512GB",
-    "Samsung Galaxy Z Fold6 256GB",
-    "Samsung Galaxy S25 Ultra 1TB",
-    "Samsung Galaxy S24 FE 256GB",
-    "Samsung Galaxy S24 FE 128GB",
-    "Samsung Galaxy S25 256GB",
-
-    # # Apple (12)
-    "Apple iPhone 15 Pro Max 256GB",
-    "Apple iPhone 15 Pro 128GB",
-    "Apple iPhone 15 128GB",
-    "Apple iPhone 14 Pro Max 256GB",
-    "Apple iPhone 14 128GB",
-    "Apple iPhone 13 128GB",
-    "Apple iPhone SE (2022) 64GB",
-    "Apple iPhone 12 64GB",
-    "Apple iPhone 11 64GB",
-    "Apple iPhone XR 64GB",
-    "Apple iPhone XS 64GB",
-    "Apple iPhone X 64GB",
-
-    # Oppo (8)
-    "Oppo Find X5 Pro 256GB",
-    "Oppo A80 5G 256GB",
-    "Oppo Reno12 Pro 512GB",
-    "Oppo Reno12 F 5G 8GB RAM 256GB",
-    "Oppo Find X8 Pro 16GB RAM 1TB",
-    "Oppo A60 256GB",
-    "Oppo Reno 11 F 256GB",
-    "Oppo A18 128GB",
-
-    # Xiaomi (16)
-    "Xiaomi 14 Ultra 512GB",
-    "Xiaomi 14 Pro 512GB",
-    "Xiaomi 13T Pro 512GB",
-    "Xiaomi 13T 256GB",
-    "Xiaomi Redmi Note 13 Pro+ 512GB",
-    "Xiaomi Redmi Note 13 Pro 256GB",
-    "Xiaomi Redmi Note 13 5G 128GB",
-    "Xiaomi Redmi 13C 128GB",
-    "Xiaomi Redmi A3 64GB",
+    "Iphone 15",
 ]
 
 def scraping_prices(product_list):
@@ -98,7 +51,7 @@ def scraping_prices(product_list):
 
         start_x = -100
         end_x = canvas_width
-        step = 30
+        step = 1
 
         driver.execute_script(
             "arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});",
@@ -118,7 +71,6 @@ def scraping_prices(product_list):
                 ActionChains(driver).move_to_element_with_offset(
                     canvas, x, canvas_center_y
                 ).perform()
-                time.sleep(1)
 
                 if tooltip.text and "TL" in tooltip.text:
                     lines = tooltip.text.split("\n")
@@ -141,138 +93,6 @@ def scraping_prices(product_list):
 
 
 # scraping_prices(product_lists)
-
-
-def price_runner(product_list):
-    driver = webdriver.Chrome(options=options)
-    driver.get("https://www.pricerunner.com")
-
-    wait = WebDriverWait(driver, 10)
-    time.sleep(4)
-
-    try:
-        reject_button = wait.until(
-            EC.element_to_be_clickable((By.ID, "onetrust-reject-all-handler"))
-        )
-        reject_button.click()
-        print("✅ Reject All butonuna tıklandı.")
-    except Exception as e:
-        print("⚠️ Reject All butonu bulunamadı veya tıklanamadı:", e)
-
-    tooltip_popularities = []
-    for product_name in product_list:
-        driver.get("https://www.pricerunner.com")  
-        time.sleep(3)
-        try: 
-            search_input = wait.until(EC.presence_of_element_located((By.NAME, "q")))
-            search_input.clear()
-            search_input.send_keys(product_name)
-            search_input.send_keys(Keys.ENTER)
-            print(f"Arama yapıldı.{product_name}")
-        except:
-            print(f"❌ Arama kutusu bulunamadı: {e}")
-            continue
-
-        first_product = wait.until(
-            EC.presence_of_element_located(
-                (By.CSS_SELECTOR, ".pr-13k6084-ProductList-grid > div")
-            )
-        )
-        first_product.click()
-        print("İlk ürün tıklandı.")
-        time.sleep(2)
-
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight / 1.5);")
-
-        try:
-            time.sleep(1)
-            popularity_button = wait.until(
-                EC.visibility_of_element_located(
-                    (By.XPATH, '//*[@id="pricegraph"]/div[3]/div/button[2]/div')
-                )
-            )
-            time.sleep(1)
-            popularity_button.click()
-        except:
-            try:
-                driver.execute_script("window.scrollTo(0, 0);")
-                # Butonu bul
-                price_history_button = driver.find_element(
-                    By.XPATH, '//*[@id="product-listing-navigation"]/div/div/button[3]'
-                )
-                price_history_button.click()
-                popularity_button = wait.until(
-                    EC.element_to_be_clickable(
-                        (By.XPATH, '//*[@id="pricegraph"]/div[3]/div/button[2]')
-                    )
-                )
-                popularity_button.click()
-                print("Price history butonuna tıklandı.")
-            except:
-                try:
-                    driver.execute_script("arguments[0].click();", price_history_button)
-                    popularity_button = wait.until(
-                    EC.element_to_be_clickable(
-                        (By.XPATH, '//*[@id="pricegraph"]/div[3]/div/button[2]')
-                    )
-                )
-                    popularity_button.click()
-                except:
-                    actions = ActionChains(driver)
-                    actions.move_to_element(price_history_button).click().perform()
-                popularity_button = wait.until(
-                    EC.element_to_be_clickable(
-                        (By.XPATH, '//*[@id="pricegraph"]/div[3]/div/button[2]')
-                    )
-                )
-                popularity_button.click()
-        try:
-            month_element = wait.until(
-                EC.element_to_be_clickable(
-                    (By.XPATH, '//*[@id="pricegraph"]/div[6]/div/div/div/label[3]/span')
-                )
-            )
-
-            month_element.click()
-
-        except Exception as e:
-            print(f"12 ay hatası: {e}")
-
-        time.sleep(3)
-   
-        chart = driver.find_element(By.CLASS_NAME, "highcharts-series")
-        actions = ActionChains(driver)
-        start_x = -50
-        end_x = 400
-        step = 30
-        fixed_y = 50
-
-        for x_offset in range(start_x, end_x, step):
-            actions.move_to_element_with_offset(chart, x_offset, fixed_y).perform()
-            time.sleep(0.3)
-            try:
-                tooltip_popularity_element = WebDriverWait(driver, 2).until(
-                    EC.presence_of_element_located(
-                        (By.CLASS_NAME, "highchart-tooltip__price")
-                    )
-                )
-                tooltip_popularity = tooltip_popularity_element.text
-                print(f"Offset {x_offset}: Tooltip Popularity = {tooltip_popularity}")
-
-                tooltip_popularities.append((product_name, tooltip_popularity))
-
-            except Exception as e:
-                print(f"Offset {x_offset}: Tooltip bulunamadı.")
-
-
-    with open("./csv/price_runner.csv", mode="w", newline="", encoding="utf-8") as file:
-        writer = csv.writer(file)
-        writer.writerow(["Product Name ", "Popularity"])
-        writer.writerows(tooltip_popularities)
-
-
-# price_runner(product_lists)
-
 
 def scraping_description_and_image(product_list):
     driver = webdriver.Chrome(options=options)
@@ -367,15 +187,14 @@ def scraping_description_and_image(product_list):
 # print(a)
 threads = []
 
-import threading
 
-threads = []
+
+#threads = []
 
 threads.append(threading.Thread(target=scraping_prices, args=(product_lists,)))
-threads.append(threading.Thread(target=price_runner, args=(product_lists,)))
-threads.append(
-    threading.Thread(target=scraping_description_and_image, args=(product_lists,))
-)
+# threads.append(
+#      threading.Thread(target=scraping_description_and_image, args=(product_lists,))
+#  )
 
 for t in threads:
     t.start()
