@@ -14,7 +14,7 @@ options.add_argument("--window-size=1920,1080")
 global driver 
 
 product_lists = [
-    "Iphone 15",
+    "iPhone 15 128 GB","Samsung Galaxy S24 FE 256 GB", "iPhone 16 Pro Max 256 GB", "iPhone 16 Pro 128 GB", "Xiaomi 14T Pro 512 GB", "Iphone 16e 128 GB", "Samsung Galaxy S25 Ultra 512 GB", "Samsung Galaxy A56 256 GB", "iPhone 15 Plus 128 GB Mavi", "iPhone 15 Pro Max 256 GB Beyaz Titanyum"
 ]
 
 def scraping_prices(product_list):
