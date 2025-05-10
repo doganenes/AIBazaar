@@ -11,3 +11,4 @@ namespace Backend.Data.Entities
         public ICollection<User> Users { get; set; } = new Collection<User>();
     }
 }
+    

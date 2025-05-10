@@ -41,7 +41,7 @@ namespace Backend.Services
             }
 
             favoriteProduct.Users.Add(user);
-            user.FavoriteProducts.Add(favoriteProduct);
+            //user.FavoriteProducts.Add(favoriteProduct);
             _projectContext.SaveChanges();
         }
 
