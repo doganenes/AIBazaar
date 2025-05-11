@@ -27,7 +27,7 @@ namespace Backend.Services
                .FirstOrDefault(u => u.UserId == userId);
 
             var favoriteProduct = _projectContext.FavoriteProducts
-                .Include(b => b.Users)
+                .Include(b => b.User)
                 .FirstOrDefault(b => b.FavoriteProductID == favoriteProductId);
 
             if (user == null)
@@ -40,7 +40,6 @@ namespace Backend.Services
                 throw new KeyNotFoundException("Favorite product not found.");
             }
 
-            favoriteProduct.Users.Add(user);
             user.FavoriteProducts.Add(favoriteProduct);
             _projectContext.SaveChanges();
         }
