@@ -8677,11 +8677,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\EXCALIBUR\\Desktop\\projects\\Okul Ödevler\\AIBazaar\\Backend\\Backend.csproj",
+      "projectUniqueName": "C:\\Users\\EXCALIBUR\\Desktop\\a\\AIBazaar\\Backend\\Backend.csproj",
       "projectName": "Backend",
-      "projectPath": "C:\\Users\\EXCALIBUR\\Desktop\\projects\\Okul Ödevler\\AIBazaar\\Backend\\Backend.csproj",
+      "projectPath": "C:\\Users\\EXCALIBUR\\Desktop\\a\\AIBazaar\\Backend\\Backend.csproj",
       "packagesPath": "C:\\Users\\EXCALIBUR\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\EXCALIBUR\\Desktop\\projects\\Okul Ödevler\\AIBazaar\\Backend\\obj\\",
+      "outputPath": "C:\\Users\\EXCALIBUR\\Desktop\\a\\AIBazaar\\Backend\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\DevExpress 24.2\\Components\\Offline Packages",

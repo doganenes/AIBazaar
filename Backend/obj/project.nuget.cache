@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Ih+9ilr8vEw=",
+  "dgSpecHash": "U9kTKHcYaZ0=",
   "success": true,
-  "projectFilePath": "C:\\Users\\EXCALIBUR\\Desktop\\projects\\Okul Ödevler\\AIBazaar\\Backend\\Backend.csproj",
+  "projectFilePath": "C:\\Users\\EXCALIBUR\\Desktop\\a\\AIBazaar\\Backend\\Backend.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\EXCALIBUR\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\EXCALIBUR\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",

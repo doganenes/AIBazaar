@@ -74,16 +74,16 @@ namespace Backend.Services
             var user = _projectContext.Users
                    .Include(u => u.FavoriteProducts)
                    .FirstOrDefault(u => u.UserId == userId);
-            var favoriteProduct = user.FavoriteProducts?.Select(product => new ProductDto
+            var favoriteProduct = user.FavoriteProducts?.Select(fp => new ProductDto
             {
-                Description = product.Description,
-                ImageUrl = product.ImageUrl,
-                IsInStock = product.IsInStock,
-                Popularity = product.Popularity,
-                Price = product.Price,
-                ProductName = product.ProductName,
-                Rating = product.Rating,
-                SaleDate = product.SaleDate
+                ProductName = fp.Product.ProductName,
+                SaleDate = fp.Product.SaleDate,
+                Price = fp.Product.Price,
+                Rating = fp.Product.Rating,
+                Description = fp.Product.Description,
+                ImageUrl = fp.Product.ImageUrl,
+                IsInStock = fp.Product.IsInStock
+
             }).ToList();
 
             if (user == null)

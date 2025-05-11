@@ -16,6 +16,8 @@ var builder = WebApplication.CreateBuilder(args);
 Env.Load();
 
 var envConnectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
+Console.WriteLine("Connection string: " + envConnectionString);
+
 builder.Services.AddDbContext<ProjectContext>(options =>
     options.UseSqlServer(envConnectionString));
 
