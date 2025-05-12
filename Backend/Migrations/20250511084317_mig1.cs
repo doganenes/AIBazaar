@@ -22,7 +22,7 @@ namespace Backend.Migrations
                     Price = table.Column<double>(type: "float", nullable: false),
                     Rating = table.Column<double>(type: "float", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Popularity = table.Column<short>(type: "smallint", nullable: false),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsInStock = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -54,17 +54,29 @@ namespace Backend.Migrations
                     FavoriteProductDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     PriceChanging = table.Column<short>(type: "smallint", nullable: false),
                     ProductID = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_FavoriteProducts", x => x.FavoriteProductID);
                     table.ForeignKey(
+                        name: "FK_FavoriteProducts_Products_ProductID",
+                        column: x => x.ProductID,
+                        principalTable: "Products",
+                        principalColumn: "ProductID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_FavoriteProducts_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "UserId");
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FavoriteProducts_ProductID",
+                table: "FavoriteProducts",
+                column: "ProductID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_FavoriteProducts_UserId",

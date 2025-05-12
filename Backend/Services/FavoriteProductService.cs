@@ -20,28 +20,40 @@ namespace Backend.Services
             _projectContext = projectContext;
         }
 
-        public void AddFavoriteProduct(string userId,int favoriteProductId)
+        public void AddFavoriteProduct(string userId,int productId)
         {
             var user = _projectContext.Users
                .Include(u => u.FavoriteProducts)
                .FirstOrDefault(u => u.UserId == userId);
 
-            var favoriteProduct = _projectContext.FavoriteProducts
-                .Include(b => b.Users)
-                .FirstOrDefault(b => b.FavoriteProductID == favoriteProductId);
+            var product = _projectContext.Products
+                .Include(b => b.FavoriteProducts)
+                .FirstOrDefault(b => b.ProductID == productId);
 
             if (user == null)
             {
                 throw new KeyNotFoundException("User not found.");
             }
 
-            if (favoriteProduct == null)
+            if (product == null)
             {
-                throw new KeyNotFoundException("Favorite product not found.");
+                throw new KeyNotFoundException("Product not found.");
             }
 
+<<<<<<< HEAD
             favoriteProduct.Users.Add(user);
             //user.FavoriteProducts.Add(favoriteProduct);
+=======
+            user.FavoriteProducts.Add(new FavoriteProduct
+            {
+                FavoriteProductDate = DateTime.Now,
+                PriceChanging = 0,
+                ProductID = productId,
+                UserId = userId,
+                Product = product,
+                User = user
+            });
+>>>>>>> 814fed5a2d8857a266a3ef065a6ee92198272dc3
             _projectContext.SaveChanges();
         }
 
@@ -74,16 +86,16 @@ namespace Backend.Services
             var user = _projectContext.Users
                    .Include(u => u.FavoriteProducts)
                    .FirstOrDefault(u => u.UserId == userId);
-            var favoriteProduct = user.FavoriteProducts?.Select(product => new ProductDto
+            var favoriteProduct = user.FavoriteProducts?.Select(fp => new ProductDto
             {
-                Description = product.Description,
-                ImageUrl = product.ImageUrl,
-                IsInStock = product.IsInStock,
-                Popularity = product.Popularity,
-                Price = product.Price,
-                ProductName = product.ProductName,
-                Rating = product.Rating,
-                SaleDate = product.SaleDate
+                ProductName = fp.Product.ProductName,
+                SaleDate = fp.Product.SaleDate,
+                Price = fp.Product.Price,
+                Rating = fp.Product.Rating,
+                Description = fp.Product.Description,
+                ImageUrl = fp.Product.ImageUrl,
+                IsInStock = fp.Product.IsInStock
+
             }).ToList();
 
             if (user == null)
