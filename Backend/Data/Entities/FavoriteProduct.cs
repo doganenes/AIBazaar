@@ -1,6 +1,5 @@
-﻿using Backend.Data.Entities;
-using System.Collections.ObjectModel;
-
+﻿using System.Collections.ObjectModel;
+namespace Backend.Data.Entities;
 public class FavoriteProduct
 {
     public int FavoriteProductID { get; set; }
@@ -10,5 +9,11 @@ public class FavoriteProduct
     public int ProductID { get; set; }
     public Product Product { get; set; }
 
-    public ICollection<User> Users { get; set; } = new Collection<User>();
+    public string UserId { get; set; }
+    public User User { get; set; } 
 }
+<<<<<<< HEAD
+    
+=======
+
+>>>>>>> 814fed5a2d8857a266a3ef065a6ee92198272dc3

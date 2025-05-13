@@ -8676,11 +8676,19 @@
   "project": {
     "version": "1.0.0",
     "restore": {
+<<<<<<< HEAD
       "projectUniqueName": "C:\\Users\\pc\\Desktop\\AIbazaar\\AIBazaar\\Backend\\Backend.csproj",
       "projectName": "Backend",
       "projectPath": "C:\\Users\\pc\\Desktop\\AIbazaar\\AIBazaar\\Backend\\Backend.csproj",
       "packagesPath": "C:\\Users\\pc\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\pc\\Desktop\\AIbazaar\\AIBazaar\\Backend\\obj\\",
+=======
+      "projectUniqueName": "C:\\Users\\EXCALIBUR\\Desktop\\projects\\Okul Ödevler\\AIBazaar\\Backend\\Backend.csproj",
+      "projectName": "Backend",
+      "projectPath": "C:\\Users\\EXCALIBUR\\Desktop\\projects\\Okul Ödevler\\AIBazaar\\Backend\\Backend.csproj",
+      "packagesPath": "C:\\Users\\EXCALIBUR\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\EXCALIBUR\\Desktop\\projects\\Okul Ödevler\\AIBazaar\\Backend\\obj\\",
+>>>>>>> e68d23105fa884b1a9e3e5925faf081ed635020a
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
