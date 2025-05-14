@@ -209,7 +209,7 @@ def scraping_description_and_image(product_list):
                         ).text.strip()
                         product_details[key] = value
                         key_value_text = ' '.join(f"{key}:{value};" for key, value in product_details.items())
-                        print(key_value_text)
+                    # print(key_value_text)
                     except:
                         continue
                 results.append((key_value_text,product_name,image_src,rating_value,price_product))
@@ -226,11 +226,10 @@ def scraping_description_and_image(product_list):
             continue
 
     driver.quit()
-    with open("./csv/trendyolyeni.csv", mode="w", newline="", encoding="utf-8-sig") as file:
+    with open("./csv/trendyol.csv", mode="w", newline="", encoding="utf-8-sig") as file:
         writer = csv.writer(file)
         writer.writerow(["Description", "Product Name", "Image", "Rating","Price"])
         writer.writerows(results)
-
 
 
 # a = scraping_description_and_image(product_lists)
@@ -238,10 +237,9 @@ def scraping_description_and_image(product_list):
 threads = []
 
 
+# threads = []
 
-#threads = []
-
-#threads.append(threading.Thread(target=scraping_prices, args=(product_lists,)))
+# threads.append(threading.Thread(target=scraping_prices, args=(product_lists,)))
 threads.append(
      threading.Thread(target=scraping_description_and_image, args=(product_lists,))
  )
