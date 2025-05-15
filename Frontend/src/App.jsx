@@ -9,6 +9,7 @@ import { Route, Routes } from "react-router-dom";
 import Forecast from "../pages/Forecast";
 import Favorites from "../pages/Favorites";
 import ProductDetail from "../pages/ProductDetail";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   return (

@@ -1,6 +1,5 @@
 import React from "react";
 import ProductCard from "../components/ProductCard";
-import 'bootstrap/dist/css/bootstrap.min.css';
 
 function Home() {
   return (

@@ -12,57 +12,10 @@ options = webdriver.ChromeOptions()
 options.add_argument("--disable-blink-features=AutomationControlled")
 options.add_argument("--window-size=1920,1080")
 global driver 
+import pandas as pd
 
-product_lists = [
-    "Apple iPhone 16 Pro Max 1TB",
-    "Apple iPhone 16 Pro Max 512TB",
-    "Apple iPhone 16 Plus 512GB",
-    "Apple iPhone 16 Pro Max 256GB",
-    "Apple iPhone 15 Pro Max 512 GB",
-    "Apple iPhone 16 Pro 512GB",
-    "Honor Magic V3 512 GB 12 GB Ram",
-    "Apple iPhone 15 Pro 1 TB",
-    "Apple iPhone 16 512GB",
-    "Samsung Galaxy Z Fold6 12/256GB",
-    "Samsung Galaxy S25 Ultra 1 TB Titanyum",
-    "Xiaomi Mi 14 Ultra 16/512 Gb",
-    "vivo X200 Pro 16/512gb",
-    "Apple İphone 14 Pro 128 Gb",
-    "Apple İphone 14 Pro 256 Gb",
-    "Apple İphone 14 Pro 512 Gb",
-    "Apple iPhone 14 Plus 512 GB",
-    "Samsung Galaxy S25 Ultra 512 GB",
-    "Samsung Galaxy Z Fold5 1 TB 12 GB Ram",
-    "Xiaomi 15 Ultra 512 GB, Siyah",
-    "Samsung Yenilenmiş Galaxy S24 Ultra 1TB",
-    "Samsung Galaxy Z Fold6 512 GB",
-    "Apple iPhone 14 Plus 256 GB",
-    "Apple Iphone 15 Pro 256gb",
-    "Honor Magic V2 512 GB 16 GB Ram",
-    "Xiaomi Mix Flip 12/512 GB",
-    "Samsung Galaxy S23 Ultra 512 GB",
-    "Huawei Pura 70 Ultra 16 GB RAM 512 GB",
-    "vivo X100 Pro 512 GB 16 GB Ram",
-    "Samsung Galaxy S25+ 512 GB",
-    "Samsung Galaxy S25+ 256 GB",
-    "AGM Mobile AGM G2 GUARDIAN",
-    "TECNO PHANTOM V2 FOLD 5G 12+512",
-    "Huawei HUAWEI MATE X3 512GB",
-    "Nubia Red Magic 9s Pro 16 Gb 512",
-    "Honor Magic 7 Pro 512 GB 12 GB Ram",
-    "Samsung Galaxy Z Fold4 256 GB 12 GB Ram",
-    "Apple Yenilenmiş Iphone 13 Pro Max 256 Gb",
-    "Samsung Z Fold 5 512 GB 5G",
-    "Samsung Galaxy S23 Ultra 256 GB",
-    "ULEFONE Armor 27t Pro",
-    "Samsung Galaxy Z Flip 6 512 Gb",
-    "Samsung Galaxy Z Flip 6 256 Gb",
-    "Samsung Galaxy Z Flip5 512 GB",
-    "Samsung Galaxy Z Flip5 256 GB",
-    "Xiaomi 14t Pro 12gb/1tb",
-    "Apple iPhone 12 Pro Max 512 GB",
-    "SAMSUNG GALAXY S22 ULTRA 512GB"
-]
+phones = pd.read_csv("csv/phoneNames.csv")
+product_lists = phones['phone_model'].tolist() 
 
 def scraping_prices(product_list):
     driver = webdriver.Chrome(options=options)
@@ -209,7 +162,7 @@ def scraping_description_and_image(product_list):
                         ).text.strip()
                         product_details[key] = value
                         key_value_text = ' '.join(f"{key}:{value};" for key, value in product_details.items())
-                    # print(key_value_text)
+                        print(key_value_text)
                     except:
                         continue
                 results.append((key_value_text,product_name,image_src,rating_value,price_product))
@@ -226,10 +179,11 @@ def scraping_description_and_image(product_list):
             continue
 
     driver.quit()
-    with open("./csv/trendyol.csv", mode="w", newline="", encoding="utf-8-sig") as file:
+    with open("./csv/trendyolyeni.csv", mode="w", newline="", encoding="utf-8-sig") as file:
         writer = csv.writer(file)
         writer.writerow(["Description", "Product Name", "Image", "Rating","Price"])
         writer.writerows(results)
+
 
 
 # a = scraping_description_and_image(product_lists)
@@ -237,9 +191,10 @@ def scraping_description_and_image(product_list):
 threads = []
 
 
-# threads = []
 
-# threads.append(threading.Thread(target=scraping_prices, args=(product_lists,)))
+#threads = []
+
+#threads.append(threading.Thread(target=scraping_prices, args=(product_lists,)))
 threads.append(
      threading.Thread(target=scraping_description_and_image, args=(product_lists,))
  )
