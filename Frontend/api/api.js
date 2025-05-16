@@ -9,9 +9,9 @@ const api = axios.create({
   },
 });
 
-export const signup = async (formData) => {
+export const register = async (formData) => {
   try {
-    const response = await api.post("/api/auth/signup", formData);
+    const response = await api.post("/api/Auth/Register", formData);
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -23,12 +23,34 @@ export const signup = async (formData) => {
 
 export const login = async (formData) => {
   try {
-    const response = await api.post("/api/auth/login", formData);
+    console.log(`Form datamız: ${formData}`)
+    const response = await api.post("/api/Auth/login", formData);
+    console.log(`Bizim dönen response : ${response.data}`)
     return response.data;
   } catch (error) {
     if (error.response) {
       return error.response.data;
     }
     throw new Error("Network error occurred.");
+  }
+};
+
+export const tokenToId = async () => {
+  const token = localStorage.getItem("authToken");
+  if (!token) {
+    throw new Error("No token found. Please log in.");
+  }
+
+  try {
+    const { data: tokenResponse } = await api.get("/api/auth/tokenToId", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    console.log("Token response:", tokenResponse);
+    return tokenResponse;
+  } catch (error) {
+    console.error("Error fetching token to ID:", error);
+    throw new Error(`${error}`);
   }
 };
