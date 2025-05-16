@@ -23,9 +23,10 @@ export const register = async (formData) => {
 
 export const login = async (formData) => {
   try {
-    console.log(`Form datamız: ${formData}`)
+    // console.log("API'ye gönderilen veriler:", formData);
     const response = await api.post("/api/Auth/login", formData);
-    console.log(`Bizim dönen response : ${response.data}`)
+   console.log("API'den dönen yanıt:", response.data)
+  
     return response.data;
   } catch (error) {
     if (error.response) {

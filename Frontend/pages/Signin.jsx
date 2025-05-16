@@ -65,18 +65,17 @@ const Signin = () => {
       try {
         console.log("API'ye gönderilen veriler:", formData);
         const response = await login(formData);
-        console.log("API yanıtı:", response);
+        console.log("API'den dönen yanıt:", response);
 
         if (response && response.message === "Login successful.") {
           setSuccess(true);
           localStorage.setItem("authToken", response.token);
           console.log(`Dönen tokenimiz : ${response.token}`)
           setSuccessMessage("Login successful!");
-          // navigate("/home");
+          navigate("/home");
           
           try {
-            const userId = await tokenToId();
-            console.log("Token to ID response:", userId);
+            
           } catch (idError) {
             console.error("Token to ID error:", idError);
           }
@@ -99,11 +98,11 @@ const Signin = () => {
     }
   };
 
-    useEffect(() => {
-    if (isLoggedIn) {
-      navigate("/home");
-    }
-  }, [isLoggedIn, navigate]);
+  //   useEffect(() => {
+  //   if (isLoggedIn) {
+  //     navigate("/home");
+  //   }
+  // }, [isLoggedIn, navigate]);
 
 
   return (

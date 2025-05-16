@@ -45,7 +45,7 @@ namespace Backend.Controllers
             try
             {
                 var token = _authService.Login(loginDto);
-                return Ok(new {Token = token, Message = "Login successful." });
+                return Ok(new {Token = token.AccessToken, Message = "Login successful." });
 
             }
             catch (Exception ex)

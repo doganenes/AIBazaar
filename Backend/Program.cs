@@ -18,7 +18,7 @@ var envConnectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRI
 Console.WriteLine("Connection string: " + envConnectionString);
 
 builder.Services.AddDbContext<ProjectContext>(options =>
-    options.UseSqlServer("Server=DESKTOP-62B01VU\\SQLEXPRESS;Database=BazaarDb;Integrated Security=True;TrustServerCertificate=True"));
+    options.UseSqlServer("Server=BZ\\SQLEXPRESS;Database=BazaarDb;Integrated Security=True;TrustServerCertificate=True"));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>
 {
