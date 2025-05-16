@@ -12,8 +12,3 @@ public class FavoriteProduct
     public string UserId { get; set; }
     public User User { get; set; } 
 }
-<<<<<<< HEAD
-    
-=======
-
->>>>>>> 814fed5a2d8857a266a3ef065a6ee92198272dc3

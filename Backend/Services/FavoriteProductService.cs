@@ -40,10 +40,6 @@ namespace Backend.Services
                 throw new KeyNotFoundException("Product not found.");
             }
 
-<<<<<<< HEAD
-            favoriteProduct.Users.Add(user);
-            //user.FavoriteProducts.Add(favoriteProduct);
-=======
             user.FavoriteProducts.Add(new FavoriteProduct
             {
                 FavoriteProductDate = DateTime.Now,
@@ -53,7 +49,6 @@ namespace Backend.Services
                 Product = product,
                 User = user
             });
->>>>>>> 814fed5a2d8857a266a3ef065a6ee92198272dc3
             _projectContext.SaveChanges();
         }
 
