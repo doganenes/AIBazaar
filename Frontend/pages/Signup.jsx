@@ -5,7 +5,7 @@ import "../css/Signin.css";
 const Signin = () => {
   return (
     <div className="container d-flex justify-content-center min-vh-100">
-      <div className="signin-form bg-light p-4 rounded shadow-sm w-100" style={{ maxWidth: '400px', maxHeight:"400px"}}>
+      <div className="signin-form bg-light p-4 rounded shadow-sm w-100" style={{ maxWidth: '400px', maxHeight:"650px"}}>
         <h2 className="mb-4 text-center">Signup</h2>
 
         <Form>
