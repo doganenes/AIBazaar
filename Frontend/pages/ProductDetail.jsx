@@ -23,8 +23,9 @@ function ProductDetail() {
           <div className="mb-2">
             <strong>Kapasite:</strong> 128 GB
           </div>
-          <div className="mb-2">
-            <p>Fiyat değişimi burada olacak</p>
+          <div className="mb-2 border border-3 p-2 rounded">
+            <p className="mb-0">Fiyat değişimi burada olacak</p>
+            <img src="graphic.jpg" alt="" style={{width:"300px"}}/>
           </div>
         </div>
       </div>
