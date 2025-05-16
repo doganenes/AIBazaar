@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Forecast() {
+function GeneratePrice() {
   return (
     <div className="container my-5">
       <div className="row justify-content-center g-4">
@@ -76,4 +76,4 @@ function Forecast() {
   );
 }
 
-export default Forecast;
+export default GeneratePrice;
