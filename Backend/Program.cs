@@ -11,14 +11,12 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 Env.Load();
 var envConnectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
 Console.WriteLine("Connection string: " + envConnectionString);
 
 builder.Services.AddDbContext<ProjectContext>(options =>
-    options.UseSqlServer("Server=BZ\\SQLEXPRESS;Database=BazaarDb;Integrated Security=True;TrustServerCertificate=True"));
+    options.UseSqlServer("Server=DESKTOP-62B01VU\\SQLEXPRESS;Database=BazaarDb;Integrated Security=True;TrustServerCertificate=True"));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>
 {

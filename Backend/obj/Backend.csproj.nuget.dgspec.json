@@ -1,23 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\pc\\Desktop\\AIbazaar\\AIBazaar\\Backend\\Backend.csproj": {}
+    "C:\\Users\\EXCALIBUR\\Desktop\\projects\\Okul Ödevler\\AIBazaar\\Backend\\Backend.csproj": {}
   },
   "projects": {
-    "C:\\Users\\pc\\Desktop\\AIbazaar\\AIBazaar\\Backend\\Backend.csproj": {
+    "C:\\Users\\EXCALIBUR\\Desktop\\projects\\Okul Ödevler\\AIBazaar\\Backend\\Backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\pc\\Desktop\\AIbazaar\\AIBazaar\\Backend\\Backend.csproj",
+        "projectUniqueName": "C:\\Users\\EXCALIBUR\\Desktop\\projects\\Okul Ödevler\\AIBazaar\\Backend\\Backend.csproj",
         "projectName": "Backend",
-        "projectPath": "C:\\Users\\pc\\Desktop\\AIbazaar\\AIBazaar\\Backend\\Backend.csproj",
-        "packagesPath": "C:\\Users\\pc\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\pc\\Desktop\\AIbazaar\\AIBazaar\\Backend\\obj\\",
+        "projectPath": "C:\\Users\\EXCALIBUR\\Desktop\\projects\\Okul Ödevler\\AIBazaar\\Backend\\Backend.csproj",
+        "packagesPath": "C:\\Users\\EXCALIBUR\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\EXCALIBUR\\Desktop\\projects\\Okul Ödevler\\AIBazaar\\Backend\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
+          "C:\\Program Files\\DevExpress 24.2\\Components\\Offline Packages",
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\pc\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\EXCALIBUR\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\DevExpress 24.2.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -26,7 +28,9 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\DevExpress 24.2\\Components\\System\\Components\\Packages": {},
           "C:\\Program Files\\dotnet\\library-packs": {},
+          "C:\\Users\\EXCALIBUR\\Desktop\\projects\\Clone Projects\\IdentityNuget\\templates": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
