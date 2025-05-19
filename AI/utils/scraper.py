@@ -14,7 +14,7 @@ options.add_argument("--window-size=1920,1080")
 global driver 
 import pandas as pd
 
-phones = pd.read_csv("csv/phoneNames.csv")
+phones = pd.read_csv("csv/phones_after_2023.csv")
 product_lists = phones['phone_model'].tolist() 
 
 def scraping_prices(product_list):
@@ -185,16 +185,14 @@ def scraping_description_and_image(product_list):
         writer.writerows(results)
 
 
-
 # a = scraping_description_and_image(product_lists)
 # print(a)
 threads = []
 
 
+# threads = []
 
-#threads = []
-
-#threads.append(threading.Thread(target=scraping_prices, args=(product_lists,)))
+# threads.append(threading.Thread(target=scraping_prices, args=(product_lists,)))
 threads.append(
      threading.Thread(target=scraping_description_and_image, args=(product_lists,))
  )

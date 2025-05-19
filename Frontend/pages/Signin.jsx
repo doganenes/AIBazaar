@@ -98,11 +98,11 @@ const Signin = () => {
     }
   };
 
-  //   useEffect(() => {
-  //   if (isLoggedIn) {
-  //     navigate("/home");
-  //   }
-  // }, [isLoggedIn, navigate]);
+   useEffect(() => {
+     if (isLoggedIn) {
+       navigate("/home");
+     }
+   }, [isLoggedIn, navigate]);
 
 
   return (
