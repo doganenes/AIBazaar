@@ -23,8 +23,7 @@ function Header() {
           <a href="/signup" className="btn btn-warning">Sign Up</a>
         </div>
       </div>
-    </nav>
-    
+    </nav>    
   );
 }
 

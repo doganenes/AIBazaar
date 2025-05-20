@@ -17,13 +17,15 @@ const Signin = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    const token = localStorage.getItem("authToken");
-    if (token) {
-      setIsLoggedIn(true);
-    }
-  }, []);
 
+useEffect(() => {
+  const token = localStorage.getItem("authToken");
+  console.log(`Token değeri: ${token}`);
+  
+  if (token) {
+    navigate("/home");
+  }
+}, [navigate]);
   const validate = () => {
     const newErrors = {};
     if (!formData.email) {
@@ -42,7 +44,7 @@ const Signin = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    setErrorMessage(""); // Her değişiklikte hata mesajını temizle
+    setErrorMessage("");
 
     if (errors[name]) {
       setErrors({
@@ -72,7 +74,8 @@ const Signin = () => {
           localStorage.setItem("authToken", response.token);
           console.log(`Dönen tokenimiz : ${response.token}`)
           setSuccessMessage("Login successful!");
-          navigate("/home");
+          navigate("/home")
+          
           
           try {
             
@@ -98,11 +101,11 @@ const Signin = () => {
     }
   };
 
-  //   useEffect(() => {
-  //   if (isLoggedIn) {
-  //     navigate("/home");
-  //   }
-  // }, [isLoggedIn, navigate]);
+   useEffect(() => {
+     if (isLoggedIn) {
+       navigate("/home");
+     }
+   }, [isLoggedIn, navigate]);
 
 
   return (

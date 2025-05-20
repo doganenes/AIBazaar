@@ -1,9 +1,20 @@
-import React from "react";
+import { Form, Button } from "react-bootstrap";
+import "../css/Signin.css";
+import { login, tokenToId } from "../api/api";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
 
-function Home() {
+const Home = () => {
+const navigate = useNavigate();
+useEffect(() => {
+  const token = localStorage.getItem("authToken");
+  if (!token) {
+    navigate("/signin");
+  }
+}, [navigate]);
   return (
-    <div>
+      <div>
       <div className="container-fluid">
         <div className="row">
           <div className="col">
@@ -35,7 +46,7 @@ function Home() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default Home;
+export default Home
