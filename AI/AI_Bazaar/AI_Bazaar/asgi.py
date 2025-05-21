@@ -1,5 +1,5 @@
 """
-ASGI config for ai_project project.
+ASGI config for AI_Bazaar project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ai_project.settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "AI_Bazaar.settings")
 
 application = get_asgi_application()
