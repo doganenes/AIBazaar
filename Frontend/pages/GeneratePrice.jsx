@@ -8,27 +8,27 @@ function GeneratePrice() {
           <form>
             <h3 className='text-light'>Price estimate for a known phone </h3>
             <div className="mb-3">
-              <label htmlFor="email1" className="form-label">Email address</label>
+              <label htmlFor="email1" className="form-label">Phone Model</label>
               <input type="email" className="form-control" id="email1" aria-describedby="emailHelp1" />
               <div id="emailHelp1" className="form-text">We'll never share your email with anyone else.</div>
             </div>
             <div className="mb-3">
-              <label htmlFor="email1" className="form-label">Email address</label>
+              <label htmlFor="email1" className="form-label">Storage</label>
               <input type="email" className="form-control" id="email1" aria-describedby="emailHelp1" />
               <div id="emailHelp1" className="form-text">We'll never share your email with anyone else.</div>
             </div>
             <div className="mb-3">
-              <label htmlFor="email1" className="form-label">Email address</label>
+              <label htmlFor="email1" className="form-label">RAM</label>
               <input type="email" className="form-control" id="email1" aria-describedby="emailHelp1" />
               <div id="emailHelp1" className="form-text">We'll never share your email with anyone else.</div>
             </div>
             <div className="mb-3">
-              <label htmlFor="email1" className="form-label">Email address</label>
+              <label htmlFor="email1" className="form-label">Display Size</label>
               <input type="email" className="form-control" id="email1" aria-describedby="emailHelp1" />
               <div id="emailHelp1" className="form-text">We'll never share your email with anyone else.</div>
             </div>
             <div className="mb-3">
-              <label htmlFor="email1" className="form-label">Email address</label>
+              <label htmlFor="email1" className="form-label">OS</label>
               <input type="email" className="form-control" id="email1" aria-describedby="emailHelp1" />
               <div id="emailHelp1" className="form-text">We'll never share your email with anyone else.</div>
             </div>
@@ -40,31 +40,31 @@ function GeneratePrice() {
           <form>
             <h3 className='text-light'>Price estimate for features </h3>
             <div className="mb-3">
-              <label htmlFor="email2" className="form-label">Email address</label>
+              <label htmlFor="email2" className="form-label">Storage</label>
               <input type="email" className="form-control" id="email2" aria-describedby="emailHelp2" />
               <div id="emailHelp2" className="form-text">We'll never share your email with anyone else.</div>
             </div>
  
             <div className="mb-3">
-              <label htmlFor="email2" className="form-label">Email address</label>
+              <label htmlFor="email2" className="form-label">RAM</label>
               <input type="email" className="form-control" id="email2" aria-describedby="emailHelp2" />
               <div id="emailHelp2" className="form-text">We'll never share your email with anyone else.</div>
             </div>
  
             <div className="mb-3">
-              <label htmlFor="email2" className="form-label">Email address</label>
+              <label htmlFor="email2" className="form-label">Display Size</label>
               <input type="email" className="form-control" id="email2" aria-describedby="emailHelp2" />
               <div id="emailHelp2" className="form-text">We'll never share your email with anyone else.</div>
             </div>
  
             <div className="mb-3">
-              <label htmlFor="email2" className="form-label">Email address</label>
+              <label htmlFor="email2" className="form-label">OS</label>
               <input type="email" className="form-control" id="email2" aria-describedby="emailHelp2" />
               <div id="emailHelp2" className="form-text">We'll never share your email with anyone else.</div>
             </div>
  
             <div className="mb-3">
-              <label htmlFor="email2" className="form-label">Email address</label>
+              <label htmlFor="email2" className="form-label">Battery</label>
               <input type="email" className="form-control" id="email2" aria-describedby="emailHelp2" />
               <div id="emailHelp2" className="form-text">We'll never share your email with anyone else.</div>
             </div>

@@ -22,9 +22,9 @@ function App() {
           <Route path="/home" element={<Home />}></Route>
           <Route path="/signup" element={<Signup />}></Route>
           <Route path="/signin" element={<Signin />}></Route>
-          <Route path="/generate-price" element={<GeneratePrice />}></Route>
+          <Route path="/generatePrice" element={<GeneratePrice />}></Route>
           <Route path="/favorites" element={<Favorites />}></Route>
-          <Route path="/product-detail" element={<ProductDetail />}></Route>
+          <Route path="/productDetail" element={<ProductDetail />}></Route>
           <Route path="*" element={<NotFound />}></Route>
         </Routes>
       </Container>
