@@ -76,21 +76,28 @@ namespace Backend.Services
         }
 
 
-        public List<ProductDto> GetFavoriteProductsByUserId(string userId)
+        public List<FavoriteProductDto> GetFavoriteProductsByUserId(string userId)
         {
             var user = _projectContext.Users
-                   .Include(u => u.FavoriteProducts)
-                   .FirstOrDefault(u => u.UserId == userId);
-            var favoriteProduct = user.FavoriteProducts?.Select(fp => new ProductDto
-            {
-                ProductName = fp.Product.ProductName,
-                SaleDate = fp.Product.SaleDate,
-                Price = fp.Product.Price,
-                Rating = fp.Product.Rating,
-                Description = fp.Product.Description,
-                ImageUrl = fp.Product.ImageUrl,
-                IsInStock = fp.Product.IsInStock
+    .Include(u => u.FavoriteProducts)
+        .ThenInclude(fp => fp.Product)
+    .FirstOrDefault(u => u.UserId == userId);
 
+
+            var favoriteProduct = user.FavoriteProducts?.Select(fp => new FavoriteProductDto
+            {
+                FavoriteProductID = fp.FavoriteProductID,
+                FavoriteProductDate = fp.FavoriteProductDate,
+                PriceChanging = fp.PriceChanging,
+                Product = new ProductDto
+                {
+                    ProductID = fp.Product.ProductID,
+                    ProductName = fp.Product.ProductName,
+                    Price = fp.Product.Price,
+                    Rating = fp.Product.Rating,
+                    Description = fp.Product.Description,
+                    ImageUrl = fp.Product.ImageUrl
+                }
             }).ToList();
 
             if (user == null)
@@ -103,11 +110,5 @@ namespace Backend.Services
             }
             return favoriteProduct;
         }
-
-        public List<FavoriteProduct> GetAllFavoriteProducts()
-        {
-            return _favoriteProductRepository.GetAll().ToList();
-        }
-
     }
 }

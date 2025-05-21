@@ -126,6 +126,15 @@
         "tags": [
           "FavoriteProduct"
         ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -191,19 +200,10 @@
         }
       }
     },
-    "/api/FavoriteProduct/getFavoriteProductsByUserId": {
+    "/api/Product/getAllProducts": {
       "get": {
         "tags": [
-          "FavoriteProduct"
-        ],
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
+          "Product"
         ],
         "responses": {
           "200": {

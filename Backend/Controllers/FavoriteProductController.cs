@@ -18,9 +18,9 @@ namespace Backend.Controllers
         }
 
         [HttpGet("getAllFavoriteProducts")]
-        public IActionResult GetAllFavoriteProducts()
+        public IActionResult GetAllFavoriteProducts([FromQuery] string id)
         {
-            var favoriteProducts = _favoriteProductService.GetAllFavoriteProducts();
+            var favoriteProducts = _favoriteProductService.GetFavoriteProductsByUserId(id);
             return Ok(favoriteProducts);
         }
 
@@ -38,11 +38,11 @@ namespace Backend.Controllers
             return Ok("Product removed from favorites.");
         }
 
-        [HttpGet("getFavoriteProductsByUserId")]
-        public IActionResult GetFavoriteProductsByUserId([FromQuery] string userId)
-        {
-            var values = _favoriteProductService.GetFavoriteProductsByUserId(userId);
-            return Ok(values);
-        }
+        //[HttpGet("getFavoriteProductsByUserId")]
+        //public IActionResult GetFavoriteProductsByUserId([FromQuery] string userId)
+        //{
+        //    var values = _favoriteProductService.GetFavoriteProductsByUserId(userId);
+        //    return Ok(values);
+        //}
     }
 }

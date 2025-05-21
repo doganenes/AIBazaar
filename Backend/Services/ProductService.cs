@@ -1,5 +1,6 @@
 ﻿using Backend.Data.Context;
 using Backend.Data.Entities;
+using Backend.Dtos;
 using Backend.Repositories.Abstract;
 
 namespace Backend.Services
@@ -13,9 +14,18 @@ namespace Backend.Services
             _context = context;
             _productRepository = repository;
         }
-        public List<Product> GetAllProducts()
+
+        public List<ProductDto> GetAllProducts()
         {
-            return _productRepository.GetAll().ToList();
+            return _productRepository.GetAll().Select(x => new ProductDto
+            {
+                ProductID = x.ProductID,
+                ProductName = x.ProductName,
+                Price = x.Price,
+                Rating = x.Rating,
+                Description = x.Description,
+                ImageUrl = x.ImageUrl
+            }).ToList();
         }
 
         public Product GetProductById(int id)

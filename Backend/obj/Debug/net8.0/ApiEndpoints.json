@@ -107,19 +107,9 @@
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "Backend.Controllers.FavoriteProductController",
-    "Method": "GetFavoriteProductsByUserId",
-    "RelativePath": "api/FavoriteProduct/getFavoriteProductsByUserId",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
     "Parameters": [
       {
-        "Name": "userId",
+        "Name": "id",
         "Type": "System.String",
         "IsRequired": false
       }
@@ -145,6 +135,16 @@
         "IsRequired": false
       }
     ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Backend.Controllers.ProductController",
+    "Method": "GetAllProducts",
+    "RelativePath": "api/Product/getAllProducts",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   }
 ]
