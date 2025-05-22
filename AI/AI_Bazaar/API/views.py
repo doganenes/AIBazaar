@@ -6,8 +6,6 @@ from rest_framework import status
 def hello_api(request):
     data = {
         "message": "Merhaba, AI_Bazaar API çalışıyor!",
-        "status": "success",
-        "version": "1.0"
     }
     return Response(data)
 
