@@ -27,6 +27,10 @@ bld/
 [Oo]bj/
 [Ll]og/
 
+bin/
+obj/
+**/bin/
+**/obj/
 # Visual Studio for Mac
 .vscode/
 .idea/
