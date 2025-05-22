@@ -88,17 +88,3 @@ def create_product(request):
         "message": "Ürün başarıyla oluşturuldu",
         "product": new_product
     }, status=status.HTTP_201_CREATED)
-
-@api_view(['GET'])
-def api_status(request):
-    return Response({
-        "status": "online",
-        "service": "AI_Bazaar API",
-        "endpoints": [
-            "/api/hello/",
-            "/api/products/",
-            "/api/products/<id>/",
-            "/api/products/create/",
-            "/api/status/"
-        ]
-    })
