@@ -1,18 +1,17 @@
-from django.shortcuts import render
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-import json
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
 
-# Basit GET API
+@api_view(['GET'])
 def hello_api(request):
     data = {
         "message": "Merhaba, AI_Bazaar API çalışıyor!",
         "status": "success",
         "version": "1.0"
     }
-    return JsonResponse(data)
+    return Response(data)
 
-# Ürün listesi API
+@api_view(['GET'])
 def product_list(request):
     products = [
         {
@@ -38,15 +37,14 @@ def product_list(request):
         }
     ]
     
-    return JsonResponse({
+    return Response({
         "status": "success",
         "count": len(products),
         "products": products
     })
 
-# Tek ürün detayı API
+@api_view(['GET'])
 def product_detail(request, product_id):
-    # Basit örnek - gerçekte veritabanından gelecek
     product = {
         "id": product_id,
         "name": f"AI Product {product_id}",
@@ -60,56 +58,40 @@ def product_detail(request, product_id):
         "rating": 4.5
     }
     
-    return JsonResponse({
+    return Response({
         "status": "success",
         "product": product
     })
 
-# POST isteği kabul eden API
-@csrf_exempt
+@api_view(['POST'])
 def create_product(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            
-            # Basit validasyon
-            required_fields = ['name', 'description', 'price']
-            for field in required_fields:
-                if field not in data:
-                    return JsonResponse({
-                        "status": "error",
-                        "message": f"'{field}' alanı gerekli"
-                    }, status=400)
-            
-            # Burada normalde veritabanına kaydedilir
-            new_product = {
-                "id": 999,  # Gerçekte otomatik ID
-                "name": data['name'],
-                "description": data['description'],
-                "price": data['price'],
-                "created_at": "2024-01-01T00:00:00Z"
-            }
-            
-            return JsonResponse({
-                "status": "success",
-                "message": "Ürün başarıyla oluşturuldu",
-                "product": new_product
-            }, status=201)
-            
-        except json.JSONDecodeError:
-            return JsonResponse({
-                "status": "error",
-                "message": "Geçersiz JSON formatı"
-            }, status=400)
+    data = request.data
     
-    return JsonResponse({
-        "status": "error",
-        "message": "Sadece POST istekleri kabul edilir"
-    }, status=405)
+    required_fields = ['name', 'description', 'price']
+    for field in required_fields:
+        if field not in data:
+            return Response({
+                "status": "error",
+                "message": f"'{field}' alanı gerekli"
+            }, status=status.HTTP_400_BAD_REQUEST)
+    
+    new_product = {
+        "id": 999, 
+        "name": data['name'],
+        "description": data['description'],
+        "price": data['price'],
+        "created_at": "2024-01-01T00:00:00Z"
+    }
+    
+    return Response({
+        "status": "success",
+        "message": "Ürün başarıyla oluşturuldu",
+        "product": new_product
+    }, status=status.HTTP_201_CREATED)
 
-# API status kontrolü
+@api_view(['GET'])
 def api_status(request):
-    return JsonResponse({
+    return Response({
         "status": "online",
         "service": "AI_Bazaar API",
         "endpoints": [
