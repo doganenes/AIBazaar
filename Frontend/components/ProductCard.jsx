@@ -1,15 +1,14 @@
-import React from 'react';
+import React from "react";
 
-function ProductCard() {
+function ProductCard({ product }) {
   return (
-    <div className="card mt-3">
-      <img src="project.jpg" className="card-img-top" alt="..." />
+    <div className="card p-3 mb-3">
+      <img src={product.imageUrl} alt={product.productName} className="card-img-top" style={{ maxHeight: "200px", objectFit: "cover" }} />
       <div className="card-body">
-        <h5 className="card-title">Card title</h5>
-        <p className="card-text">
-          Some quick example text to build on the card title and make up the bulk of the card's content.
-        </p>
-        <a href="#" className="btn btn-primary">Go somewhere</a>
+        <h5 className="card-title">{product.productName}</h5>
+        <p className="card-text">Price: ${product.price}</p>
+        <p className="card-text">Rating: {product.rating}</p>
+        <p className="card-text">{product.description}</p>
       </div>
     </div>
   );
