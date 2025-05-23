@@ -1,5 +1,3 @@
-import { Form, Button } from "react-bootstrap";
-import { login, tokenToId } from "../api/api";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ProductCard from "../components/ProductCard";

@@ -4,13 +4,13 @@ import "../css/Footer.css";
 
 function Footer() {
   return (
-    <footer className="bg-dark text-white mt-5 pt-4 pb-3 w-100">
+    <footer className="bg-dark text-white mt-5 pt-3 pb-3 w-100">
       <div className="container">
         <div className="row text-center text-md-start align-items-center">
-          <div className="col-md-4 mb-3">
+          <div className="col-md-4">
             <h5 className="fw-bold">AIBazaar</h5>
           </div>
-          <div className="col-md-4 mb-3 mb-md-0">
+          <div className="col-md-4">
             <p className="mb-0">&copy; 2025 AIBazaar</p>
           </div>
           <div className="col-md-4">

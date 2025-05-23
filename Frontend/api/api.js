@@ -42,16 +42,12 @@ export const tokenToId = async () => {
   }
 
   try {
-    const { data: tokenResponse } = await api.get("/api/auth/tokenToId", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    console.log("Token response:", tokenResponse);
-    return tokenResponse;
+    const { data } = await api.get(`/api/auth/getIdFromToken?t=${token}`);
+    console.log("Token response:", data);
+    return data.user;
   } catch (error) {
     console.error("Error fetching token to ID:", error);
-    throw new Error(`${error}`);
+    throw new Error("Favori ürünler alınamadı: " + error);
   }
 };
 
@@ -65,12 +61,34 @@ export const getAllProducts = async () => {
   }
 };
 
+export const getAllFavoriteProducts = async (userId) => {
+  try {
+    const response = await api.get(
+      `/api/FavoriteProduct/getAllFavoriteProducts?id=${userId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
+      }
+    );
+    console.log("Favori ürünler:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("API hatası:", error.message);
+    return [];
+  }
+};
+
 export const addFavoriteProduct = async (userId, productId) => {
   try {
     const response = await api.post(
       `/api/FavoriteProduct/addFavoriteProduct`,
       { userId, productId },
-      { headers: authHeader() }
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
+      }
     );
     return response.data;
   } catch (error) {
@@ -84,22 +102,12 @@ export const removeFavoriteProduct = async (userId, productId) => {
     const response = await api.delete(
       `/api/FavoriteProduct/removeFavoriteProduct`,
       {
-        headers: authHeader(),
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
         data: { userId, favoriteProductId: productId },
       }
     );
-    return response.data;
-  } catch (error) {
-    if (error.response) return error.response.data;
-    throw new Error("Network error occurred.");
-  }
-};
-
-export const getAllFavoriteProducts = async (userId) => {
-  try {
-    const response = await api.get(`/api/FavoriteProduct/getAllFavoriteProducts?userId=${userId}`, {
-      headers: authHeader(),
-    });
     return response.data;
   } catch (error) {
     if (error.response) return error.response.data;
