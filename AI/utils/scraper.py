@@ -8,14 +8,19 @@ import csv
 from selenium.webdriver.common.keys import Keys
 import urllib.parse
 import threading
+
 options = webdriver.ChromeOptions()
 options.add_argument("--disable-blink-features=AutomationControlled")
 options.add_argument("--window-size=1920,1080")
-global driver 
+global driver
 import pandas as pd
 
-phones = pd.read_csv("csv/phones_after_2023.csv")
-product_lists = phones['phone_model'].tolist() 
+phones = pd.read_csv("csv/phones.csv")
+product_lists = (
+    phones["phone_model"] + " " + phones["storage"].astype(str) + "GB "
+).tolist()
+print(product_lists)
+
 
 def scraping_prices(product_list):
     driver = webdriver.Chrome(options=options)
@@ -94,6 +99,7 @@ def scraping_prices(product_list):
 
 # scraping_prices(product_lists)
 
+
 def scraping_description_and_image(product_list):
     driver = webdriver.Chrome(options=options)
     driver.get("https://www.trendyol.com/")
@@ -101,7 +107,7 @@ def scraping_description_and_image(product_list):
     time.sleep(4)
 
     results = []
-
+    index = 0
     for product_name in product_list:
         try:
             search_input = wait.until(
@@ -133,9 +139,9 @@ def scraping_description_and_image(product_list):
                 rating_element = driver.find_element(
                     By.CSS_SELECTOR, ".product-rating-score .value"
                 )
-                rating_value = rating_element.text.strip()
-                price_product = driver.find_element(By.CSS_SELECTOR,".prc-dsc")
-                price_product = price_product.text.replace(" TL","")
+
+                price_product = driver.find_element(By.CSS_SELECTOR, ".prc-dsc")
+                price_product = price_product.text.replace(" TL", "")
                 print(f"Product price: {price_product}")
             except:
                 rating_value = None
@@ -147,28 +153,17 @@ def scraping_description_and_image(product_list):
             )
             image_src = image_element.get_attribute("src")
 
-            product_details = {}
-            try:
-                feature_elements = driver.find_elements(
-                    By.CSS_SELECTOR, ".detail-attr-container li.detail-attr-item"
+          
+            product_name = phones["phone_model"].iloc[index]
+            index += 1 
+            results.append(
+                    (
+                      
+                        product_name,
+                        image_src,   
+                        price_product,
+                    )
                 )
-                for item in feature_elements:
-                    try:
-                        key = item.find_element(
-                            By.CSS_SELECTOR, ".attr-name.attr-key-name-w"
-                        ).text.strip()
-                        value = item.find_element(
-                            By.CSS_SELECTOR, ".attr-value-name-w"
-                        ).text.strip()
-                        product_details[key] = value
-                        key_value_text = ' '.join(f"{key}:{value};" for key, value in product_details.items())
-                        print(key_value_text)
-                    except:
-                        continue
-                results.append((key_value_text,product_name,image_src,rating_value,price_product))
-
-            except:
-                pass
 
             driver.close()
             driver.switch_to.window(main_window)
@@ -179,9 +174,11 @@ def scraping_description_and_image(product_list):
             continue
 
     driver.quit()
-    with open("./csv/trendyolyeni.csv", mode="w", newline="", encoding="utf-8-sig") as file:
+    with open(
+        "./csv/trendyolyeni.csv", mode="w", newline="", encoding="utf-8-sig"
+    ) as file:
         writer = csv.writer(file)
-        writer.writerow(["Description", "Product Name", "Image", "Rating","Price"])
+        writer.writerow(["Description", "Product Name", "Image", "Rating", "Price"])
         writer.writerows(results)
 
 
@@ -190,12 +187,10 @@ def scraping_description_and_image(product_list):
 threads = []
 
 
-# threads = []
-
 # threads.append(threading.Thread(target=scraping_prices, args=(product_lists,)))
 threads.append(
-     threading.Thread(target=scraping_description_and_image, args=(product_lists,))
- )
+    threading.Thread(target=scraping_description_and_image, args=(product_lists,))
+)
 
 for t in threads:
     t.start()
