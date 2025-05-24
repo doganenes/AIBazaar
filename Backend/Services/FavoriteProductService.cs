@@ -94,7 +94,6 @@ namespace Backend.Services
                     ProductID = fp.Product.ProductID,
                     ProductName = fp.Product.ProductName,
                     Price = fp.Product.Price,
-                    Rating = fp.Product.Rating,
                     Description = fp.Product.Description,
                     ImageUrl = fp.Product.ImageUrl
                 }

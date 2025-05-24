@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import "../css/Header.css"
 function Header() {
   return (
-    <nav className="navbar navbar-expand-lg fixed-top shadow-sm py-3 headerContainer">
+    <nav className="navbar navbar-expand-lg navbarTag fixed-top shadow-sm py-3 headerContainer">
       <div className="container d-flex justify-content-between align-items-center">
         
         <a className="navbar-brand fs-3 fw-bold" href="/">AIBazaar</a>

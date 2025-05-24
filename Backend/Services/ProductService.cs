@@ -22,7 +22,6 @@ namespace Backend.Services
                 ProductID = x.ProductID,
                 ProductName = x.ProductName,
                 Price = x.Price,
-                Rating = x.Rating,
                 Description = x.Description,
                 ImageUrl = x.ImageUrl
             }).ToList();

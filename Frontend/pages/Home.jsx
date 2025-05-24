@@ -6,7 +6,6 @@ import { getAllProducts } from "../api/api";
 const Home = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
-
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     if (!token) {
@@ -29,6 +28,7 @@ const Home = () => {
       </div>
     </div>
   );
+  
 };
 
 export default Home;

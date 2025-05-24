@@ -4,6 +4,7 @@ using Backend.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ProjectContext))]
-    partial class ProjectContextModelSnapshot : ModelSnapshot
+    [Migration("20250524173057_mig2")]
+    partial class mig2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -87,53 +90,6 @@ namespace Backend.Migrations
                     b.HasKey("ProductID");
 
                     b.ToTable("Products");
-                });
-
-            modelBuilder.Entity("Backend.Data.Entities.Product_KNN", b =>
-                {
-                    b.Property<int>("ProductId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductId"));
-
-                    b.Property<int>("Battery")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CPU_Core")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Display_Type")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("Foldable")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("OS")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PPI")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ProductName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("RAM")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Storage")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Video_Resolution")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ProductId");
-
-                    b.ToTable("KNN_Products");
                 });
 
             modelBuilder.Entity("Backend.Data.Entities.User", b =>

@@ -1,3 +1,7 @@
+html {
+  box-sizing: border-box;
+height: 100vh;
+}
 #root {
   margin: 0 auto;
   text-align: center;

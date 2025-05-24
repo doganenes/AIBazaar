@@ -12,5 +12,6 @@ namespace Backend.Data.Context
         public DbSet<User> Users { get; set; }
         public DbSet<FavoriteProduct> FavoriteProducts { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<Product_KNN> KNN_Products { get; set; }
     }
 }
