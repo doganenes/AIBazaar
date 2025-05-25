@@ -1,6 +1,10 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from sklearn.neighbors import KNeighborsRegressor
+import pandas as pd
+import os
+from django.conf import settings
 
 @api_view(['GET'])
 def hello_api(request):
@@ -86,3 +90,61 @@ def create_product(request):
         "message": "Ürün başarıyla oluşturuldu",
         "product": new_product
     }, status=status.HTTP_201_CREATED)
+
+
+@api_view(['POST'])
+def predict_product_knn(request):
+    data = request.data
+
+    try:
+        ram = float(data.get("ram"))
+        storage = float(data.get("storage"))
+        display_size = float(data.get("display_size"))
+        battery = float(data.get("battery"))
+        foldable = int(data.get("foldable"))
+        ppi = int(data.get("ppi"))
+        os = data.get("os")
+        display_type = data.get("display_type")
+        video_resolution = data.get("video_resolution")
+
+        df = pd.read_csv(r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\csv\phones.csv")
+        print(df.head()) 
+
+        features = ["ram", "storage", "display_size", "battery", "foldable", "ppi_density", "os", "display_type", "video_resolution"]
+        df = df[features + ["price_usd"]]
+
+        df = pd.get_dummies(df, columns=["os", "display_type", "video_resolution"])
+
+        new_data = pd.DataFrame([{
+            "ram": ram,
+            "storage": storage,
+            "display_size": display_size,
+            "battery": battery,
+            "foldable": foldable,
+            "ppi": ppi,
+            "os": os,
+            "display_type": display_type,
+            "video_resolution": video_resolution
+        }])
+
+        new_data = pd.get_dummies(new_data)
+
+        for col in df.columns:
+            if col not in new_data.columns and col != "price_usd":
+                new_data[col] = 0
+
+        X = df.drop("price_usd", axis=1)
+        y = df["price_usd"]
+
+        model = KNeighborsRegressor(n_neighbors=4)
+        model.fit(X, y)
+
+        tahmin = model.predict(new_data[X.columns])[0]
+
+        return Response({
+            "message": "KNN tahmini başarıyla yapıldı",
+            "price": round(tahmin, 2)
+        })
+
+    except Exception as e:
+        return Response({"error": str(e)}, status=400)

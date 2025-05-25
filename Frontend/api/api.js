@@ -114,3 +114,16 @@ export const removeFavoriteProduct = async (userId, productId) => {
     throw new Error("Network error occurred.");
   }
 };
+
+export const predict_knn = async (formData) => {
+  try {
+    const response = await axios.post(
+      "http://localhost:8000/api/predict/",
+      formData
+    );
+    return response.data;
+  } catch (error) {
+    console.error("API çağrısı sırasında hata oluştu:", error);
+    throw error;
+  }
+};
