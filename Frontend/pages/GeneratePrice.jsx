@@ -13,6 +13,7 @@ function GeneratePrice() {
     os: "",
     display_type: "",
     video_resolution: "",
+    chipset: ""
   });
 
   const [predictedPrice, setPredictedPrice] = useState(null);
@@ -150,10 +151,13 @@ function GeneratePrice() {
                 required
               >
                 <option value="">Select Display Type</option>
-                <option value="Super Retina">Super Retina</option>
                 <option value="Amoled">Amoled</option>
-                <option value="IPS">IPS LCD</option>
-                <option value="Oled">OLED</option>
+                <option value="Super AMOLED">Super Amoled</option>
+                <option value="Dynamic AMOLED">Dynamic Amoled</option>
+                <option value="LCD">LCD</option>
+                <option value="Super Retina">Super Retina</option>
+                <option value="IPS LCD">LCD</option>
+                <option value="OLED">OLED</option>
                 <option value="Liquid Retina">Liquid Retina</option>
               </select>
             </div>
@@ -188,6 +192,26 @@ function GeneratePrice() {
                 <option value="2">350 - 450</option>
                 <option value="3">450 - 500</option>
                 <option value="4">500+</option>
+              </select>
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Chipset Litography</label>
+              <select
+                className="form-select"
+                name="chipset"
+                value={formData.chipset}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Select chipset nm</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
               </select>
             </div>
 

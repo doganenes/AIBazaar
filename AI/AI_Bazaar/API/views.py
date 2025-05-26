@@ -1,3 +1,6 @@
+import base64
+import io
+from matplotlib import pyplot as plt
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -5,92 +8,7 @@ from sklearn.neighbors import KNeighborsRegressor
 import pandas as pd
 import os
 from django.conf import settings
-
-@api_view(['GET'])
-def hello_api(request):
-    data = {
-        "message": "Merhaba, AI_Bazaar API çalışıyor!",
-    }
-    return Response(data)
-
-@api_view(['GET'])
-def product_list(request):
-    products = [
-        {
-            "id": 1,
-            "name": "ChatGPT Clone",
-            "description": "Yapay zeka sohbet botu",
-            "price": 299.99,
-            "category": "AI Tools"
-        },
-        {
-            "id": 2,
-            "name": "Image Generator",
-            "description": "AI görsel üretici",
-            "price": 199.99,
-            "category": "AI Tools"
-        },
-        {
-            "id": 3,
-            "name": "Voice Assistant",
-            "description": "Sesli asistan AI",
-            "price": 399.99,
-            "category": "AI Tools"
-        }
-    ]
-    
-    return Response({
-        "status": "success",
-        "count": len(products),
-        "products": products
-    })
-
-@api_view(['GET'])
-def product_detail(request, product_id):
-    product = {
-        "id": product_id,
-        "name": f"AI Product {product_id}",
-        "description": "Detaylı ürün açıklaması",
-        "price": 299.99,
-        "features": [
-            "Advanced AI algorithms",
-            "Real-time processing",
-            "Easy integration"
-        ],
-        "rating": 4.5
-    }
-    
-    return Response({
-        "status": "success",
-        "product": product
-    })
-
-@api_view(['POST'])
-def create_product(request):
-    data = request.data
-
-    required_fields = ['name', 'description', 'price']
-    for field in required_fields:
-        if field not in data:
-            return Response({
-                "status": "error",
-                "message": f"'{field}' alanı gerekli"
-            }, status=status.HTTP_400_BAD_REQUEST)
-
-    new_product = {
-        "id": 999, 
-        "name": data['name'],
-        "description": data['description'],
-        "price": data['price'],
-        "created_at": "2024-01-01T00:00:00Z"
-    }
-
-    return Response({
-        "status": "success",
-        "message": "Ürün başarıyla oluşturuldu",
-        "product": new_product
-    }, status=status.HTTP_201_CREATED)
-
+from statsmodels.tsa.arima.model import ARIMA
 
 @api_view(["POST"])
 def predict_product_knn(request):
@@ -106,9 +24,9 @@ def predict_product_knn(request):
         os = data.get("os")
         display_type = data.get("display_type")
         video_resolution = data.get("video_resolution")
-
+        chipset = int(data.get("chipset"))
         df = pd.read_csv(
-            r"C:\Users\pc\Desktop\AIbazaar\AIBazaar\AI\utils\csv\phones.csv"
+            r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\csv\phones.csv"
         )
 
         features = [
@@ -121,14 +39,14 @@ def predict_product_knn(request):
             "os",
             "display_type",
             "video_resolution",
+            "chipset",
         ]
         df = df[features + ["price_usd"]]
 
-        # Ordinal encoding mapping'leri tanımla
         os_hierarchy = {
             "Android": 1,
             "iOS": 2,
-            "HarmonyOS": 1.5,  # Android ve iOS arası
+            "HarmonyOS": 1.5,  
             "Windows": 0.5,
             "Other": 0,
         }
@@ -141,7 +59,6 @@ def predict_product_knn(request):
             "Super AMOLED": 5,
             "Dynamic AMOLED": 6,
             "LTPO OLED": 7,
-            "Micro LED": 8,
             "Other": 0,
         }
 
@@ -160,7 +77,6 @@ def predict_product_knn(request):
             "Other": 0,
         }
 
-        # DataFrame'deki kategorik değişkenleri encode et
         def safe_map(value, mapping, default=0):
             """Güvenli mapping fonksiyonu - eğer değer mapping'de yoksa default değer döner"""
             return mapping.get(value, default)
@@ -173,14 +89,18 @@ def predict_product_knn(request):
             lambda x: safe_map(x, video_resolution_hierarchy)
         )
 
-        # Yeni veri için encoding
+        df["chipset"] = df["chipset"].apply(
+            lambda x: int(
+                ''.join(filter(str.isdigit, x.split("(")[-1].split("nm")[0]))
+            ) if isinstance(x, str) and "(" in x and "nm" in x else 0
+        )
+
         os_encoded = safe_map(os, os_hierarchy)
         display_type_encoded = safe_map(display_type, display_type_hierarchy)
         video_resolution_encoded = safe_map(
             video_resolution, video_resolution_hierarchy
         )
 
-        # Yeni feature set oluştur (encoded değerlerle)
         feature_columns = [
             "ram",
             "storage",
@@ -191,12 +111,12 @@ def predict_product_knn(request):
             "os_encoded",
             "display_type_encoded",
             "video_resolution_encoded",
+            "chipset",
         ]
 
         x = df[feature_columns]
         y = df["price_usd"]
 
-        # Yeni veri noktası
         new_data = pd.DataFrame(
             [
                 {
@@ -209,21 +129,20 @@ def predict_product_knn(request):
                     "os_encoded": os_encoded,
                     "display_type_encoded": display_type_encoded,
                     "video_resolution_encoded": video_resolution_encoded,
+                    "chipset": chipset
                 }
             ]
         )
 
-        # Feature scaling (opsiyonel ama KNN için önerilen)
         from sklearn.preprocessing import StandardScaler
 
         scaler = StandardScaler()
         x_scaled = scaler.fit_transform(x)
         new_data_scaled = scaler.transform(new_data)
 
-        # Model eğitimi
         model = KNeighborsRegressor(
             n_neighbors=3, weights="distance"
-        )  # distance weight'i daha iyi sonuç verebilir
+        )  
         model.fit(x_scaled, y)
 
         prediction_price = model.predict(new_data_scaled)[0]
@@ -248,3 +167,41 @@ def predict_product_knn(request):
     except Exception as e:
         print(f"Error in prediction: {str(e)}")
         return Response({"error": str(e)}, status=400)
+
+
+
+@api_view(['POST'])
+def predict_product_arima(request):
+    product_name = request.data.get('product')
+
+
+    if not product_name:
+        return Response({"error": "Lütfen 'product' alanını POST verisinde gönderin."}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        df = pd.read_csv(r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\csv\akakce.csv")
+
+        df["Price"] = df["Price"].apply(lambda x: int(str(x).replace(" TL", "").split(",")[0].replace(".", "")))
+        df["Price"] = df["Price"].astype(int)
+
+        df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+        df = df.dropna(subset=["Date"])
+
+        product_df = df[df["Product Name"] == product_name].sort_values("Date")
+        print(len(product_df))
+        if len(product_df) < 1:
+            return Response({"error": f"Yetersiz veri: {product_name}"}, status=status.HTTP_400_BAD_REQUEST)
+
+        model = ARIMA(product_df["Price"], order=(2, 1, 1))
+        model_fit = model.fit()
+        forecast = model_fit.forecast(steps=5).tolist()
+
+        future_dates = pd.date_range(start=product_df["Date"].iloc[-1], periods=6, freq="D")[1:]
+
+        return Response({
+            "product": product_name,
+            "forecast": forecast,
+        })
+
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
