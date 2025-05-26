@@ -141,11 +141,11 @@ def predict_product_knn(request):
         model = KNeighborsRegressor(n_neighbors=4)
         model.fit(x, y)
 
-        tahmin = model.predict(new_data)[0]
-        print(f"Predicted price: {round(tahmin, 2)}")
+        prediction_price = model.predict(new_data)[0]
+        print(f"Predicted price: {round(prediction_price, 2)}")
         return Response({
             "message": "KNN prediction successful",
-            "price": round(tahmin, 2)
+            "price": round(prediction_price, 2)
         })
 
     except Exception as e:
