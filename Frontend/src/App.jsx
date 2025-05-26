@@ -12,23 +12,26 @@ import ProductDetail from "../pages/ProductDetail";
 import "bootstrap/dist/css/bootstrap.min.css";
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import Footer from "../components/Footer";
+
 function App() {
   return (
-    <div>
-      <Container>
-        <Header />
+    <div className="d-flex flex-column min-vh-100">
+      <Header />
+
+      <Container className="flex-grow-1">
         <Routes>
-          <Route path="/" element={<Signin />}></Route>
-          <Route path="/home" element={<Home />}></Route>
-          <Route path="/signup" element={<Signup />}></Route>
-          <Route path="/signin" element={<Signin />}></Route>
-          <Route path="/generatePrice" element={<GeneratePrice />}></Route>
-          <Route path="/favorites" element={<Favorites />}></Route>
-          <Route path="/productDetail" element={<ProductDetail />}></Route>
-          <Route path="*" element={<NotFound />}></Route>
+          <Route path="/" element={<Signin />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/signin" element={<Signin />} />
+          <Route path="/generatePrice" element={<GeneratePrice />} />
+          <Route path="/favorites" element={<Favorites />} />
+          <Route path="/productDetail" element={<ProductDetail />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Container>
-        <Footer />
+
+      <Footer />
     </div>
   );
 }

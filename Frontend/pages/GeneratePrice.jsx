@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import "../css/GeneratePrice.css";
 
 function GeneratePrice() {
   const [formData, setFormData] = useState({
@@ -13,7 +14,7 @@ function GeneratePrice() {
     video_resolution: "",
     ppi: "",
   });
-  
+
   const [predictedPrice, setPredictedPrice] = useState(null);
 
   const handleChange = (e) => {
@@ -22,7 +23,6 @@ function GeneratePrice() {
       [e.target.name]: e.target.value,
     });
   };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,7 +33,6 @@ function GeneratePrice() {
         formData
       );
       console.log("Backend response:", response.data);
-      alert(`Tahmin edilen fiyat: ${response.data.price} USD`);
       setPredictedPrice(response.data.price);
     } catch (error) {
       console.error("API isteği başarısız:", error);
@@ -42,10 +41,10 @@ function GeneratePrice() {
     }
   };
   return (
-    <div className="container my-5">
-      <div className="row justify-content-center g-4">
-        <div className="col-12 col-md-5 mb-4 p-3 bg-secondary rounded ms-md-4">
-          <form onSubmit={handleSubmit}>
+    <div className="container generatePriceContainer my-5">
+      <div className="row justify-content-center g-4 mt-5">
+        <div className="col-12 col-md-5 mb-4 mt-5 bg-secondary rounded ms-md-4">
+          <form onSubmit={handleSubmit} className="mt-5">
             <h3 className="text-light">Price estimate for features</h3>
 
             <div className="mb-3">
@@ -193,13 +192,13 @@ function GeneratePrice() {
               </select>
             </div>
 
-            <button type="submit" className="btn btn-primary">
+            <button type="submit" className="btn btn-primary mb-3">
               Submit
             </button>
             {predictedPrice !== null && (
-              <div className="alert alert-info mt-4" role="alert">
-                Tahmin edilen fiyat: <strong>{predictedPrice} USD</strong>
-              </div>
+              <p className="mt-3 text-light fw-bold">
+                Estimated Price: {predictedPrice} USD
+              </p>
             )}
           </form>
         </div>

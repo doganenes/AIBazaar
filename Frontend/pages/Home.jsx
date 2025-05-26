@@ -21,7 +21,7 @@ const Home = () => {
     <div className="container-fluid">
       <div className="row">
         {products.map((product) => (
-          <div className="col-md-3 mt-5" key={product.productID}>
+          <div className="col-md-3 mt-3" key={product.productID}>
             <ProductCard product={product} />
           </div>
         ))}
