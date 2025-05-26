@@ -108,7 +108,6 @@ def predict_product_knn(request):
         video_resolution = data.get("video_resolution")
 
         df = pd.read_csv(r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\csv\phones.csv")
-        print(df.head()) 
 
         features = ["ram", "storage", "display_size", "battery", "foldable", "ppi_density", "os", "display_type", "video_resolution"]
         df = df[features + ["price_usd"]]
@@ -121,7 +120,7 @@ def predict_product_knn(request):
             "display_size": display_size,
             "battery": battery,
             "foldable": foldable,
-            "ppi": ppi,
+            "ppi_density": ppi,
             "os": os,
             "display_type": display_type,
             "video_resolution": video_resolution
@@ -129,20 +128,23 @@ def predict_product_knn(request):
 
         new_data = pd.get_dummies(new_data)
 
-        for col in df.columns:
-            if col not in new_data.columns and col != "price_usd":
-                new_data[col] = 0
+        missing_cols = [col for col in df.columns if col not in new_data.columns and col != "price_usd"]
+        zeros_df = pd.DataFrame(0, index=new_data.index, columns=missing_cols)
+        new_data = pd.concat([new_data, zeros_df], axis=1)
 
-        X = df.drop("price_usd", axis=1)
+        x = df.drop("price_usd", axis=1)
+        new_data = new_data[x.columns]
+        print("New data for prediction:", new_data)
+
         y = df["price_usd"]
 
         model = KNeighborsRegressor(n_neighbors=4)
-        model.fit(X, y)
+        model.fit(x, y)
 
-        tahmin = model.predict(new_data[X.columns])[0]
-
+        tahmin = model.predict(new_data)[0]
+        print(f"Predicted price: {round(tahmin, 2)}")
         return Response({
-            "message": "KNN tahmini başarıyla yapıldı",
+            "message": "KNN prediction successful",
             "price": round(tahmin, 2)
         })
 

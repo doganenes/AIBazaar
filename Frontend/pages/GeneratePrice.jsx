@@ -4,15 +4,15 @@ import "../css/GeneratePrice.css";
 
 function GeneratePrice() {
   const [formData, setFormData] = useState({
-    storage: "",
     ram: "",
+    storage: "",
     display_size: "",
-    os: "",
     battery: "",
     foldable: "",
+    ppi: "",
+    os: "",
     display_type: "",
     video_resolution: "",
-    ppi: "",
   });
 
   const [predictedPrice, setPredictedPrice] = useState(null);
@@ -35,8 +35,7 @@ function GeneratePrice() {
       console.log("Backend response:", response.data);
       setPredictedPrice(response.data.price);
     } catch (error) {
-      console.error("API isteği başarısız:", error);
-      alert("Fiyat tahmini yapılamadı.");
+      console.error("API request error:", error);
       setPredictedPrice(null);
     }
   };
@@ -105,8 +104,8 @@ function GeneratePrice() {
                 required
               >
                 <option value="">Select OS</option>
-                <option value="android">Android</option>
-                <option value="ios">iOS</option>
+                <option value="Android">Android</option>
+                <option value="iOS">iOS</option>
               </select>
             </div>
 
@@ -169,9 +168,9 @@ function GeneratePrice() {
                 required
               >
                 <option value="">Select Video Resolution</option>
-                <option value="8K">8K</option>
+                <option value="1080p">1080p</option>
                 <option value="4K">4K</option>
-                <option value="1080P">1080P</option>
+                <option value="8K">8K</option>
               </select>
             </div>
 
