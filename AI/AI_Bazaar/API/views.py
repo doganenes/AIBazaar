@@ -9,6 +9,15 @@ import pandas as pd
 import os
 from django.conf import settings
 from statsmodels.tsa.arima.model import ARIMA
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+import pandas as pd
+import numpy as np
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense
+from sklearn.preprocessing import MinMaxScaler
+
 
 @api_view(["POST"])
 def predict_product_knn(request):
@@ -171,9 +180,8 @@ def predict_product_knn(request):
 
 
 @api_view(['POST'])
-def predict_product_arima(request):
+def predict_product_lstm(request):
     product_name = request.data.get('product')
-
 
     if not product_name:
         return Response({"error": "Lütfen 'product' alanını POST verisinde gönderin."}, status=status.HTTP_400_BAD_REQUEST)
@@ -183,24 +191,49 @@ def predict_product_arima(request):
 
         df["Price"] = df["Price"].apply(lambda x: int(str(x).replace(" TL", "").split(",")[0].replace(".", "")))
         df["Price"] = df["Price"].astype(int)
-
         df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
         df = df.dropna(subset=["Date"])
 
         product_df = df[df["Product Name"] == product_name].sort_values("Date")
-        print(len(product_df))
-        if len(product_df) < 1:
+
+        if len(product_df) < 20:
             return Response({"error": f"Yetersiz veri: {product_name}"}, status=status.HTTP_400_BAD_REQUEST)
 
-        model = ARIMA(product_df["Price"], order=(2, 1, 1))
-        model_fit = model.fit()
-        forecast = model_fit.forecast(steps=5).tolist()
+        prices = product_df["Price"].values.reshape(-1, 1)
+        scaler = MinMaxScaler()
+        prices_scaled = scaler.fit_transform(prices)
 
-        future_dates = pd.date_range(start=product_df["Date"].iloc[-1], periods=6, freq="D")[1:]
+        look_back = 5
+
+        x, y = [], []
+        for i in range(len(prices_scaled) - look_back):
+            x.append(prices_scaled[i:i+look_back])
+            y.append(prices_scaled[i+look_back])
+
+        x = np.array(x)
+        y = np.array(y)
+
+        model = Sequential()
+        model.add(LSTM(64, input_shape=(look_back, 1)))
+        model.add(Dense(1))
+        model.compile(loss='mean_squared_error', optimizer='adam')
+        model.fit(x, y, epochs=20, batch_size=4, verbose=0)
+
+
+        input_seq = prices_scaled[-look_back:]
+        input_seq = input_seq.reshape((1, look_back, 1))
+
+        forecast_scaled = []
+        for _ in range(15):
+            pred = model.predict(input_seq)[0]
+            forecast_scaled.append(pred[0])
+            input_seq = np.append(input_seq[:, 1:, :], [[[pred[0]]]], axis=1)
+
+        forecast = scaler.inverse_transform(np.array(forecast_scaled).reshape(-1, 1)).flatten().tolist()
 
         return Response({
             "product": product_name,
-            "forecast": forecast,
+            "forecast": forecast
         })
 
     except Exception as e:
