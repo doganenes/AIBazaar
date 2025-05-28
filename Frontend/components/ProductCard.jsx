@@ -14,9 +14,9 @@ function ProductCard({ product }) {
         />
 
         <div className="card-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
-          <button className="btn btn-light btn-sm me-2 overlay-btn">
-            <i className="fas fa-eye"></i> Display
-          </button>
+          <a href="/productdetail" className="btn btn-light btn-sm me-2 overlay-btn">
+            <i className="fas fa-eye"></i> View
+          </a>
           <button className="btn btn-danger btn-sm overlay-btn">
             <i className="fas fa-heart"></i>
           </button>
