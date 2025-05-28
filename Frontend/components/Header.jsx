@@ -1,12 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { getAllFavoriteProducts, tokenToId } from "../api/api";
+import "../css/Header.css";
 
 function Header() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [favoriteProductsCount, setFavoriteProductsCount] = useState(null);
+  const [isLoadingFavorites, setIsLoadingFavorites] = useState(true);
 
   const handleSearch = () => {
     console.log("Searching for:", searchTerm);
   };
+
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      try {
+        const userId = await tokenToId();
+        const favorites = await getAllFavoriteProducts(userId);
+        setFavoriteProductsCount(favorites);
+      } catch (error) {
+        console.error("Favorites not found:", error.message || error);
+      } finally {
+        setIsLoadingFavorites(false);
+      }
+    };
+    fetchFavorites();
+  }, []);
 
   return (
     <nav
@@ -71,7 +90,11 @@ function Header() {
             >
               <i className="fas fa-heart me-1"></i>
               <span>Favorites</span>
-              <span className="badge bg-danger ms-1 rounded-pill">3</span>
+              <span className="badge bg-danger ms-1 rounded-pill">
+                {!isLoadingFavorites && favoriteProductsCount !== null
+                  ? favoriteProductsCount.length
+                  : ""}
+              </span>
             </a>
 
             <div className="dropdown">
