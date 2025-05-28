@@ -84,6 +84,14 @@ function Header() {
           </div>
 
           <div className="d-flex flex-column flex-lg-row align-items-center ms-lg-3">
+          <a
+              href="/generateprice"
+              className="nav-link text-white d-flex align-items-center me-lg-3 mb-2 mb-lg-0 nav-item-hover"
+            >
+            <i class="fas fa-chart-line me-1"></i>
+              <span>Forecast</span>
+            </a>
+
             <a
               href="/favorites"
               className="nav-link text-white d-flex align-items-center me-lg-3 mb-2 mb-lg-0 nav-item-hover"

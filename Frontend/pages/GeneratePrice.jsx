@@ -71,7 +71,7 @@ function GeneratePrice() {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/predict_product_knn/",
+        "http://localhost:8000/api/predict_product_xgboost/",
         formData
       );
       console.log("Backend response:", response.data);
