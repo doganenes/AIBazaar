@@ -1,10 +1,54 @@
-.headerContainer {
-    background-color: #4CC9F0;
-    box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
-
+.nav-item-hover {
+  transition: all 0.3s ease;
+  border-radius: 25px;
+  padding: 8px 15px !important;
 }
 
-.logo {
-    font-family: "Lobster", sans-serif;
-    letter-spacing: 2px;
+.nav-item-hover:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.navbar-brand {
+  transition: all 0.3s ease;
+}
+
+.navbar-brand:hover {
+  transform: scale(1.05);
+  color: white !important;
+}
+
+.dropdown-menu {
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-item {
+  transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  transform: translateX(5px);
+}
+
+.input-group .form-control:focus {
+  box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+}
+
+.btn-outline-light:hover {
+  background: white;
+  color: #667eea;
+  border-color: white;
 }

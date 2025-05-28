@@ -1,0 +1,36 @@
+.product-card {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.product-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15) !important;
+}
+
+.card-overlay {
+  background: rgba(0, 0, 0, 0.7);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.product-card:hover .card-overlay {
+  opacity: 1;
+}
+
+.overlay-btn {
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+}
+
+.product-card:hover .overlay-btn {
+  transform: translateY(0);
+}
+
+.card-img-top {
+  transition: all 0.3s ease;
+}
+
+.product-card:hover .card-img-top {
+  transform: scale(1.05);
+}

@@ -1,6 +1,6 @@
-import React from 'react';
+import React from "react";
 
-function FavoriteProductCard({ title, description, imageUrl, link }) {
+function FavoriteProductCard({ title, description, imageUrl }) {
   return (
     <div className="card mt-3" style={{ width: "100%" }}>
       <img
@@ -12,7 +12,9 @@ function FavoriteProductCard({ title, description, imageUrl, link }) {
       <div className="card-body">
         <h5 className="card-title">{title}</h5>
         <p className="card-text">{description}</p>
-        <a href={link || "#"} className="btn btn-primary">Detail</a>
+        <a href="/productdetail" className="btn btn-primary">
+          Detail
+        </a>
       </div>
     </div>
   );

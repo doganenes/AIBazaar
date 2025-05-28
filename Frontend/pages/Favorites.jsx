@@ -35,7 +35,11 @@ function Favorites() {
 
   return (
     <Container className="mt-4">
-      <h2 className="mb-4">My Favorite Products</h2>
+      <h2 className="mb-4 mt-3">My Favorite Products</h2>
+      <div className="d-flex justify-content-end mb-3">
+        {currentItems.length} items found
+      </div>
+
       <Row>
         {currentItems.map((item) => (
           <Col
