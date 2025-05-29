@@ -27,10 +27,20 @@ namespace Backend.Services
             }).ToList();
         }
 
-        public Product GetProductById(int id)
+        public ProductDetailDto GetProductById(int id)
         {
-            return _context.Products.FirstOrDefault(p => p.ProductID == id);
+            return _context.Products
+                .Where(x => x.ProductID == id)
+                .Select(x => new ProductDetailDto
+                {
+                    ProductName = x.ProductName,
+                    Price = x.Price,
+                    Description = x.Description,
+                    ImageUrl = x.ImageUrl
+                })
+                .FirstOrDefault();
         }
+
         public void AddProduct(Product product)
         {
             _context.Products.Add(product);
@@ -41,14 +51,16 @@ namespace Backend.Services
             _context.Products.Update(product);
             _context.SaveChanges();
         }
+        
         public void DeleteProduct(int id)
         {
-            var product = GetProductById(id);
+            var product = _context.Products.FirstOrDefault(p => p.ProductID == id);
             if (product != null)
             {
                 _context.Products.Remove(product);
                 _context.SaveChanges();
             }
         }
+
     }
 }

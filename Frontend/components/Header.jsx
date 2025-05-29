@@ -5,7 +5,7 @@ import "../css/Header.css";
 
 function Header() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [favoriteProductsCount, setFavoriteProductsCount] = useState(null);
+  const [favoriteProducts, setFavoriteProducts] = useState(null);
   const [isLoadingFavorites, setIsLoadingFavorites] = useState(true);
   const navigate = useNavigate();
   const handleSearch = () => {
@@ -17,7 +17,7 @@ function Header() {
       try {
         const userId = await tokenToId();
         const favorites = await getAllFavoriteProducts(userId);
-        setFavoriteProductsCount(favorites);
+        setFavoriteProducts(favorites);
       } catch (error) {
         console.error("Favorites not found:", error.message || error);
       } finally {
@@ -105,8 +105,8 @@ function Header() {
               <i className="fas fa-heart me-1"></i>
               <span>Favorites</span>
               <span className="badge bg-danger ms-1 rounded-pill">
-                {!isLoadingFavorites && favoriteProductsCount !== null
-                  ? favoriteProductsCount.length
+                {!isLoadingFavorites && favoriteProducts !== null
+                  ? favoriteProducts.length
                   : ""}
               </span>
             </a>
