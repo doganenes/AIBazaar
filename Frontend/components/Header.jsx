@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
-import { getAllFavoriteProducts, tokenToId } from "../api/api";
+import { getAllFavoriteProducts, tokenToId, logout } from "../api/api";
+import { useNavigate } from "react-router-dom";
 import "../css/Header.css";
 
 function Header() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [favoriteProductsCount, setFavoriteProductsCount] = useState(null);
+  const [favoriteProducts, setFavoriteProducts] = useState(null);
   const [isLoadingFavorites, setIsLoadingFavorites] = useState(true);
-
+  const navigate = useNavigate();
   const handleSearch = () => {
     console.log("Searching for:", searchTerm);
   };
@@ -17,7 +17,7 @@ function Header() {
       try {
         const userId = await tokenToId();
         const favorites = await getAllFavoriteProducts(userId);
-        setFavoriteProductsCount(favorites);
+        setFavoriteProducts(favorites);
       } catch (error) {
         console.error("Favorites not found:", error.message || error);
       } finally {
@@ -26,6 +26,12 @@ function Header() {
     };
     fetchFavorites();
   }, []);
+
+  const handleLogout = async (e) => {
+    e.preventDefault();
+    await logout();
+    navigate("/signin");
+  };
 
   return (
     <nav
@@ -84,11 +90,11 @@ function Header() {
           </div>
 
           <div className="d-flex flex-column flex-lg-row align-items-center ms-lg-3">
-          <a
+            <a
               href="/generateprice"
               className="nav-link text-white d-flex align-items-center me-lg-3 mb-2 mb-lg-0 nav-item-hover"
             >
-            <i class="fas fa-chart-line me-1"></i>
+              <i class="fas fa-chart-line me-1"></i>
               <span>Forecast</span>
             </a>
 
@@ -99,8 +105,8 @@ function Header() {
               <i className="fas fa-heart me-1"></i>
               <span>Favorites</span>
               <span className="badge bg-danger ms-1 rounded-pill">
-                {!isLoadingFavorites && favoriteProductsCount !== null
-                  ? favoriteProductsCount.length
+                {!isLoadingFavorites && favoriteProducts !== null
+                  ? favoriteProducts.length
                   : ""}
               </span>
             </a>
@@ -120,7 +126,11 @@ function Header() {
                 style={{ borderRadius: "15px" }}
               >
                 <li>
-                  <a className="dropdown-item py-2 text-danger" href="/logout">
+                  <a
+                    className="dropdown-item py-2 text-danger"
+                    onClick={handleLogout}
+                    href="/logout"
+                  >
                     <i className="fas fa-sign-out-alt me-2"></i>Logout
                   </a>
                 </li>

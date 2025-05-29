@@ -21,5 +21,16 @@ namespace Backend.Controllers
            var values = _productService.GetAllProducts();
             return Ok(values);
         }
+
+        [HttpGet("getProductById/{id}")]
+        public IActionResult GetProductById(int id)
+        {
+            var value = _productService.GetProductById(id);
+            if (value == null)
+            {
+                return NotFound();
+            }
+            return Ok(value);
+        }
     }
 }

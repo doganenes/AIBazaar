@@ -1,13 +1,9 @@
-.loginContainer {
-    box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.75);
-}
-
-.signin-form {
-  transition: all 0.3s ease;
-}
-
-@media (max-width: 576px) {
-  .signin-form {
-    padding: 2rem 1rem;
-  }
-}
+@keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-20px); }
+        }
+        
+        .form-control:focus {
+          border-color: #667eea !important;
+          box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25) !important;
+        }

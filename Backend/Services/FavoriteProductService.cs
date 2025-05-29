@@ -20,25 +20,27 @@ namespace Backend.Services
             _projectContext = projectContext;
         }
 
-        public void AddFavoriteProduct(string userId,int productId)
+        public bool AddFavoriteProduct(string userId, int productId)
         {
             var user = _projectContext.Users
                .Include(u => u.FavoriteProducts)
                .FirstOrDefault(u => u.UserId == userId);
 
             var product = _projectContext.Products
-                .Include(b => b.FavoriteProducts)
-                .FirstOrDefault(b => b.ProductID == productId);
+                .Include(p => p.FavoriteProducts)
+                .FirstOrDefault(p => p.ProductID == productId);
 
             if (user == null)
-            {
                 throw new KeyNotFoundException("User not found.");
-            }
 
             if (product == null)
-            {
                 throw new KeyNotFoundException("Product not found.");
-            }
+
+            bool alreadyFavorite = user.FavoriteProducts
+                .Any(f => f.ProductID == productId);
+
+            if (alreadyFavorite)
+                return false; 
 
             user.FavoriteProducts.Add(new FavoriteProduct
             {
@@ -49,8 +51,11 @@ namespace Backend.Services
                 Product = product,
                 User = user
             });
+
             _projectContext.SaveChanges();
+            return true;
         }
+
 
         public void RemoveFavoriteProduct(string userId, int favoriteProductId)
         {

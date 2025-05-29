@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 import "../css/GeneratePrice.css";
 function GeneratePrice() {
@@ -136,6 +135,8 @@ function GeneratePrice() {
                       <option value="64">64 GB</option>
                       <option value="128">128 GB</option>
                       <option value="256">256 GB</option>
+                      <option value="512">512 GB</option>
+                      <option value="1024">1024 GB</option>
                     </select>
                     {formErrors.storage && (
                       <div className="invalid-feedback">
@@ -171,6 +172,8 @@ function GeneratePrice() {
                       <option value="4">4 GB</option>
                       <option value="6">6 GB</option>
                       <option value="8">8 GB</option>
+                      <option value="12">12 GB</option>
+                      <option value="16">16 GB</option>
                     </select>
                     {formErrors.ram && (
                       <div className="invalid-feedback">{formErrors.ram}</div>
@@ -552,7 +555,7 @@ function GeneratePrice() {
                     >
                       <h4 className="fw-light mb-2">Estimated Price</h4>
                       <div className="display-3 fw-bold mb-2">
-                        ${predictedPrice}
+                        ${predictedPrice.toFixed(2)}
                       </div>
                       <small className="opacity-75">USD</small>
                     </div>

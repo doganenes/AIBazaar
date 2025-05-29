@@ -27,9 +27,25 @@ namespace Backend.Controllers
         [HttpPost("addFavoriteProduct")]
         public IActionResult AddFavoriteProduct([FromQuery] string userId, int productId)
         {
-            _favoriteProductService.AddFavoriteProduct(userId, productId);
-            return Ok("Product added to favorites.");
+            try
+            {
+                bool added = _favoriteProductService.AddFavoriteProduct(userId, productId);
+                if (!added)
+                    return BadRequest("This product is already in favorites.");
+
+                return Ok("Product added to favorites.");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                // Log exception gerekirse
+                return StatusCode(500, "An error occurred while adding the product.");
+            }
         }
+
 
         [HttpDelete("removeFavoriteProduct")]
         public IActionResult RemoveFavoriteProduct([FromQuery] string userId, int productId)
@@ -37,12 +53,5 @@ namespace Backend.Controllers
             _favoriteProductService.RemoveFavoriteProduct(userId, productId);
             return Ok("Product removed from favorites.");
         }
-
-        //[HttpGet("getFavoriteProductsByUserId")]
-        //public IActionResult GetFavoriteProductsByUserId([FromQuery] string userId)
-        //{
-        //    var values = _favoriteProductService.GetFavoriteProductsByUserId(userId);
-        //    return Ok(values);
-        //}
     }
 }

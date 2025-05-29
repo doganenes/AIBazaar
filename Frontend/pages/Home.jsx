@@ -11,7 +11,6 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [favoriteProductsCount, setFavoriteProductsCount] = useState([]);
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     if (!token) {
@@ -39,18 +38,7 @@ const Home = () => {
     );
     setFilteredProducts(filtered);
   }, [searchTerm, products]);
-  useEffect(() => {
-    const fetchFavorites = async () => {
-      try {
-        const response = await fetch("/api/favorites");
-        const data = await response.json();
-        setFavoriteProductsCount(data.count);
-      } catch (error) {
-        console.error("Error fetching favorite products:", error);
-      }
-    };
-    fetchFavorites();
-  }, []);
+ 
   if (loading) {
     return (
       <div
