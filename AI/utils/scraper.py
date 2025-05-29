@@ -26,7 +26,7 @@ def scraping_prices(product_list):
     driver = webdriver.Chrome(options=options)
     driver.get("https://www.akakce.com/")
     wait = WebDriverWait(driver, 10)
-    time.sleep(4)
+    time.sleep(2)
 
     all_data = []
 
@@ -97,7 +97,7 @@ def scraping_prices(product_list):
         writer.writerows(all_data)
 
 
-# scraping_prices(product_lists)
+
 
 
 def scraping_description_and_image(product_list):
@@ -153,17 +153,15 @@ def scraping_description_and_image(product_list):
             )
             image_src = image_element.get_attribute("src")
 
-          
             product_name = phones["phone_model"].iloc[index]
-            index += 1 
+            index += 1
             results.append(
-                    (
-                      
-                        product_name,
-                        image_src,   
-                        price_product,
-                    )
+                (
+                    product_name,
+                    image_src,
+                    price_product,
                 )
+            )
 
             driver.close()
             driver.switch_to.window(main_window)
