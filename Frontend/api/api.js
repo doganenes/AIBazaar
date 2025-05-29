@@ -127,3 +127,13 @@ export const predict_knn = async (formData) => {
     throw error;
   }
 };
+
+export const logout = async () => {
+  try {
+    localStorage.removeItem("authToken");
+    return { message: "Logout successful" };
+  } catch (error) {
+    console.error("Logout error:", error);
+    throw new Error("Logout failed");
+  }
+};
