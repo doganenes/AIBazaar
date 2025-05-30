@@ -116,7 +116,7 @@ const Signin = () => {
           <div className="col-lg-6 col-md-6 d-flex flex-column justify-content-center p-5 text-white">
             {/* Logo */}
             <div className="mb-5">
-              <div className="d-flex align-items-center mb-4">
+              <div className="d-flex align-items-center justify-content-center mb-4">
                 <div
                   className="rounded-3 me-3 d-flex align-items-center justify-content-center"
                   style={{
@@ -128,7 +128,7 @@ const Signin = () => {
                 >
                   <i className="fas fa-chart-line fs-2"></i>
                 </div>
-                <h1 className="fs-1 fw-bold mb-0">AIBazaar</h1>
+                <h1 className="fs-1 fw-bold mb-0 ">AIBazaar</h1>
               </div>
             </div>
 
