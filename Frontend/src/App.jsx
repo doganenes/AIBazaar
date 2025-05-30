@@ -6,7 +6,7 @@ import NotFound from "../pages/NotFound";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { Container } from "react-bootstrap";
 import Header from "../components/Header";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import GeneratePrice from "../pages/GeneratePrice";
 import Favorites from "../pages/Favorites";
 import ProductDetail from "../pages/ProductDetail";
@@ -14,9 +14,14 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Footer from "../components/Footer";
 
 function App() {
+  const location = useLocation();
+  
+  const authPages = ["/", "/signin", "/signup"];
+  const shouldShowHeader = !authPages.includes(location.pathname);
+
   return (
     <div className="d-flex flex-column min-vh-100">
-      <Header />
+      {shouldShowHeader && <Header />}
 
       <Container className="flex-grow-1">
         <Routes>
@@ -31,7 +36,7 @@ function App() {
         </Routes>
       </Container>
 
-      <Footer />
+      {shouldShowHeader && <Footer />}
     </div>
   );
 }

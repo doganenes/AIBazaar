@@ -3,7 +3,6 @@ import "../css/Signin.css";
 import { login, tokenToId } from "../api/api";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "../css/Signin.css";
 
 const Signin = () => {
   const navigate = useNavigate();
@@ -107,221 +106,196 @@ const Signin = () => {
 
   return (
     <div
-      className="min-vh-100 d-flex align-items-center mt-5 justify-content-center py-5"
+      className="min-vh-100 d-flex"
       style={{
-        position: "relative",
-        overflow: "hidden",
+        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
       }}
     >
-      <div
-        className="position-absolute"
-        style={{
-          width: "300px",
-          height: "300px",
-          background: "rgba(255,255,255,0.1)",
-          borderRadius: "50%",
-          top: "5%",
-          right: "10%",
-          animation: "float 8s ease-in-out infinite",
-        }}
-      />
-      <div
-        className="position-absolute"
-        style={{
-          width: "200px",
-          height: "200px",
-          background: "rgba(255,255,255,0.05)",
-          borderRadius: "50%",
-          bottom: "10%",
-          left: "5%",
-          animation: "float 6s ease-in-out infinite reverse",
-        }}
-      />
-
-      <div className="container">
-        <div className="row justify-content-center">
-          <div className="col-lg-4 col-md-6 col-sm-8 col-12">
-            <div
-              className="p-5 rounded-4 shadow-lg"
-              style={{
-                background: "rgba(255, 255, 255, 0.95)",
-                backdropFilter: "blur(20px)",
-                border: "1px solid rgba(255, 255, 255, 0.2)",
-                maxWidth: "450px",
-                margin: "0 auto",
-              }}
-            >
-              <div className="text-center mb-4">
+      <div className="container-fluid h-100">
+        <div className="row min-vh-100 align-items-stretch">
+          <div className="col-lg-6 col-md-6 d-flex flex-column justify-content-center p-5 text-white">
+            {/* Logo */}
+            <div className="mb-5">
+              <div className="d-flex align-items-center mb-4">
                 <div
-                  className="d-inline-flex align-items-center justify-content-center rounded-circle mb-3"
+                  className="rounded-3 me-3 d-flex align-items-center justify-content-center"
                   style={{
-                    width: "80px",
-                    height: "80px",
-                    background:
-                      "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                    color: "white",
+                    width: "60px",
+                    height: "60px",
+                    background: "rgba(255, 255, 255, 0.2)",
+                    backdropFilter: "blur(10px)",
                   }}
                 >
-                  <i className="fas fa-user fs-2"></i>
+                  <i className="fas fa-chart-line fs-2"></i>
                 </div>
-                <h2
-                  className="fw-bold mb-2"
-                  style={{
-                    background:
-                      "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    backgroundClip: "text",
-                  }}
-                >
-                  Log In
-                </h2>
-                <p className="text-muted">Log in your account</p>
+                <h1 className="fs-1 fw-bold mb-0">AIBazaar</h1>
               </div>
+            </div>
 
-              <Form onSubmit={handleSubmit}>
-                <Form.Group className="mb-3" controlId="formEmail">
-                  <Form.Label className="fw-semibold text-dark">
-                    <i className="fas fa-envelope me-2 text-muted"></i>
-                    Email
-                  </Form.Label>
-                  <Form.Control
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="Enter your email"
-                    isInvalid={!!errors.email}
-                    className="py-3 rounded-3 border-2"
+            <div className="mb-5">
+              <h2 className="display-4 fw-bold mb-4">
+                Welcome back to intelligent pricing
+              </h2>
+              <p className="fs-4 mb-4 opacity-90">
+                Continue optimizing your business with AI-powered market
+                analysis and smart pricing strategies.
+              </p>
+            </div>
+          </div>
+
+          <div className="col-lg-6 col-md-6 d-flex align-items-center justify-content-center bg-white">
+            <div className="w-100 px-4" style={{ maxWidth: "450px" }}>
+              <div
+                className="p-5 rounded-4 shadow-lg bg-white"
+                style={{
+                  border: "1px solid rgba(102, 126, 234, 0.1)",
+                }}
+              >
+                <div className="text-center mb-4">
+                  <h2 className="fw-bold mb-2">Sign In</h2>
+                  <p className="text-muted">
+                    Enter your credentials to access your account
+                  </p>
+                </div>
+
+                <Form onSubmit={handleSubmit}>
+                  <Form.Group className="mb-3" controlId="formEmail">
+                    <Form.Label className="fw-semibold text-dark">
+                      Email Address
+                    </Form.Label>
+                    <Form.Control
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="Enter your email"
+                      isInvalid={!!errors.email}
+                      className="py-3 rounded-3"
+                      style={{
+                        fontSize: "1rem",
+                        border: errors.email
+                          ? "2px solid #dc3545"
+                          : "2px solid #e9ecef",
+                        transition: "all 0.3s ease",
+                      }}
+                    />
+                    {errors.email && (
+                      <Form.Control.Feedback
+                        type="invalid"
+                        className="fw-medium"
+                      >
+                        <i className="fas fa-exclamation-circle me-1"></i>
+                        {errors.email}
+                      </Form.Control.Feedback>
+                    )}
+                  </Form.Group>
+
+                  <Form.Group className="mb-4" controlId="formPassword">
+                    <Form.Label className="fw-semibold text-dark">
+                      Password
+                    </Form.Label>
+                    <Form.Control
+                      type="password"
+                      name="password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      placeholder="Enter your password"
+                      isInvalid={!!errors.password}
+                      className="py-3 rounded-3"
+                      style={{
+                        fontSize: "1rem",
+                        border: errors.password
+                          ? "2px solid #dc3545"
+                          : "2px solid #e9ecef",
+                        transition: "all 0.3s ease",
+                      }}
+                    />
+                    {errors.password && (
+                      <Form.Control.Feedback
+                        type="invalid"
+                        className="fw-medium"
+                      >
+                        <i className="fas fa-exclamation-circle me-1"></i>
+                        {errors.password}
+                      </Form.Control.Feedback>
+                    )}
+                  </Form.Group>
+
+                  {errorMessage && (
+                    <div
+                      className="alert alert-danger d-flex align-items-center py-3 mb-3 rounded-3 border-0"
+                      role="alert"
+                      style={{
+                        background: "rgba(220, 53, 69, 0.1)",
+                        color: "#dc3545",
+                        border: "1px solid rgba(220, 53, 69, 0.2)",
+                      }}
+                    >
+                      <i className="fas fa-exclamation-triangle me-2"></i>
+                      {errorMessage}
+                    </div>
+                  )}
+
+                  {successMessage && (
+                    <div
+                      className="alert alert-success d-flex align-items-center py-3 mb-3 rounded-3 border-0"
+                      role="alert"
+                      style={{
+                        background: "rgba(25, 135, 84, 0.1)",
+                        color: "#198754",
+                        border: "1px solid rgba(25, 135, 84, 0.2)",
+                      }}
+                    >
+                      <i className="fas fa-check-circle me-2"></i>
+                      {successMessage}
+                    </div>
+                  )}
+
+                  <Button
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-100 py-3 rounded-3 border-0 fw-semibold fs-5 mb-4"
                     style={{
-                      fontSize: "1rem",
+                      background: isLoading
+                        ? "linear-gradient(135deg, #cccccc 0%, #999999 100%)"
+                        : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                       transition: "all 0.3s ease",
-                      borderColor: errors.email ? "#dc3545" : "#e0e0e0",
-                    }}
-                  />
-                  {errors.email && (
-                    <Form.Control.Feedback type="invalid" className="fw-medium">
-                      <i className="fas fa-exclamation-circle me-1"></i>
-                      {errors.email}
-                    </Form.Control.Feedback>
-                  )}
-                </Form.Group>
-
-                <Form.Group className="mb-4" controlId="formPassword">
-                  <Form.Label className="fw-semibold text-dark">
-                    <i className="fas fa-lock me-2 text-muted"></i>
-                    Şifre
-                  </Form.Label>
-                  <Form.Control
-                    type="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    placeholder="Enter your password"
-                    isInvalid={!!errors.password}
-                    className="py-3 rounded-3 border-2"
-                    style={{
-                      fontSize: "1rem",
-                      transition: "all 0.3s ease",
-                      borderColor: errors.password ? "#dc3545" : "#e0e0e0",
-                    }}
-                  />
-                  {errors.password && (
-                    <Form.Control.Feedback type="invalid" className="fw-medium">
-                      <i className="fas fa-exclamation-circle me-1"></i>
-                      {errors.password}
-                    </Form.Control.Feedback>
-                  )}
-                </Form.Group>
-
-                {errorMessage && (
-                  <div
-                    className="alert alert-danger d-flex align-items-center py-3 mb-3 rounded-3 border-0"
-                    role="alert"
-                    style={{
-                      background: "rgba(220, 53, 69, 0.1)",
-                      color: "#dc3545",
-                      border: "1px solid rgba(220, 53, 69, 0.2)",
+                      transform: "translateY(0)",
+                      boxShadow: "0 4px 15px rgba(102, 126, 234, 0.3)",
                     }}
                   >
-                    <i className="fas fa-exclamation-triangle me-2"></i>
-                    {errorMessage}
-                  </div>
-                )}
+                    {isLoading ? (
+                      <>
+                        <i className="fas fa-spinner fa-spin me-2"></i>
+                        Signing in...
+                      </>
+                    ) : (
+                      <>
+                        <i className="fas fa-sign-in-alt me-2"></i>
+                        Sign In
+                      </>
+                    )}
+                  </Button>
+                </Form>
 
-                {successMessage && (
-                  <div
-                    className="alert alert-success d-flex align-items-center py-3 mb-3 rounded-3 border-0"
-                    role="alert"
-                    style={{
-                      background: "rgba(25, 135, 84, 0.1)",
-                      color: "#198754",
-                      border: "1px solid rgba(25, 135, 84, 0.2)",
-                    }}
-                  >
-                    <i className="fas fa-check-circle me-2"></i>
-                    {successMessage}
-                  </div>
-                )}
-
-                <Button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-100 py-3 rounded-3 border-0 fw-semibold fs-5 mb-4"
-                  style={{
-                    background: isLoading
-                      ? "linear-gradient(135deg, #cccccc 0%, #999999 100%)"
-                      : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                    transition: "all 0.3s ease",
-                    transform: "translateY(0)",
-                    boxShadow: "0 4px 15px rgba(102, 126, 234, 0.3)",
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!isLoading) {
-                      e.target.style.transform = "translateY(-2px)";
-                      e.target.style.boxShadow =
-                        "0 8px 25px rgba(102, 126, 234, 0.4)";
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isLoading) {
-                      e.target.style.transform = "translateY(0)";
-                      e.target.style.boxShadow =
-                        "0 4px 15px rgba(102, 126, 234, 0.3)";
-                    }
-                  }}
-                >
-                  {isLoading ? (
-                    <>
-                      <i className="fas fa-spinner fa-spin me-2"></i>
-                      Login...
-                    </>
-                  ) : (
-                    <>
-                      <i className="fas fa-sign-in-alt me-2"></i>
-                      Login
-                    </>
-                  )}
-                </Button>
-              </Form>
-
-              <div className="text-center border-top pt-4">
-                <p className="text-muted mb-0">
-                  Don't have an account?{" "}
-                  <a
-                    href="/signup"
-                    className="text-decoration-none fw-semibold"
-                    style={{
-                      background:
-                        "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                      WebkitBackgroundClip: "text",
-                      WebkitTextFillColor: "transparent",
-                      backgroundClip: "text",
-                    }}
-                  >
-                    Sign Up
-                  </a>
-                </p>
+                <div className="text-center border-top pt-4">
+                  <p className="text-muted mb-0">
+                    Don't have an account?{" "}
+                    <a
+                      href="/signup"
+                      className="text-decoration-none fw-semibold"
+                      style={{
+                        background:
+                          "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        backgroundClip: "text",
+                      }}
+                    >
+                      Sign Up
+                    </a>
+                  </p>
+                </div>
               </div>
             </div>
           </div>

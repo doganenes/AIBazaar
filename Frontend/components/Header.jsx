@@ -45,7 +45,7 @@ function Header() {
           className="navbar-brand d-flex align-items-center text-white"
           href="/"
         >
-          <i className="fas fa-shopping-bag me-2 fs-4"></i>
+          <i className="fas fa-chart-bar me-2 fs-4"></i>
           <span className="fs-3 fw-bold">AIBazaar</span>
         </a>
 
