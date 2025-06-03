@@ -4,6 +4,7 @@ import axios from "axios";
 
 function ProductDetail() {
   const { id } = useParams();
+
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -31,7 +32,7 @@ function ProductDetail() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-8">
             <div className="flex justify-center items-center">
               <img
-                src={`https://localhost:7011${product.imageUrl}`}
+                src={`${product.imageUrl}`}
                 alt={product.productName}
                 className="w-full max-w-sm mt-5 mb-3 h-auto rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300"
               />
