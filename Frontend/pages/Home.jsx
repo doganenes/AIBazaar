@@ -122,7 +122,7 @@ const Home = () => {
                   opacity: 0,
                 }}
               >
-                <ProductCard product={product} />
+                <ProductCard key={product.productID} product={product} />
               </div>
             ))}
           </div>

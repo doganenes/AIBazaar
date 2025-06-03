@@ -1,6 +1,29 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 
 function ProductDetail() {
+  const { id } = useParams();
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    axios
+      .get(`https://localhost:7011/api/Product/getProductById/${id}`)
+      .then((response) => {
+        setProduct(response.data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Ürün detayları alınamadı:", error);
+        setLoading(false);
+      });
+  }, [id]);
+
+  if (loading) {
+    return <p className="text-center mt-10">Loading...</p>;
+  }
+
   return (
     <div className="min-h-screen py-10 mt-5">
       <div className="max-w-5xl mx-auto px-4">
@@ -8,8 +31,8 @@ function ProductDetail() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-8">
             <div className="flex justify-center items-center">
               <img
-                src="https://placehold.co/600x400"
-                alt="iPhone 15 128 GB Siyah"
+                src={`https://localhost:7011${product.imageUrl}`}
+                alt={product.productName}
                 className="w-full max-w-sm mt-5 mb-3 h-auto rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300"
               />
             </div>
@@ -17,13 +40,16 @@ function ProductDetail() {
             <div className="space-y-6">
               <div>
                 <h1 className="text-3xl font-semibold text-gray-900">
-                  Apple iPhone 15 128 GB Siyah
+                  {product.productName}
                 </h1>
               </div>
 
               <div className="bg-green-50 rounded-lg p-5">
                 <h2 className="text-3xl font-bold text-green-600">
-                  53.999,00 TL
+                  {product.price.toLocaleString("tr-TR", {
+                    style: "currency",
+                    currency: "TRY",
+                  })}
                 </h2>
                 <p className="text-sm text-red-600 font-medium mt-1 flex items-center">
                   📈 30 günün en düşük fiyatı
@@ -32,12 +58,8 @@ function ProductDetail() {
 
               <div className="space-y-3">
                 <div className="flex justify-between border-b pb-2">
-                  <span className="text-gray-600 font-medium">Renk:</span>
-                  <span className="text-gray-900">Siyah</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600 font-medium">Kapasite:</span>
-                  <span className="text-gray-900">128 GB</span>
+                  <span className="text-gray-600 font-medium">Açıklama:</span>
+                  <span className="text-gray-900">{product.description}</span>
                 </div>
               </div>
 
@@ -47,7 +69,7 @@ function ProductDetail() {
                 </h3>
                 <div className="flex justify-center">
                   <img
-                    src="graphic.jpg"
+                    src="/graphic.jpg"
                     alt="Fiyat Grafiği"
                     className="rounded-md shadow-sm"
                     style={{ width: "100%", maxWidth: "400px" }}

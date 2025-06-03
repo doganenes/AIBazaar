@@ -54,6 +54,7 @@ export const tokenToId = async () => {
 export const getAllProducts = async () => {
   try {
     const response = await api.get("/api/product/getAllProducts");
+    console.log("Ürünler:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching products:", error);
@@ -76,6 +77,17 @@ export const getAllFavoriteProducts = async (userId) => {
   } catch (error) {
     console.error("API hatası:", error.message);
     return [];
+  }
+};
+
+export const getProductById = async (id) => {
+  try {
+    const response = await axios.get(`/api/Product/getProductById/${id}`);
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Ürün getirme hatası:", error);
+    throw error;
   }
 };
 

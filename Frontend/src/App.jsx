@@ -31,7 +31,7 @@ function App() {
           <Route path="/signin" element={<Signin />} />
           <Route path="/generatePrice" element={<GeneratePrice />} />
           <Route path="/favorites" element={<Favorites />} />
-          <Route path="/productDetail" element={<ProductDetail />} />
+          <Route path="/productDetail/:id" element={<ProductDetail />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Container>
