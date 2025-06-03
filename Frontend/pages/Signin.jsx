@@ -126,7 +126,7 @@ const Signin = () => {
                     backdropFilter: "blur(10px)",
                   }}
                 >
-                  <i className="fas fa-chart-line fs-2"></i>
+                  <i className="fas fa-chart-bar fs-2"></i>
                 </div>
                 <h1 className="fs-1 fw-bold mb-0 ">AIBazaar</h1>
               </div>
