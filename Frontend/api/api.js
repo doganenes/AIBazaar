@@ -82,7 +82,7 @@ export const getAllFavoriteProducts = async (userId) => {
 
 export const getProductById = async (id) => {
   try {
-    const response = await axios.get(`/api/Product/getProductById/${id}`);
+    const response = await api.get(`/api/Product/getProductById/${id}`);
     console.log(response.data);
     return response.data;
   } catch (error) {
@@ -137,6 +137,16 @@ export const predict_knn = async (formData) => {
   } catch (error) {
     console.error("API çağrısı sırasında hata oluştu:", error);
     throw error;
+  }
+};
+
+export const getUserFromId = async (id) => {
+  try {
+    const response = await api.get(`/api/Auth/getUserFromId?id=${id}`);
+    console.log("Kullanıcı bilgisi:", response);
+    return response.data;
+  } catch (error) {
+    console.error('Kullanıcı alınırken hata oluştu:', error);
   }
 };
 

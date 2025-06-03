@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { getAllFavoriteProducts, tokenToId, logout } from "../api/api";
+import { getAllFavoriteProducts, tokenToId, logout,getUserFromId } from "../api/api";
 import { useNavigate } from "react-router-dom";
 import "../css/Header.css";
 
 function Header() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [user, setUser] = useState(null);
   const [favoriteProducts, setFavoriteProducts] = useState(null);
   const [isLoadingFavorites, setIsLoadingFavorites] = useState(true);
   const navigate = useNavigate();
@@ -16,7 +17,10 @@ function Header() {
     const fetchFavorites = async () => {
       try {
         const userId = await tokenToId();
+        console.log("User ID from token:", userId);
         const favorites = await getAllFavoriteProducts(userId);
+        const userData = await getUserFromId(userId);
+        setUser(userData);
         setFavoriteProducts(favorites);
       } catch (error) {
         console.error("Favorites not found:", error.message || error);
@@ -119,7 +123,7 @@ function Header() {
                 style={{ borderRadius: "25px" }}
               >
                 <i className="fas fa-user me-1"></i>
-                My Account
+                {user ? `${user.firstName} ${user.lastName}` : "Loading..."}
               </button>
               <ul
                 className="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2"
