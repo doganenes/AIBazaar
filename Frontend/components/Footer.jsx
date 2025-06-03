@@ -8,13 +8,13 @@ function Footer() {
           <div className="col-md-4 d-flex flex-column justify-content-center text-md-start text-center mb-3 mb-md-0">
             <h5 className="fw-bold text-info mt-3">AIBazaar</h5>
             <small className="text-light">
-              AI Based Price Prediction Tools
+              AI-Based Price Prediction Tool
             </small>
           </div>
 
           <div className="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0">
             <small className="text-light">
-              &copy; 2025 AIBazaar. All rights reserved.
+              &copy; 2025 AIBazaar | All rights reserved.
             </small>
           </div>
 
