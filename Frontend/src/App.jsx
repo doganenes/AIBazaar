@@ -1,17 +1,17 @@
 import "./App.css";
-import Home from "../pages/Home";
-import Signin from "../pages/Signin";
-import Signup from "../pages/Signup";
-import NotFound from "../pages/NotFound";
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import Home from "../src/pages/Home";
+import Signin from "../src/pages/Signin";
+import Signup from "../src/pages/Signup";
+import NotFound from "../src/pages/NotFound";
 import { Container } from "react-bootstrap";
-import Header from "../components/Header";
+import Header from "../src/components/Header";
 import { Route, Routes, useLocation } from "react-router-dom";
-import GeneratePrice from "../pages/GeneratePrice";
-import Favorites from "../pages/Favorites";
-import ProductDetail from "../pages/ProductDetail";
+import GeneratePrice from "../src/pages/GeneratePrice";
+import Favorites from "../src/pages/Favorites";
+import ProductDetail from "../src/pages/ProductDetail";
 import "bootstrap/dist/css/bootstrap.min.css";
-import Footer from "../components/Footer";
+import Footer from "../src/components/Footer";
 
 function App() {
   const location = useLocation();
