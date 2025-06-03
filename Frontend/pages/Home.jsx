@@ -77,7 +77,7 @@ const Home = () => {
             )}
           </div>
           <div className="col-md-4 text-md-end">
-            <span className="badge bg-dark text-white fs-6 px-3 py-2">
+            <span className="badge bg-dark rounded text-white fs-6 px-3 py-2">
               {filteredProducts.length}{" "}
               {filteredProducts.length === 1 ? "Product" : "Products"}
             </span>
