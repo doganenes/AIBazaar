@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getAllFavoriteProducts, tokenToId, logout,getUserFromId, addFavoriteProduct } from "../api/api";
+import { getAllFavoriteProducts, tokenToId, logout,getUserFromId } from "../api/api";
 import { useNavigate } from "react-router-dom";
 import "../css/Header.css";
 
@@ -18,7 +18,7 @@ function Header() {
       try {
         const userId = await tokenToId();
         console.log("User ID from token:", userId);
-        const favorites = await addFavoriteProduct(userId);
+        const favorites = await getAllFavoriteProducts(userId);
         const userData = await getUserFromId(userId);
         setUser(userData);
         setFavoriteProducts(favorites);
