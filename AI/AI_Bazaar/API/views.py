@@ -62,7 +62,8 @@ def predict_product_xgboost(request):
             "AMOLED": 4,
             "Super AMOLED": 5,
             "Dynamic AMOLED": 6,
-            "LTPO OLED": 7,
+            "Super Retina": 7,
+            "LTPO OLED": 8,
             "Other": 0,
         }
 

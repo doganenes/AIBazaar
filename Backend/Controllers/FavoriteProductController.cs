@@ -25,11 +25,11 @@ namespace Backend.Controllers
         }
 
         [HttpPost("addFavoriteProduct")]
-        public IActionResult AddFavoriteProduct([FromQuery] string userId, int productId)
+        public IActionResult AddFavoriteProduct([FromBody] AddFavoriteProductDto request)
         {
             try
             {
-                bool added = _favoriteProductService.AddFavoriteProduct(userId, productId);
+                bool added = _favoriteProductService.AddFavoriteProduct(request.UserId, request.ProductId);
                 if (!added)
                     return BadRequest("This product is already in favorites.");
 

@@ -5,10 +5,10 @@ function GeneratePrice() {
   const [formData, setFormData] = useState({
     ram: "",
     storage: "",
-    display_size: "",
+    display_size: "6.2",
     battery: "",
     foldable: "",
-    ppi: "",
+    ppi: "250",
     os: "",
     display_type: "",
     video_resolution: "",
@@ -80,7 +80,6 @@ function GeneratePrice() {
       console.error("API request error:", error);
       setPredictedPrice(null);
     }
-
   };
 
   const isFormValid = Object.values(formData).every((value) => value !== "");
@@ -184,16 +183,14 @@ function GeneratePrice() {
                     <label className="form-label fw-semibold text-gray-700">
                       <span className="me-2">📐</span>Display Size
                     </label>
-                    <select
-                      className={`form-select form-select-lg border-2 ${
+                    <input
+                      type="range"
+                      className={`form-range border-2 w-100 ${
                         formErrors.display_size ? "is-invalid" : ""
                       }`}
-                      style={{
-                        borderColor: formErrors.display_size
-                          ? "#dc3545"
-                          : "#e5e7eb",
-                        transition: "all 0.3s",
-                      }}
+                      min="5.5"
+                      max="7.0"
+                      step="0.1"
                       name="display_size"
                       value={formData.display_size}
                       onChange={handleChange}
@@ -203,20 +200,27 @@ function GeneratePrice() {
                           ? "#dc3545"
                           : "#e5e7eb")
                       }
+                      style={{
+                        borderColor: formErrors.display_size
+                          ? "#dc3545"
+                          : "#e5e7eb",
+                        transition: "all 0.3s",
+                      }}
                       required
-                    >
-                      <option value="">Select Display Size</option>
-                      <option value="5.5">5.5 inch</option>
-                      <option value="6.1">6.1 inch</option>
-                      <option value="6.7">6.7 inch</option>
-                    </select>
+                    />
+                    <div className="d-flex justify-content-between fs-5 fw-bold">
+                      <small className="text-muted">5.5"</small>
+                      <small className="text-muted fs-5">
+                        {formData.display_size}"
+                      </small>
+                      <small className="text-muted">7.0"</small>
+                    </div>
                     {formErrors.display_size && (
                       <div className="invalid-feedback">
                         {formErrors.display_size}
                       </div>
                     )}
                   </div>
-
                   <div className="col-md-6">
                     <label className="form-label fw-semibold text-gray-700">
                       <span className="me-2">🤖</span>Operating System
@@ -346,14 +350,14 @@ function GeneratePrice() {
                       required
                     >
                       <option value="">Select Display Type</option>
-                      <option value="Amoled">AMOLED</option>
-                      <option value="Super AMOLED">Super AMOLED</option>
-                      <option value="Dynamic AMOLED">Dynamic AMOLED</option>
                       <option value="LCD">LCD</option>
-                      <option value="Super Retina">Super Retina</option>
                       <option value="IPS LCD">IPS LCD</option>
                       <option value="OLED">OLED</option>
-                      <option value="Liquid Retina">Liquid Retina</option>
+                      <option value="AMOLED">AMOLED</option>
+                      <option value="Super AMOLED">Super AMOLED</option>
+                      <option value="Dynamic AMOLED">Dynamic AMOLED</option>
+                      <option value="Super Retina">Super Retina</option>
+                      <option value="LTPO OLED">Liquid Retina</option>
                     </select>
                     {formErrors.display_type && (
                       <div className="invalid-feedback">
@@ -402,14 +406,14 @@ function GeneratePrice() {
                     <label className="form-label fw-semibold text-gray-700">
                       <span className="me-2">🔍</span>PPI (Pixels per inch)
                     </label>
-                    <select
-                      className={`form-select form-select-lg border-2 ${
+                    <input
+                      type="range"
+                      className={`form-range border-2 w-100 ${
                         formErrors.ppi ? "is-invalid" : ""
                       }`}
-                      style={{
-                        borderColor: formErrors.ppi ? "#dc3545" : "#e5e7eb",
-                        transition: "all 0.3s",
-                      }}
+                      min="250"
+                      max="500"
+                      step="25"
                       name="ppi"
                       value={formData.ppi}
                       onChange={handleChange}
@@ -419,14 +423,17 @@ function GeneratePrice() {
                           ? "#dc3545"
                           : "#e5e7eb")
                       }
+                      style={{
+                        borderColor: formErrors.ppi ? "#dc3545" : "#e5e7eb",
+                        transition: "all 0.3s",
+                      }}
                       required
-                    >
-                      <option value="">Select PPI Range</option>
-                      <option value="1">250 - 350</option>
-                      <option value="2">350 - 450</option>
-                      <option value="3">450 - 500</option>
-                      <option value="4">500+</option>
-                    </select>
+                    />
+                    <div className="d-flex justify-content-between fs-5 fw-bold">
+                      <small className="text-muted">250</small>
+                      <small className="text-muted fs-5">{formData.ppi} PPI</small>
+                      <small className="text-muted">500</small>
+                    </div>
                     {formErrors.ppi && (
                       <div className="invalid-feedback">{formErrors.ppi}</div>
                     )}
