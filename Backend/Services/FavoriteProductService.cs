@@ -64,18 +64,6 @@ namespace Backend.Services
                .FirstOrDefault(u => u.UserId == userId);
             var favoriteProduct = user.FavoriteProducts.FirstOrDefault(b => b.ProductID == favoriteProductId);
 
-            if(user == null)
-            {
-                throw new InvalidOperationException("User not found!");
-
-            }
-
-            if (favoriteProduct == null)
-            {
-                throw new InvalidOperationException("Favorite product not found!");
-
-            }
-
             user.FavoriteProducts.Remove(favoriteProduct);
             _projectContext.SaveChanges();
         }

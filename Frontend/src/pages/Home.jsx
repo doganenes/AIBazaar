@@ -4,20 +4,22 @@ import ProductCard from "../components/ProductCard";
 import { getAllProducts } from "../api/api";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../css/Home.css";
+import { ToastContainer, Toast } from "react-bootstrap";
 
 const Home = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+
   const [toast, setToast] = useState({
-    visible: false,
+    show: false,
     message: "",
     type: "success",
   });
 
   const [filteredProducts, setFilteredProducts] = useState([]);
-  
+
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     if (!token) {
@@ -37,10 +39,7 @@ const Home = () => {
   }, [navigate]);
 
   const showToast = (message, type = "success") => {
-    setToast({ visible: true, message, type });
-    setTimeout(() => {
-      setToast((prev) => ({ ...prev, visible: false }));
-    }, 3000);
+    setToast({ show: true, message, type });
   };
 
   useEffect(() => {
@@ -79,44 +78,6 @@ const Home = () => {
         paddingTop: "100px",
       }}
     >
-      <div
-        className="position-fixed bottom-0 start-0 p-3"
-        style={{ zIndex: 9999 }}
-      >
-        <div
-          className={`toast ${toast.visible ? "show" : ""}`}
-          role="alert"
-          aria-live="assertive"
-          aria-atomic="true"
-        >
-          <div
-            className={`toast-header ${
-              toast.type === "success"
-                ? "bg-success text-white"
-                : "bg-danger text-white"
-            }`}
-          >
-            <i
-              className={`fas ${
-                toast.type === "success"
-                  ? "fa-check-circle"
-                  : "fa-exclamation-circle"
-              } me-2`}
-            ></i>
-            <strong className="me-auto">
-              {toast.type === "success" ? "Success" : "Error"}
-            </strong>
-            <button
-              type="button"
-              className="btn-close btn-close-white"
-              onClick={() => setToast(prev => ({...prev, visible: false}))}
-              aria-label="Close"
-            ></button>
-          </div>
-          <div className="toast-body">{toast.message}</div>
-        </div>
-      </div>
-
       <div className="container py-4">
         <div className="row mb-4">
           <div className="col-md-8">
@@ -182,6 +143,26 @@ const Home = () => {
           </div>
         )}
       </div>
+      <ToastContainer
+        position="bottom-start"
+        className="p-3"
+        style={{ zIndex: 9999 }}
+      >
+        <Toast
+          show={toast.show}
+          onClose={() => setToast((prev) => ({ ...prev, show: false }))}
+          delay={3000}
+          autohide
+          bg={toast.type}
+        >
+          <Toast.Header closeButton>
+            <strong className="me-auto">
+              {toast.type === "success" ? "Başarılı" : "Hata"}
+            </strong>
+          </Toast.Header>
+          <Toast.Body className="text-white">{toast.message}</Toast.Body>
+        </Toast>
+      </ToastContainer>
     </div>
   );
 };

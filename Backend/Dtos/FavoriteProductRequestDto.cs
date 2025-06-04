@@ -1,6 +1,6 @@
 ﻿namespace Backend.Dtos
 {
-    public class AddFavoriteProductDto
+    public class FavoriteProductRequestDto
     {
         public string UserId { get; set; }
         public int ProductId { get; set; }

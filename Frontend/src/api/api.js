@@ -93,21 +93,21 @@ export const getProductById = async (id) => {
 
 export const addFavoriteProduct = async (userId, productId) => {
   try {
-    const response = await api.post('api/FavoriteProduct/addFavoriteProduct', {
+    const response = await api.post("api/FavoriteProduct/addFavoriteProduct", {
       userId: userId,
-      productId: productId
+      productId: productId,
     });
 
     if (response.data === true) {
-      console.log('Ürün favorilere eklendi.');
+      console.log("Ürün favorilere eklendi.");
     } else {
-      console.log('Ürün zaten favorilerde.');
+      console.log("Ürün zaten favorilerde.");
     }
   } catch (error) {
     if (error.response && error.response.status === 404) {
-      console.error('Kullanıcı veya ürün bulunamadı.');
+      console.error("Kullanıcı veya ürün bulunamadı.");
     } else {
-      console.error('Bir hata oluştu:', error.message);
+      console.error("Bir hata oluştu:", error.message);
     }
   }
 };
@@ -117,10 +117,13 @@ export const removeFavoriteProduct = async (userId, productId) => {
     const response = await api.delete(
       `/api/FavoriteProduct/removeFavoriteProduct`,
       {
+        data: {
+          userId: userId,
+          productId: productId,
+        },
         headers: {
           Authorization: `Bearer ${localStorage.getItem("authToken")}`,
         },
-        data: { userId, favoriteProductId: productId },
       }
     );
     return response.data;

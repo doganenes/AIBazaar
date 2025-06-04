@@ -25,7 +25,7 @@ namespace Backend.Controllers
         }
 
         [HttpPost("addFavoriteProduct")]
-        public IActionResult AddFavoriteProduct([FromBody] AddFavoriteProductDto request)
+        public IActionResult AddFavoriteProduct([FromBody] FavoriteProductRequestDto request)
         {
             try
             {
@@ -41,17 +41,27 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                // Log exception gerekirse
                 return StatusCode(500, "An error occurred while adding the product.");
             }
         }
 
 
         [HttpDelete("removeFavoriteProduct")]
-        public IActionResult RemoveFavoriteProduct([FromQuery] string userId, int productId)
+        public IActionResult RemoveFavoriteProduct(FavoriteProductRequestDto dto)
         {
-            _favoriteProductService.RemoveFavoriteProduct(userId, productId);
-            return Ok("Product removed from favorites.");
+            try
+            {
+                _favoriteProductService.RemoveFavoriteProduct(dto.UserId, dto.ProductId);
+                return Ok("Product removed from favorites.");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while removing the product.");
+            }
         }
     }
 }

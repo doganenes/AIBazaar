@@ -1,7 +1,15 @@
 import React, { useState, useEffect } from "react";
 import FavoriteProductCard from "../components/FavoriteProductCard";
-import { Container, Row, Col, Pagination } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Pagination,
+  Toast,
+  ToastContainer,
+} from "react-bootstrap";
 import { getAllFavoriteProducts, tokenToId } from "../api/api";
+import "../css/Favorites.css";
 
 function Favorites() {
   const [favoriteProducts, setFavoriteProducts] = useState([]);
@@ -9,13 +17,17 @@ function Favorites() {
   const [isLoading, setIsLoading] = useState(true);
   const itemsPerPage = 4;
 
+  const [toast, setToast] = useState({
+    show: false,
+    message: "",
+    variant: "danger",
+  });
+
   useEffect(() => {
     const fetchFavorites = async () => {
       try {
         const userId = await tokenToId();
-        console.log("userId from token:", userId);
         const favorites = await getAllFavoriteProducts(userId);
-        console.log("favorites response:", favorites);
         setFavoriteProducts(favorites);
       } catch (error) {
         console.error("Favorites not found:", error.message || error);
@@ -25,6 +37,25 @@ function Favorites() {
     };
     fetchFavorites();
   }, []);
+
+  const showToast = (message, variant = "danger") => {
+    setToast({ show: true, message, variant });
+    setTimeout(() => {
+      setToast((prev) => ({ ...prev, show: false }));
+    }, 3000);
+  };
+
+  const handleRemoveFavorite = (productId) => {
+    setFavoriteProducts((prev) =>
+      prev.filter((item) => item.product.productID !== productId)
+    );
+    const newTotalPages = Math.ceil(
+      (favoriteProducts.length - 1) / itemsPerPage
+    );
+    if (currentPage > newTotalPages && newTotalPages > 0) {
+      setCurrentPage(newTotalPages);
+    }
+  };
 
   const totalPages = Math.ceil(favoriteProducts.length / itemsPerPage);
   const currentItems = favoriteProducts.slice(
@@ -38,16 +69,18 @@ function Favorites() {
 
   if (isLoading) {
     return (
-      <Container className="mt-4">
-        <h2 className="mb-4 mt-3">My Favorite Products</h2>
+      <Container className="mt-5">
         <div className="text-center">Loading...</div>
       </Container>
     );
   }
 
   return (
-    <Container className="mt-4">
-      <h2 className="mb-4 mt-3">My Favorite Products</h2>
+    <Container className="favorites-container">
+      {/* Başlığı sadece favori ürün varsa göster */}
+      {favoriteProducts.length > 0 && (
+        <h2 className="mb-4 mt-3">My Favorite Products</h2>
+      )}
 
       {favoriteProducts.length === 0 ? (
         <div className="text-center mt-5">
@@ -69,11 +102,17 @@ function Favorites() {
                 className="mb-4 d-flex justify-content-center"
               >
                 <FavoriteProductCard
+                  key={item.product.productID}
                   productID={item.product.productID}
                   title={item.product.productName}
                   description={item.product.description}
                   imageUrl={item.product.imageUrl}
+                  price={item.product.price}
                   link={`/product/${item.product.productID}`}
+                  onFavoriteRemoved={(message, type) => {
+                    showToast(message, type);
+                    handleRemoveFavorite(item.product.productID);
+                  }}
                 />
               </Col>
             ))}
@@ -110,6 +149,25 @@ function Favorites() {
           )}
         </>
       )}
+      <ToastContainer
+        position="bottom-start"
+        className="p-3"
+        style={{ zIndex: 9999 }}
+      >
+        <Toast
+          show={toast.show}
+          onClose={() => setToast((prev) => ({ ...prev, show: false }))}
+          delay={3000}
+          bg={toast.variant}
+        >
+          <Toast.Header closeButton>
+            <strong className="me-auto">
+              {toast.variant === "danger" ? "Hata" : "Başarılı"}
+            </strong>
+          </Toast.Header>
+          <Toast.Body className="text-white">{toast.message}</Toast.Body>
+        </Toast>
+      </ToastContainer>
     </Container>
   );
 }
