@@ -10,7 +10,14 @@ const Home = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [toast, setToast] = useState({
+    visible: false,
+    message: "",
+    type: "success",
+  });
+
   const [filteredProducts, setFilteredProducts] = useState([]);
+  
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     if (!token) {
@@ -20,7 +27,6 @@ const Home = () => {
         .then((data) => {
           setProducts(data);
           setFilteredProducts(data);
-
           setLoading(false);
         })
         .catch((err) => {
@@ -30,6 +36,13 @@ const Home = () => {
     }
   }, [navigate]);
 
+  const showToast = (message, type = "success") => {
+    setToast({ visible: true, message, type });
+    setTimeout(() => {
+      setToast((prev) => ({ ...prev, visible: false }));
+    }, 3000);
+  };
+
   useEffect(() => {
     const filtered = products.filter(
       (product) =>
@@ -38,7 +51,7 @@ const Home = () => {
     );
     setFilteredProducts(filtered);
   }, [searchTerm, products]);
- 
+
   if (loading) {
     return (
       <div
@@ -66,6 +79,44 @@ const Home = () => {
         paddingTop: "100px",
       }}
     >
+      <div
+        className="position-fixed bottom-0 start-0 p-3"
+        style={{ zIndex: 9999 }}
+      >
+        <div
+          className={`toast ${toast.visible ? "show" : ""}`}
+          role="alert"
+          aria-live="assertive"
+          aria-atomic="true"
+        >
+          <div
+            className={`toast-header ${
+              toast.type === "success"
+                ? "bg-success text-white"
+                : "bg-danger text-white"
+            }`}
+          >
+            <i
+              className={`fas ${
+                toast.type === "success"
+                  ? "fa-check-circle"
+                  : "fa-exclamation-circle"
+              } me-2`}
+            ></i>
+            <strong className="me-auto">
+              {toast.type === "success" ? "Success" : "Error"}
+            </strong>
+            <button
+              type="button"
+              className="btn-close btn-close-white"
+              onClick={() => setToast(prev => ({...prev, visible: false}))}
+              aria-label="Close"
+            ></button>
+          </div>
+          <div className="toast-body">{toast.message}</div>
+        </div>
+      </div>
+
       <div className="container py-4">
         <div className="row mb-4">
           <div className="col-md-8">
@@ -122,7 +173,10 @@ const Home = () => {
                   opacity: 0,
                 }}
               >
-                <ProductCard key={product.productID} product={product} />
+                <ProductCard
+                  product={product}
+                  onFavoriteAdded={(message, type) => showToast(message, type)}
+                />
               </div>
             ))}
           </div>

@@ -2,10 +2,9 @@ import React from "react";
 import "../css/ProductCard.css";
 import { Link } from "react-router-dom";
 import { addFavoriteProduct } from "../api/api";
-import { useState, useEffect } from "react";
-import { tokenToId, getUserFromId } from "../api/api";
+import { tokenToId } from "../api/api";
 
-function ProductCard({ product }) {
+function ProductCard({ product, onFavoriteAdded }) {
   const handleAddFavorite = async () => {
     try {
       const userId = await tokenToId();
@@ -13,11 +12,15 @@ function ProductCard({ product }) {
       await addFavoriteProduct(userId, product.productID);
       console.log("Favori ürün eklendi:", product.productID);
       console.log("Product favorilere eklendi.");
+
+      onFavoriteAdded("Product added to favorites!", "success");
     } catch (error) {
       console.error("Favori eklenirken hata oluştu:", error.message || error);
-    } finally {
+
+      onFavoriteAdded("Error adding to favorites!", "error");
     }
   };
+
   return (
     <div className="card h-100 border-0 shadow-sm product-card">
       <div className="position-relative overflow-hidden">
