@@ -28,7 +28,7 @@ function ProductCard({ product }) {
 
         <div className="position-absolute top-0 end-0 m-3">
           <span className="badge bg-primary fs-6 px-3 py-2">
-            ${product.price.toFixed(2)}
+            ₺{product.price.toFixed(2)}
           </span>
         </div>
       </div>
