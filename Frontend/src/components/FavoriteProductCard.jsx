@@ -1,6 +1,8 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import { getProductById } from "../api/api";
 
-function FavoriteProductCard({ title, description, imageUrl }) {
+function FavoriteProductCard({ productID, title, description, imageUrl }) {
   return (
     <div className="card mt-3" style={{ width: "100%" }}>
       <img
@@ -12,9 +14,12 @@ function FavoriteProductCard({ title, description, imageUrl }) {
       <div className="card-body">
         <h5 className="card-title">{title}</h5>
         <p className="card-text">{description}</p>
-        <a href="/productdetail" className="btn btn-primary">
+        <Link
+          to={`/productDetail/${productID}`}
+          className="btn btn-primary"
+        >
           Detail
-        </a>
+        </Link>
       </div>
     </div>
   );
