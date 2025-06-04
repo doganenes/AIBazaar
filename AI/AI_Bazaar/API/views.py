@@ -1,29 +1,20 @@
-import base64
-import io
-from matplotlib import pyplot as plt
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework import status
-from sklearn.neighbors import KNeighborsRegressor
-import pandas as pd
 import os
+import io
+import base64
+import numpy as np
+import pandas as pd
+from matplotlib import pyplot as plt
 from django.conf import settings
-from statsmodels.tsa.arima.model import ARIMA
+
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-import pandas as pd
-import numpy as np
+
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
-from sklearn.preprocessing import MinMaxScaler
-import xgboost as xgb
 
-import pandas as pd
 import xgboost as xgb
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from sklearn.preprocessing import StandardScaler
 
 @api_view(["POST"])
 def predict_product_xgboost(request):
@@ -62,9 +53,6 @@ def predict_product_xgboost(request):
         os_hierarchy = {
             "Android": 1,
             "iOS": 2,
-            "HarmonyOS": 1.5,  
-            "Windows": 0.5,
-            "Other": 0,
         }
 
         display_type_hierarchy = {
