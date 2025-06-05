@@ -1,4 +1,5 @@
-﻿using Backend.Services;
+﻿using Backend.Dtos;
+using Backend.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,7 +19,7 @@ namespace Backend.Controllers
         [HttpGet("getAllProducts")]
         public async Task<IActionResult> GetAllProducts()
         {
-           var values = await _productService.GetAllProducts();
+            var values = await _productService.GetAllProducts();
             return Ok(values);
         }
 
@@ -31,6 +32,18 @@ namespace Backend.Controllers
                 return NotFound();
             }
             return Ok(value);
+        }
+
+        [HttpPost("searchProducts")]
+        public async Task<IActionResult> SearchProducts([FromBody] SearchProductDto dto)
+        {
+            if (dto == null)
+            {
+                return BadRequest("Search criteria cannot be null.");
+            }
+
+            var products = await _productService.SearchProductsAsync(dto);
+            return Ok(products);
         }
     }
 }

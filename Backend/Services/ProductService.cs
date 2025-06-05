@@ -2,6 +2,7 @@
 using Backend.Data.Entities;
 using Backend.Dtos;
 using Backend.Repositories.Abstract;
+using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Services
 {
@@ -27,7 +28,7 @@ namespace Backend.Services
             }).ToList();
         }
 
-        public async Task <ProductDetailDto> GetProductById(int id)
+        public async Task<ProductDetailDto> GetProductById(int id)
         {
             return _context.Products
                 .Where(x => x.ProductID == id)
@@ -41,25 +42,31 @@ namespace Backend.Services
                 .FirstOrDefault();
         }
 
-        public void AddProduct(Product product)
+        public async Task<List<Product>> SearchProductsAsync(SearchProductDto dto)
         {
-            _context.Products.Add(product);
-            _context.SaveChanges();
-        }
-        public void UpdateProduct(Product product)
-        {
-            _context.Products.Update(product);
-            _context.SaveChanges();
-        }
-        
-        public void DeleteProduct(int id)
-        {
-            var product = _context.Products.FirstOrDefault(p => p.ProductID == id);
-            if (product != null)
+            IQueryable<Product> query = _context.Products.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(dto.ProductName))
             {
-                _context.Products.Remove(product);
-                _context.SaveChanges();
+                query = query.Where(p => p.ProductName.ToLower().Contains(dto.ProductName.ToLower()));
             }
+
+            if (!string.IsNullOrWhiteSpace(dto.Description))
+            {
+                query = query.Where(p => p.Description.ToLower().Contains(dto.Description.ToLower()));
+            }
+
+            if (!string.IsNullOrWhiteSpace(dto.ImageUrl))
+            {
+                query = query.Where(p => p.ImageUrl.ToLower().Contains(dto.ImageUrl.ToLower()));
+            }
+
+            if (dto.Price.HasValue)
+            {
+                query = query.Where(p => p.Price == dto.Price.Value);
+            }
+
+            return await query.ToListAsync();
         }
 
     }
