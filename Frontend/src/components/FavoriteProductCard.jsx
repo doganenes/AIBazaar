@@ -14,7 +14,7 @@ function FavoriteProductCard({
     try {
       const userId = await tokenToId();
       await removeFavoriteProduct(userId, productID);
-      onFavoriteRemoved("Product removed from favorites!", "danger");
+      onFavoriteRemoved(`${title} removed from favorites!`, "danger");
     } catch (error) {
       console.error(error.message);
       onFavoriteRemoved("Error removing from favorites!", "warning");
@@ -41,9 +41,9 @@ function FavoriteProductCard({
 
           <button
             onClick={handleRemoveFavorite}
-            className="btn btn-danger btn-sm overlay-btn"
+            className="btn btn-light btn-sm overlay-btn"
           >
-            <i className="fas fa-heart"></i>
+            <i class="fa-solid fa-heart text-danger"></i>
           </button>
         </div>
 

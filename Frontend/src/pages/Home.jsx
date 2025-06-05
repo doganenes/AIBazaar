@@ -144,9 +144,13 @@ const Home = () => {
         )}
       </div>
       <ToastContainer
-        position="bottom-start"
         className="p-3"
-        style={{ zIndex: 9999 }}
+        style={{
+          zIndex: 9999,
+          position: "fixed",
+          bottom: "1rem",
+          left: "1rem",
+        }}
       >
         <Toast
           show={toast.show}

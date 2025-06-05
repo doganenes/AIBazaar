@@ -16,16 +16,16 @@ namespace Backend.Controllers
         }
 
         [HttpGet("getAllProducts")]
-        public IActionResult GetAllProducts()
+        public async Task<IActionResult> GetAllProducts()
         {
-           var values = _productService.GetAllProducts();
+           var values = await _productService.GetAllProducts();
             return Ok(values);
         }
 
         [HttpGet("getProductById/{id}")]
-        public IActionResult GetProductById(int id)
+        public async Task<IActionResult> GetProductById(int id)
         {
-            var value = _productService.GetProductById(id);
+            var value = await _productService.GetProductById(id);
             if (value == null)
             {
                 return NotFound();

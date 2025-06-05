@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { getAllFavoriteProducts, tokenToId, logout,getUserFromId } from "../api/api";
+import {
+  getAllFavoriteProducts,
+  tokenToId,
+  logout,
+  getUserFromId,
+} from "../api/api";
 import { useNavigate } from "react-router-dom";
 import "../css/Header.css";
 

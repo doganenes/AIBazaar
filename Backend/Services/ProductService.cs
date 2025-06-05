@@ -15,7 +15,7 @@ namespace Backend.Services
             _productRepository = repository;
         }
 
-        public List<ProductDto> GetAllProducts()
+        public async Task<List<ProductDto>> GetAllProducts()
         {
             return _productRepository.GetAll().Select(x => new ProductDto
             {
@@ -27,7 +27,7 @@ namespace Backend.Services
             }).ToList();
         }
 
-        public ProductDetailDto GetProductById(int id)
+        public async Task <ProductDetailDto> GetProductById(int id)
         {
             return _context.Products
                 .Where(x => x.ProductID == id)

@@ -20,27 +20,21 @@ namespace Backend.Services
             _projectContext = projectContext;
         }
 
-        public bool AddFavoriteProduct(string userId, int productId)
+        public async Task AddFavoriteProductAsync(string userId, int productId)
         {
-            var user = _projectContext.Users
-               .Include(u => u.FavoriteProducts)
-               .FirstOrDefault(u => u.UserId == userId);
+            var user = await _projectContext.Users
+                .Include(u => u.FavoriteProducts)
+                .FirstOrDefaultAsync(u => u.UserId == userId)
+                ?? throw new KeyNotFoundException("User not found.");
 
-            var product = _projectContext.Products
+            var product = await _projectContext.Products
                 .Include(p => p.FavoriteProducts)
-                .FirstOrDefault(p => p.ProductID == productId);
+                .FirstOrDefaultAsync(p => p.ProductID == productId)
+                ?? throw new KeyNotFoundException("Product not found.");
 
-            if (user == null)
-                throw new KeyNotFoundException("User not found.");
-
-            if (product == null)
-                throw new KeyNotFoundException("Product not found.");
-
-            bool alreadyFavorite = user.FavoriteProducts
-                .Any(f => f.ProductID == productId);
-
+            bool alreadyFavorite = user.FavoriteProducts.Any(f => f.ProductID == productId);
             if (alreadyFavorite)
-                return false; 
+                throw new InvalidOperationException("This product is already in the user's favorites.");
 
             user.FavoriteProducts.Add(new FavoriteProduct
             {
@@ -52,24 +46,26 @@ namespace Backend.Services
                 User = user
             });
 
-            _projectContext.SaveChanges();
-            return true;
+            await _projectContext.SaveChangesAsync();
         }
 
-
-        public void RemoveFavoriteProduct(string userId, int favoriteProductId)
+        public async Task RemoveFavoriteProductAsync(string userId, int favoriteProductId)
         {
-            var user = _projectContext.Users
-               .Include(u => u.FavoriteProducts)
-               .FirstOrDefault(u => u.UserId == userId);
+            var user = await _projectContext.Users
+                .Include(u => u.FavoriteProducts)
+                .FirstOrDefaultAsync(u => u.UserId == userId);
+
+            if (user == null) return;
+
             var favoriteProduct = user.FavoriteProducts.FirstOrDefault(b => b.ProductID == favoriteProductId);
 
+            if (favoriteProduct == null) return;
+
             user.FavoriteProducts.Remove(favoriteProduct);
-            _projectContext.SaveChanges();
+            await _projectContext.SaveChangesAsync();
         }
 
-
-        public List<FavoriteProductDto> GetFavoriteProductsByUserId(string userId)
+        public async Task <List<FavoriteProductDto>> GetFavoriteProductsByUserId(string userId)
         {
             var user = _projectContext.Users
     .Include(u => u.FavoriteProducts)

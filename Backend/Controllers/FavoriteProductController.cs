@@ -18,21 +18,18 @@ namespace Backend.Controllers
         }
 
         [HttpGet("getAllFavoriteProducts")]
-        public IActionResult GetAllFavoriteProducts([FromQuery] string id)
+        public async Task <IActionResult> GetAllFavoriteProducts([FromQuery] string id)
         {
-            var favoriteProducts = _favoriteProductService.GetFavoriteProductsByUserId(id);
+            var favoriteProducts = await _favoriteProductService.GetFavoriteProductsByUserId(id);
             return Ok(favoriteProducts);
         }
 
         [HttpPost("addFavoriteProduct")]
-        public IActionResult AddFavoriteProduct([FromBody] FavoriteProductRequestDto request)
+        public async Task<IActionResult> AddFavoriteProduct([FromBody] FavoriteProductRequestDto request)
         {
             try
             {
-                bool added = _favoriteProductService.AddFavoriteProduct(request.UserId, request.ProductId);
-                if (!added)
-                    return BadRequest("This product is already in favorites.");
-
+                await _favoriteProductService.AddFavoriteProductAsync(request.UserId, request.ProductId);
                 return Ok("Product added to favorites.");
             }
             catch (KeyNotFoundException ex)
@@ -47,11 +44,11 @@ namespace Backend.Controllers
 
 
         [HttpDelete("removeFavoriteProduct")]
-        public IActionResult RemoveFavoriteProduct(FavoriteProductRequestDto dto)
+        public async Task<IActionResult> RemoveFavoriteProduct(FavoriteProductRequestDto dto)
         {
             try
             {
-                _favoriteProductService.RemoveFavoriteProduct(dto.UserId, dto.ProductId);
+                await _favoriteProductService.RemoveFavoriteProductAsync(dto.UserId, dto.ProductId);
                 return Ok("Product removed from favorites.");
             }
             catch (KeyNotFoundException ex)

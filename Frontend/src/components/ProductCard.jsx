@@ -13,7 +13,7 @@ function ProductCard({ product, onFavoriteAdded }) {
       console.log("Favori ürün eklendi:", product.productID);
       console.log("Product favorilere eklendi.");
 
-      onFavoriteAdded("Product added to favorites!", "success");
+      onFavoriteAdded(`${product.productName} added to favorites!`, "success");
     } catch (error) {
       console.error("Favori eklenirken hata oluştu:", error.message || error);
 
@@ -41,9 +41,9 @@ function ProductCard({ product, onFavoriteAdded }) {
 
           <button
             onClick={handleAddFavorite}
-            className="btn btn-danger btn-sm overlay-btn"
+            className="btn btn-light btn-sm overlay-btn"
           >
-            <i className="fas fa-heart"></i>
+            <i class="fa-regular fa-heart text-danger"></i>
           </button>
         </div>
 
