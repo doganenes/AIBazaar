@@ -4,13 +4,15 @@ import ProductCard from "../components/ProductCard";
 import { getAllProducts } from "../api/api";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../css/Home.css";
-import { ToastContainer, Toast } from "react-bootstrap";
+import { ToastContainer, Toast, Pagination } from "react-bootstrap";
 
 const Home = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12;
 
   const [toast, setToast] = useState({
     show: false,
@@ -49,7 +51,19 @@ const Home = () => {
         product.description?.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredProducts(filtered);
+    setCurrentPage(1);
   }, [searchTerm, products]);
+
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  const currentItems = filteredProducts.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   if (loading) {
     return (
@@ -123,24 +137,60 @@ const Home = () => {
             </div>
           </div>
         ) : (
-          <div className="row g-4">
-            {filteredProducts.map((product, index) => (
-              <div
-                key={product.productID || index}
-                className="col-lg-3 col-md-4 col-sm-6"
-                style={{
-                  animationDelay: `${index * 100}ms`,
-                  animation: "fadeInUp 0.8s ease-out forwards",
-                  opacity: 0,
-                }}
-              >
-                <ProductCard
-                  product={product}
-                  onFavoriteAdded={(message, type) => showToast(message, type)}
-                />
+          <>
+            <div className="row g-4">
+              {currentItems.map((product, index) => (
+                <div
+                  key={product.productID || index}
+                  className="col-lg-3 col-md-4 col-sm-6"
+                  style={{
+                    animationDelay: `${index * 100}ms`,
+                    animation: "fadeInUp 0.8s ease-out forwards",
+                    opacity: 0,
+                  }}
+                >
+                  <ProductCard
+                    product={product}
+                    onFavoriteAdded={(message, type) =>
+                      showToast(message, type)
+                    }
+                  />
+                </div>
+              ))}
+            </div>
+
+            {totalPages > 1 && (
+              <div className="d-flex justify-content-center mt-5">
+                <Pagination>
+                  <Pagination.First
+                    onClick={() => handlePageChange(1)}
+                    disabled={currentPage === 1}
+                  />
+                  <Pagination.Prev
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                  />
+                  {Array.from({ length: totalPages }, (_, index) => (
+                    <Pagination.Item
+                      key={index + 1}
+                      active={index + 1 === currentPage}
+                      onClick={() => handlePageChange(index + 1)}
+                    >
+                      {index + 1}
+                    </Pagination.Item>
+                  ))}
+                  <Pagination.Next
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                  />
+                  <Pagination.Last
+                    onClick={() => handlePageChange(totalPages)}
+                    disabled={currentPage === totalPages}
+                  />
+                </Pagination>
               </div>
-            ))}
-          </div>
+            )}
+          </>
         )}
       </div>
       <ToastContainer
