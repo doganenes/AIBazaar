@@ -211,7 +211,7 @@ const Home = () => {
         >
           <Toast.Header closeButton>
             <strong className="me-auto">
-              {toast.type === "success" ? "Başarılı" : "Hata"}
+              {toast.type === "success" ? "Success" : "Fail"}
             </strong>
           </Toast.Header>
           <Toast.Body className="text-white">{toast.message}</Toast.Body>

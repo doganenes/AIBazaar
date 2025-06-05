@@ -162,7 +162,7 @@ function Favorites() {
         >
           <Toast.Header closeButton>
             <strong className="me-auto">
-              {toast.variant === "danger" ? "Hata" : "Başarılı"}
+              {toast.variant === "danger" ? "Success" : "Fail"}
             </strong>
           </Toast.Header>
           <Toast.Body className="text-white">{toast.message}</Toast.Body>
