@@ -9,15 +9,15 @@ function ProductCard({ product, onFavoriteAdded }) {
     try {
       const userId = await tokenToId();
       console.log("User ID from token:", userId);
+
       await addFavoriteProduct(userId, product.productID);
       console.log("Favori ürün eklendi:", product.productID);
-      console.log("Product favorilere eklendi.");
 
       onFavoriteAdded(`${product.productName} added to favorites!`, "success");
     } catch (error) {
-      console.error("Favori eklenirken hata oluştu:", error.message || error);
-
-      onFavoriteAdded("Error adding to favorites!", "error");
+      const message = error.message || "Error adding to favorites!";
+      console.error("Favori eklenirken hata oluştu:", message);
+      onFavoriteAdded(message, "error");
     }
   };
 

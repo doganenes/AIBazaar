@@ -36,12 +36,17 @@ namespace Backend.Controllers
             {
                 return NotFound(ex.Message);
             }
+
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { Error = ex.Message });
+            }
+
             catch (Exception ex)
             {
                 return StatusCode(500, "An error occurred while adding the product.");
             }
         }
-
 
         [HttpDelete("removeFavoriteProduct")]
         public async Task<IActionResult> RemoveFavoriteProduct(FavoriteProductRequestDto dto)

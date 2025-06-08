@@ -93,22 +93,18 @@ export const getProductById = async (id) => {
 
 export const addFavoriteProduct = async (userId, productId) => {
   try {
-    const response = await api.post("api/FavoriteProduct/addFavoriteProduct", {
-      userId: userId,
-      productId: productId,
-    });
-
-    if (response.data === true) {
-      console.log("Ürün favorilere eklendi.");
-    } else {
-      console.log("Ürün zaten favorilerde.");
-    }
+    const response = await axios.post(
+      "https://localhost:7011/api/FavoriteProduct/addFavoriteProduct",
+      {
+        userId,
+        productId,
+      }
+    );
+    return response.data;
   } catch (error) {
-    if (error.response && error.response.status === 404) {
-      console.error("Kullanıcı veya ürün bulunamadı.");
-    } else {
-      console.error("Bir hata oluştu:", error.message);
-    }
+    const errorMessage =
+      error.response?.data?.error || "Error adding to favorites.";
+    throw new Error(errorMessage);
   }
 };
 

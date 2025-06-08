@@ -20,7 +20,7 @@ function Favorites() {
   const [toast, setToast] = useState({
     show: false,
     message: "",
-    variant: "danger",
+    variant: "warning",
   });
 
   useEffect(() => {
@@ -77,7 +77,6 @@ function Favorites() {
 
   return (
     <Container className="favorites-container">
-      {/* Başlığı sadece favori ürün varsa göster */}
       {favoriteProducts.length > 0 && (
         <h2 className="mb-4 mt-3">My Favorite Products</h2>
       )}

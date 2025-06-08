@@ -207,11 +207,11 @@ const Home = () => {
           onClose={() => setToast((prev) => ({ ...prev, show: false }))}
           delay={3000}
           autohide
-          bg={toast.type}
+          bg={toast.type === "success" ? "success" : "danger"}
         >
           <Toast.Header closeButton>
             <strong className="me-auto">
-              {toast.type === "success" ? "Success" : "Fail"}
+              {toast.type === "success" ? "success" : "Fail"}
             </strong>
           </Toast.Header>
           <Toast.Body className="text-white">{toast.message}</Toast.Body>
