@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../css/GeneratePrice.css";
+
 function GeneratePrice() {
   const [formData, setFormData] = useState({
     ram: "",
@@ -18,6 +19,19 @@ function GeneratePrice() {
   const [predictedPrice, setPredictedPrice] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [formErrors, setFormErrors] = useState({});
+  const [formattedPrice, setFormattedPrice] = useState("");
+
+  useEffect(() => {
+    if (predictedPrice !== null && predictedPrice !== undefined) {
+      const formatted =
+        new Intl.NumberFormat("tr-TR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(predictedPrice) + " ₺";
+
+      setFormattedPrice(formatted);
+    }
+  }, [predictedPrice]);
 
   const handleChange = (e) => {
     setFormData({
@@ -62,6 +76,7 @@ function GeneratePrice() {
     e.preventDefault();
 
     const isValid = validateForm();
+
     if (!isValid) {
       return;
     }
@@ -75,10 +90,11 @@ function GeneratePrice() {
       );
       console.log("Backend response:", response.data);
       setPredictedPrice(response.data.price);
-      setIsLoading(false);
     } catch (error) {
       console.error("API request error:", error);
       setPredictedPrice(null);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -431,7 +447,9 @@ function GeneratePrice() {
                     />
                     <div className="d-flex justify-content-between fs-5 fw-bold">
                       <small className="text-muted">250</small>
-                      <small className="text-muted fs-5">{formData.ppi} PPI</small>
+                      <small className="text-muted fs-5">
+                        {formData.ppi} PPI
+                      </small>
                       <small className="text-muted">500</small>
                     </div>
                     {formErrors.ppi && (
@@ -562,9 +580,8 @@ function GeneratePrice() {
                     >
                       <h4 className="fw-light mb-2">Estimated Price</h4>
                       <div className="display-3 fw-bold mb-2">
-                        ${predictedPrice.toFixed(2)}
+                        {formattedPrice}
                       </div>
-                      <small className="opacity-75">USD</small>
                     </div>
 
                     <div

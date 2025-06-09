@@ -9,8 +9,8 @@ namespace Backend.Services
     public class ProductService
     {
         private readonly ProjectContext _context;
-        private readonly IRepository<Product> _productRepository;
-        public ProductService(ProjectContext context, IRepository<Product> repository)
+        private readonly IRepository<LSTMProduct> _productRepository;
+        public ProductService(ProjectContext context, IRepository<LSTMProduct> repository)
         {
             _context = context;
             _productRepository = repository;
@@ -30,7 +30,7 @@ namespace Backend.Services
 
         public async Task<ProductDetailDto> GetProductById(int id)
         {
-            return _context.Products
+            return _context.LSTMProducts
                 .Where(x => x.ProductID == id)
                 .Select(x => new ProductDetailDto
                 {
@@ -42,9 +42,9 @@ namespace Backend.Services
                 .FirstOrDefault();
         }
 
-        public async Task<List<Product>> SearchProductsAsync(SearchProductDto dto)
+        public async Task<List<LSTMProduct>> SearchProductsAsync(SearchProductDto dto)
         {
-            IQueryable<Product> query = _context.Products.AsQueryable();
+            IQueryable<LSTMProduct> query = _context.LSTMProducts.AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(dto.ProductName))
             {

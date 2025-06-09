@@ -34,7 +34,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 });
 
 builder.Services.AddScoped(typeof(IRepository<User>), typeof(Repository<User>));
-builder.Services.AddScoped(typeof(IRepository<Product>), typeof(Repository<Product>));
+builder.Services.AddScoped(typeof(IRepository<LSTMProduct>), typeof(Repository<LSTMProduct>));
 builder.Services.AddScoped(typeof(IRepository<FavoriteProduct>), typeof(Repository<FavoriteProduct>));
 
 builder.Services.AddScoped<AuthService>();

@@ -2,11 +2,10 @@
 
 namespace Backend.Data.Entities
 {
-    public class Product_KNN
+    public class XGBoostProduct
     {
         [Key]
         public int ProductId { get; set; }
-        public string ProductName { get; set; }
         public int Storage { get; set; }
         public int RAM { get; set; }
         public string OS { get; set; }

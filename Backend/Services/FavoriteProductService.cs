@@ -27,7 +27,7 @@ namespace Backend.Services
                 .FirstOrDefaultAsync(u => u.UserId == userId)
                 ?? throw new KeyNotFoundException("User not found.");
 
-            var product = await _projectContext.Products
+            var product = await _projectContext.LSTMProducts
                 .Include(p => p.FavoriteProducts)
                 .FirstOrDefaultAsync(p => p.ProductID == productId)
                 ?? throw new KeyNotFoundException("Product not found.");

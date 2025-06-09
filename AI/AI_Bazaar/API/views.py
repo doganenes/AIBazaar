@@ -33,7 +33,7 @@ def predict_product_xgboost(request):
         chipset = int(data.get("chipset"))
         
         df = pd.read_csv(
-            r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\csv\phones.csv"
+            r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\filterPhone.csv"
         )
 
         features = [
@@ -48,7 +48,7 @@ def predict_product_xgboost(request):
             "video_resolution",
             "chipset",
         ]
-        df = df[features + ["price_usd"]]
+        df = df[features + ["price"]]
 
         os_hierarchy = {
             "Android": 1,
@@ -119,7 +119,7 @@ def predict_product_xgboost(request):
         ]
 
         X = df[feature_columns]
-        y = df["price_usd"]
+        y = df["price"]
 
         new_data = pd.DataFrame(
             [
@@ -195,8 +195,8 @@ def predict_product_lstm(request):
         return Response({"error": "Lütfen 'product' alanını POST verisinde gönderin."}, status=status.HTTP_400_BAD_REQUEST)
 
     try:
-        df = pd.read_csv(r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\csv\akakce.csv")
-
+        df = pd.read_csv(r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\products3.csv")
+        print(df.head())
         df["Price"] = df["Price"].apply(lambda x: int(str(x).replace(" TL", "").split(",")[0].replace(".", "")))
         df["Price"] = df["Price"].astype(int)
         df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
