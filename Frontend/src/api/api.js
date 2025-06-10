@@ -10,7 +10,7 @@ const api = axios.create({
   },
 });
 
-export const aiApi = axios.create({
+const aiApi = axios.create({
   baseURL: AI_API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
@@ -111,13 +111,10 @@ const searchProducts = async (searchDto) => {
 
 export const addFavoriteProduct = async (userId, productId) => {
   try {
-    const response = await api.post(
-      "/api/FavoriteProduct/addFavoriteProduct",
-      {
-        userId,
-        productId,
-      }
-    );
+    const response = await api.post("/api/FavoriteProduct/addFavoriteProduct", {
+      userId,
+      productId,
+    });
     return response.data;
   } catch (error) {
     const errorMessage =
@@ -149,10 +146,7 @@ export const removeFavoriteProduct = async (userId, productId) => {
 
 export const predict_knn = async (formData) => {
   try {
-    const response = await aiApi.post(
-      "/api/predict/",
-      formData
-    );
+    const response = await aiApi.post("/api/predict/", formData);
     return response.data;
   } catch (error) {
     console.error("API error occurred:", error);
