@@ -13,5 +13,6 @@ namespace Backend.Data.Context
         public DbSet<FavoriteProduct> FavoriteProducts { get; set; }
         public DbSet<LSTMProduct> LSTMProducts { get; set; }
         public DbSet<XGBoostProduct> XGBoostProducts { get; set; }
+        public DbSet<LSTMProductPriceHistory> LSTMProductPriceHistories { get; set; }
     }
 }

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ProjectContext))]
-    [Migration("20250516200755_mymg")]
-    partial class mymg
+    [Migration("20250610120204_mig2")]
+    partial class mig2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,9 +36,6 @@ namespace Backend.Migrations
                     b.Property<DateTime>("FavoriteProductDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<short>("PriceChanging")
-                        .HasColumnType("smallint");
-
                     b.Property<int>("ProductID")
                         .HasColumnType("int");
 
@@ -55,7 +52,7 @@ namespace Backend.Migrations
                     b.ToTable("FavoriteProducts");
                 });
 
-            modelBuilder.Entity("Backend.Data.Entities.Product", b =>
+            modelBuilder.Entity("Backend.Data.Entities.LSTMProduct", b =>
                 {
                     b.Property<int>("ProductID")
                         .ValueGeneratedOnAdd()
@@ -71,25 +68,40 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsInStock")
-                        .HasColumnType("bit");
-
-                    b.Property<double>("Price")
-                        .HasColumnType("float");
-
                     b.Property<string>("ProductName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("Rating")
-                        .HasColumnType("float");
-
-                    b.Property<DateTime>("SaleDate")
-                        .HasColumnType("datetime2");
-
                     b.HasKey("ProductID");
 
-                    b.ToTable("Products");
+                    b.ToTable("LSTMProducts");
+                });
+
+            modelBuilder.Entity("Backend.Data.Entities.LSTMProductPriceHistory", b =>
+                {
+                    b.Property<int>("PriceHistoryID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PriceHistoryID"));
+
+                    b.Property<int?>("LSTMProductProductID")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ProductID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("RecordDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("PriceHistoryID");
+
+                    b.HasIndex("LSTMProductProductID");
+
+                    b.ToTable("LSTMProductPriceHistories");
                 });
 
             modelBuilder.Entity("Backend.Data.Entities.User", b =>
@@ -114,9 +126,52 @@ namespace Backend.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("Backend.Data.Entities.XGBoostProduct", b =>
+                {
+                    b.Property<int>("ProductId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductId"));
+
+                    b.Property<int>("Battery")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CPU_Core")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Display_Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Foldable")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("OS")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PPI")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RAM")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Storage")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Video_Resolution")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ProductId");
+
+                    b.ToTable("XGBoostProducts");
+                });
+
             modelBuilder.Entity("Backend.Data.Entities.FavoriteProduct", b =>
                 {
-                    b.HasOne("Backend.Data.Entities.Product", "Product")
+                    b.HasOne("Backend.Data.Entities.LSTMProduct", "Product")
                         .WithMany("FavoriteProducts")
                         .HasForeignKey("ProductID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -133,9 +188,18 @@ namespace Backend.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Backend.Data.Entities.Product", b =>
+            modelBuilder.Entity("Backend.Data.Entities.LSTMProductPriceHistory", b =>
+                {
+                    b.HasOne("Backend.Data.Entities.LSTMProduct", null)
+                        .WithMany("PriceHistory")
+                        .HasForeignKey("LSTMProductProductID");
+                });
+
+            modelBuilder.Entity("Backend.Data.Entities.LSTMProduct", b =>
                 {
                     b.Navigation("FavoriteProducts");
+
+                    b.Navigation("PriceHistory");
                 });
 
             modelBuilder.Entity("Backend.Data.Entities.User", b =>

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ProjectContext))]
-    [Migration("20250603073236_mig3")]
-    partial class mig3
+    [Migration("20250610115941_mig1")]
+    partial class mig1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,9 +36,6 @@ namespace Backend.Migrations
                     b.Property<DateTime>("FavoriteProductDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<short>("PriceChanging")
-                        .HasColumnType("smallint");
-
                     b.Property<int>("ProductID")
                         .HasColumnType("int");
 
@@ -55,7 +52,7 @@ namespace Backend.Migrations
                     b.ToTable("FavoriteProducts");
                 });
 
-            modelBuilder.Entity("Backend.Data.Entities.Product", b =>
+            modelBuilder.Entity("Backend.Data.Entities.LSTMProduct", b =>
                 {
                     b.Property<int>("ProductID")
                         .ValueGeneratedOnAdd()
@@ -71,22 +68,65 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("Price")
-                        .HasColumnType("float");
-
                     b.Property<string>("ProductName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("SaleDate")
-                        .HasColumnType("datetime2");
-
                     b.HasKey("ProductID");
 
-                    b.ToTable("Products");
+                    b.ToTable("LSTMProducts");
                 });
 
-            modelBuilder.Entity("Backend.Data.Entities.Product_KNN", b =>
+            modelBuilder.Entity("Backend.Data.Entities.LSTMProductPriceHistory", b =>
+                {
+                    b.Property<int>("PriceHistoryID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PriceHistoryID"));
+
+                    b.Property<int>("LSTMProductProductID")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ProductID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("RecordDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("PriceHistoryID");
+
+                    b.HasIndex("LSTMProductProductID");
+
+                    b.ToTable("LSTMProductPriceHistories");
+                });
+
+            modelBuilder.Entity("Backend.Data.Entities.User", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("Backend.Data.Entities.XGBoostProduct", b =>
                 {
                     b.Property<int>("ProductId")
                         .ValueGeneratedOnAdd()
@@ -114,10 +154,6 @@ namespace Backend.Migrations
                     b.Property<int>("PPI")
                         .HasColumnType("int");
 
-                    b.Property<string>("ProductName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("RAM")
                         .HasColumnType("int");
 
@@ -130,34 +166,12 @@ namespace Backend.Migrations
 
                     b.HasKey("ProductId");
 
-                    b.ToTable("KNN_Products");
-                });
-
-            modelBuilder.Entity("Backend.Data.Entities.User", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Password")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("UserId");
-
-                    b.ToTable("Users");
+                    b.ToTable("XGBoostProducts");
                 });
 
             modelBuilder.Entity("Backend.Data.Entities.FavoriteProduct", b =>
                 {
-                    b.HasOne("Backend.Data.Entities.Product", "Product")
+                    b.HasOne("Backend.Data.Entities.LSTMProduct", "Product")
                         .WithMany("FavoriteProducts")
                         .HasForeignKey("ProductID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -174,9 +188,22 @@ namespace Backend.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Backend.Data.Entities.Product", b =>
+            modelBuilder.Entity("Backend.Data.Entities.LSTMProductPriceHistory", b =>
+                {
+                    b.HasOne("Backend.Data.Entities.LSTMProduct", "LSTMProduct")
+                        .WithMany("PriceHistory")
+                        .HasForeignKey("LSTMProductProductID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LSTMProduct");
+                });
+
+            modelBuilder.Entity("Backend.Data.Entities.LSTMProduct", b =>
                 {
                     b.Navigation("FavoriteProducts");
+
+                    b.Navigation("PriceHistory");
                 });
 
             modelBuilder.Entity("Backend.Data.Entities.User", b =>

@@ -22,7 +22,6 @@ namespace Backend.Services
             {
                 ProductID = x.ProductID,
                 ProductName = x.ProductName,
-                Price = x.Price,
                 Description = x.Description,
                 ImageUrl = x.ImageUrl
             }).ToList();
@@ -35,7 +34,6 @@ namespace Backend.Services
                 .Select(x => new ProductDetailDto
                 {
                     ProductName = x.ProductName,
-                    Price = x.Price,
                     Description = x.Description,
                     ImageUrl = x.ImageUrl
                 })
@@ -59,11 +57,6 @@ namespace Backend.Services
             if (!string.IsNullOrWhiteSpace(dto.ImageUrl))
             {
                 query = query.Where(p => p.ImageUrl.ToLower().Contains(dto.ImageUrl.ToLower()));
-            }
-
-            if (dto.Price.HasValue)
-            {
-                query = query.Where(p => p.Price == dto.Price.Value);
             }
 
             return await query.ToListAsync();

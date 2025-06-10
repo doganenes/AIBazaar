@@ -6,7 +6,6 @@ namespace Backend.Dtos
     {
         public int FavoriteProductID { get; set; }
         public DateTime FavoriteProductDate { get; set; }
-        public short PriceChanging { get; set; }
         public ProductDto Product { get; set; }
     }
 

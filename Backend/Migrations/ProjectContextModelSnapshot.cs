@@ -33,9 +33,6 @@ namespace Backend.Migrations
                     b.Property<DateTime>("FavoriteProductDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<short>("PriceChanging")
-                        .HasColumnType("smallint");
-
                     b.Property<int>("ProductID")
                         .HasColumnType("int");
 
@@ -54,11 +51,11 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Backend.Data.Entities.LSTMProduct", b =>
                 {
-                    b.Property<int>("LSTMProductID")
+                    b.Property<int>("ProductID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LSTMProductID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductID"));
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -68,22 +65,37 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("Price")
-                        .HasColumnType("float");
-
-                    b.Property<int>("ProductID")
-                        .HasColumnType("int");
-
                     b.Property<string>("ProductName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("SaleDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("LSTMProductID");
+                    b.HasKey("ProductID");
 
                     b.ToTable("LSTMProducts");
+                });
+
+            modelBuilder.Entity("Backend.Data.Entities.LSTMProductPriceHistory", b =>
+                {
+                    b.Property<int>("PriceHistoryID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PriceHistoryID"));
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ProductID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("RecordDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("PriceHistoryID");
+
+                    b.HasIndex("ProductID");
+
+                    b.ToTable("LSTMProductPriceHistories");
                 });
 
             modelBuilder.Entity("Backend.Data.Entities.User", b =>
@@ -170,9 +182,22 @@ namespace Backend.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Backend.Data.Entities.LSTMProductPriceHistory", b =>
+                {
+                    b.HasOne("Backend.Data.Entities.LSTMProduct", "LSTMProduct")
+                        .WithMany("PriceHistory")
+                        .HasForeignKey("ProductID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LSTMProduct");
+                });
+
             modelBuilder.Entity("Backend.Data.Entities.LSTMProduct", b =>
                 {
                     b.Navigation("FavoriteProducts");
+
+                    b.Navigation("PriceHistory");
                 });
 
             modelBuilder.Entity("Backend.Data.Entities.User", b =>

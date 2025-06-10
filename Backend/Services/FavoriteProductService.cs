@@ -39,7 +39,6 @@ namespace Backend.Services
             user.FavoriteProducts.Add(new FavoriteProduct
             {
                 FavoriteProductDate = DateTime.Now,
-                PriceChanging = 0,
                 ProductID = productId,
                 UserId = userId,
                 Product = product,
@@ -77,12 +76,10 @@ namespace Backend.Services
             {
                 FavoriteProductID = fp.FavoriteProductID,
                 FavoriteProductDate = fp.FavoriteProductDate,
-                PriceChanging = fp.PriceChanging,
                 Product = new ProductDto
                 {
                     ProductID = fp.Product.ProductID,
                     ProductName = fp.Product.ProductName,
-                    Price = fp.Product.Price,
                     Description = fp.Product.Description,
                     ImageUrl = fp.Product.ImageUrl
                 }
