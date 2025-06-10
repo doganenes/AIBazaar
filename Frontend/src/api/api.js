@@ -1,9 +1,17 @@
 import axios from "axios";
 
-const API_BASE_URL = "https://localhost:7011";
+const BACKEND_API_BASE_URL = "https://localhost:7011";
+const AI_API_BASE_URL = "http://localhost:8000";
 
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: BACKEND_API_BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+export const aiApi = axios.create({
+  baseURL: AI_API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -54,7 +62,7 @@ export const tokenToId = async () => {
 export const getAllProducts = async () => {
   try {
     const response = await api.get("/api/product/getAllProducts");
-    console.log("Ürünler:", response.data);
+    console.log("Products:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching products:", error);
@@ -72,10 +80,10 @@ export const getAllFavoriteProducts = async (userId) => {
         },
       }
     );
-    console.log("Favori ürünler:", response.data);
+    console.log("Favorites:", response.data);
     return response.data;
   } catch (error) {
-    console.error("API hatası:", error.message);
+    console.error("API error:", error.message);
     return [];
   }
 };
@@ -83,28 +91,28 @@ export const getAllFavoriteProducts = async (userId) => {
 export const getProductById = async (id) => {
   try {
     const response = await api.get(`/api/Product/getProductById/${id}`);
-    console.log(response.data);
+    console.log("Product:", response.data);
     return response.data;
   } catch (error) {
-    console.error("Ürün getirme hatası:", error);
+    console.error("Error:", error);
     throw error;
   }
 };
 
 const searchProducts = async (searchDto) => {
   try {
-    const response = await api.post('/api/products/searchProducts', searchDto);
+    const response = await api.post("/api/products/searchProducts", searchDto);
     return response.data;
   } catch (error) {
-    console.error('Product search failed:', error);
+    console.error("Product search failed:", error);
     throw error;
   }
 };
 
 export const addFavoriteProduct = async (userId, productId) => {
   try {
-    const response = await axios.post(
-      "https://localhost:7011/api/FavoriteProduct/addFavoriteProduct",
+    const response = await api.post(
+      "/api/FavoriteProduct/addFavoriteProduct",
       {
         userId,
         productId,
@@ -141,13 +149,13 @@ export const removeFavoriteProduct = async (userId, productId) => {
 
 export const predict_knn = async (formData) => {
   try {
-    const response = await axios.post(
-      "http://localhost:8000/api/predict/",
+    const response = await aiApi.post(
+      "/api/predict/",
       formData
     );
     return response.data;
   } catch (error) {
-    console.error("API çağrısı sırasında hata oluştu:", error);
+    console.error("API error occurred:", error);
     throw error;
   }
 };
@@ -155,10 +163,10 @@ export const predict_knn = async (formData) => {
 export const getUserFromId = async (id) => {
   try {
     const response = await api.get(`/api/Auth/getUserFromId?id=${id}`);
-    console.log("Kullanıcı bilgisi:", response);
+    console.log("User info:", response);
     return response.data;
   } catch (error) {
-    console.error("Kullanıcı alınırken hata oluştu:", error);
+    console.error("Error fetching user:", error);
   }
 };
 
