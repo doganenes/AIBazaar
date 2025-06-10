@@ -12,21 +12,22 @@ import Favorites from "../src/pages/Favorites";
 import ProductDetail from "../src/pages/ProductDetail";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Footer from "../src/components/Footer";
+import { useState } from "react";
 
 function App() {
   const location = useLocation();
-  
+  const [searchTerm, setSearchTerm] = useState("");
   const authPages = ["/", "/signin", "/signup"];
   const shouldShowHeader = !authPages.includes(location.pathname);
 
   return (
     <div className="d-flex flex-column min-vh-100">
-      {shouldShowHeader && <Header />}
+      {shouldShowHeader && <Header setSearchTerm={setSearchTerm} />}
 
       <Container className="flex-grow-1">
         <Routes>
           <Route path="/" element={<Signin />} />
-          <Route path="/home" element={<Home />} />
+          <Route path="/home" element={<Home searchTerm={searchTerm} />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/signin" element={<Signin />} />
           <Route path="/generatePrice" element={<GeneratePrice />} />

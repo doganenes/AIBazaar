@@ -6,11 +6,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../css/Home.css";
 import { ToastContainer, Toast, Pagination } from "react-bootstrap";
 
-const Home = () => {
+const Home = ({ searchTerm }) => {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
 
@@ -94,14 +93,7 @@ const Home = () => {
     >
       <div className="container py-4">
         <div className="row mb-4">
-          <div className="col-md-8">
-            {searchTerm && (
-              <p className="text-muted">
-                "<strong>{searchTerm}</strong>" for {filteredProducts.length}{" "}
-                found!
-              </p>
-            )}
-          </div>
+          <div className="col-md-8"></div>
           <div className="col-md-4 text-md-end">
             <span className="badge bg-dark rounded text-white fs-6 px-3 py-2">
               {filteredProducts.length}{" "}

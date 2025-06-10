@@ -91,6 +91,16 @@ export const getProductById = async (id) => {
   }
 };
 
+const searchProducts = async (searchDto) => {
+  try {
+    const response = await api.post('/api/products/searchProducts', searchDto);
+    return response.data;
+  } catch (error) {
+    console.error('Product search failed:', error);
+    throw error;
+  }
+};
+
 export const addFavoriteProduct = async (userId, productId) => {
   try {
     const response = await axios.post(

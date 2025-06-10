@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   getAllFavoriteProducts,
   tokenToId,
@@ -8,21 +8,22 @@ import {
 import { useNavigate } from "react-router-dom";
 import "../css/Header.css";
 
-function Header() {
-  const [searchTerm, setSearchTerm] = useState("");
+function Header({ setSearchTerm }) {
   const [user, setUser] = useState(null);
   const [favoriteProducts, setFavoriteProducts] = useState(null);
   const [isLoadingFavorites, setIsLoadingFavorites] = useState(true);
+  const [inputValue, setInputValue] = useState("");
   const navigate = useNavigate();
+
   const handleSearch = () => {
-    console.log("Searching for:", searchTerm);
+    setSearchTerm(inputValue);
+    navigate("/home"); 
   };
 
   useEffect(() => {
     const fetchFavorites = async () => {
       try {
         const userId = await tokenToId();
-        console.log("User ID from token:", userId);
         const favorites = await getAllFavoriteProducts(userId);
         const userData = await getUserFromId(userId);
         setUser(userData);
@@ -78,8 +79,8 @@ function Header() {
                 className="form-control border-0 shadow-sm"
                 type="search"
                 placeholder="Search Product.."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
                 style={{
                   borderRadius: "25px 0 0 25px",
                   fontSize: "0.95rem",
@@ -103,7 +104,7 @@ function Header() {
               href="/generateprice"
               className="nav-link text-white d-flex align-items-center me-lg-3 mb-2 mb-lg-0 nav-item-hover"
             >
-              <i class="fas fa-chart-line me-1"></i>
+              <i className="fas fa-chart-line me-1"></i>
               <span>Forecast</span>
             </a>
 
