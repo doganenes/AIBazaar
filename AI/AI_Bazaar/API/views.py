@@ -195,7 +195,7 @@ def predict_product_lstm(request):
         return Response({"error": "Lütfen 'product' alanını POST verisinde gönderin."}, status=status.HTTP_400_BAD_REQUEST)
 
     try:
-        df = pd.read_csv(r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\products3.csv")
+        df = pd.read_csv(r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\filterNewAkakce.csv")
         print(df.head())
         df["Price"] = df["Price"].apply(lambda x: int(str(x).replace(" TL", "").split(",")[0].replace(".", "")))
         df["Price"] = df["Price"].astype(int)
