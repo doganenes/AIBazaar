@@ -59,7 +59,6 @@ const Signup = () => {
     <div className="signup-container">
       <div className="container-fluid h-100">
         <div className="row signup-row">
-          {/* Sol Panel - Bilgi ve Özellikler */}
           <div className="col-lg-7 col-md-6 info-panel">
             <div className="info-content">
               <div className="brand-container">
@@ -145,7 +144,6 @@ const Signup = () => {
             </div>
           </div>
 
-          {/* Sağ Panel - Form */}
           <div className="col-lg-5 col-md-6 form-panel">
             <div className="form-wrapper">
               <div className="form-card">

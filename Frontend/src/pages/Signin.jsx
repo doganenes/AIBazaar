@@ -108,9 +108,7 @@ const Signin = () => {
     <div className="signin-container">
       <div className="container-fluid h-100">
         <div className="row signin-row">
-          {/* Sol Panel - Welcome */}
           <div className="col-lg-6 col-md-6 welcome-panel">
-            {/* Logo */}
             <div className="brand-section">
               <div className="brand-header">
                 <div className="brand-icon">
@@ -131,7 +129,6 @@ const Signin = () => {
             </div>
           </div>
 
-          {/* Sağ Panel - Form */}
           <div className="col-lg-6 col-md-6 form-panel">
             <div className="form-wrapper">
               <div className="form-card">
