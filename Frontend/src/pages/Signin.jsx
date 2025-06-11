@@ -105,62 +105,46 @@ const Signin = () => {
   }, [isLoggedIn, navigate]);
 
   return (
-    <div
-      className="min-vh-100 d-flex"
-      style={{
-        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-      }}
-    >
+    <div className="signin-container">
       <div className="container-fluid h-100">
-        <div className="row min-vh-100 align-items-stretch">
-          <div className="col-lg-6 col-md-6 d-flex flex-column justify-content-center p-5 text-white">
+        <div className="row signin-row">
+          {/* Sol Panel - Welcome */}
+          <div className="col-lg-6 col-md-6 welcome-panel">
             {/* Logo */}
-            <div className="mb-5">
-              <div className="d-flex align-items-center justify-content-center mb-4">
-                <div
-                  className="rounded-3 me-3 d-flex align-items-center justify-content-center"
-                  style={{
-                    width: "60px",
-                    height: "60px",
-                    background: "rgba(255, 255, 255, 0.2)",
-                    backdropFilter: "blur(10px)",
-                  }}
-                >
+            <div className="brand-section">
+              <div className="brand-header">
+                <div className="brand-icon">
                   <i className="fas fa-chart-bar fs-2"></i>
                 </div>
-                <h1 className="fs-1 fw-bold mb-0 ">AIBazaar</h1>
+                <h1 className="brand-title">AIBazaar</h1>
               </div>
             </div>
 
-            <div className="mb-5">
-              <h2 className="display-4 fw-bold mb-4">
+            <div className="welcome-content">
+              <h2 className="welcome-title">
                 Welcome back to intelligent pricing
               </h2>
-              <p className="fs-4 mb-4 opacity-90">
+              <p className="welcome-description">
                 Continue optimizing your business with AI-powered market
                 analysis and smart pricing strategies.
               </p>
             </div>
           </div>
 
-          <div className="col-lg-6 col-md-6 d-flex align-items-center justify-content-center bg-white">
-            <div className="w-100 px-4" style={{ maxWidth: "450px" }}>
-              <div
-                className="p-5 rounded-4 shadow-lg bg-white"
-                style={{
-                  border: "1px solid rgba(102, 126, 234, 0.1)",
-                }}
-              >
-                <div className="text-center mb-4">
-                  <h2 className="fw-bold mb-2">Sign In</h2>
-                  <p className="text-muted">
+          {/* Sağ Panel - Form */}
+          <div className="col-lg-6 col-md-6 form-panel">
+            <div className="form-wrapper">
+              <div className="form-card">
+                <div className="form-header">
+                  <h2 className="form-title">Sign In</h2>
+                  <p className="form-subtitle">
                     Enter your credentials to access your account
                   </p>
                 </div>
 
                 <Form onSubmit={handleSubmit}>
                   <Form.Group className="mb-3" controlId="formEmail">
-                    <Form.Label className="fw-semibold text-dark">
+                    <Form.Label className="form-label">
                       Email Address
                     </Form.Label>
                     <Form.Control
@@ -170,30 +154,23 @@ const Signin = () => {
                       onChange={handleChange}
                       placeholder="Enter your email"
                       isInvalid={!!errors.email}
-                      className="py-3 rounded-3"
-                      style={{
-                        fontSize: "1rem",
-                        border: errors.email
-                          ? "2px solid #dc3545"
-                          : "2px solid #e9ecef",
-                        transition: "all 0.3s ease",
-                      }}
+                      className={`form-input ${
+                        errors.email ? "form-input-error" : "form-input-default"
+                      }`}
                     />
                     {errors.email && (
                       <Form.Control.Feedback
                         type="invalid"
-                        className="fw-medium"
+                        className="error-feedback"
                       >
-                        <i className="fas fa-exclamation-circle me-1"></i>
+                        <i className="fas fa-exclamation-circle error-icon"></i>
                         {errors.email}
                       </Form.Control.Feedback>
                     )}
                   </Form.Group>
 
                   <Form.Group className="mb-4" controlId="formPassword">
-                    <Form.Label className="fw-semibold text-dark">
-                      Password
-                    </Form.Label>
+                    <Form.Label className="form-label">Password</Form.Label>
                     <Form.Control
                       type="password"
                       name="password"
@@ -201,52 +178,33 @@ const Signin = () => {
                       onChange={handleChange}
                       placeholder="Enter your password"
                       isInvalid={!!errors.password}
-                      className="py-3 rounded-3"
-                      style={{
-                        fontSize: "1rem",
-                        border: errors.password
-                          ? "2px solid #dc3545"
-                          : "2px solid #e9ecef",
-                        transition: "all 0.3s ease",
-                      }}
+                      className={`form-input ${
+                        errors.password
+                          ? "form-input-error"
+                          : "form-input-default"
+                      }`}
                     />
                     {errors.password && (
                       <Form.Control.Feedback
                         type="invalid"
-                        className="fw-medium"
+                        className="error-feedback"
                       >
-                        <i className="fas fa-exclamation-circle me-1"></i>
+                        <i className="fas fa-exclamation-circle error-icon"></i>
                         {errors.password}
                       </Form.Control.Feedback>
                     )}
                   </Form.Group>
 
                   {errorMessage && (
-                    <div
-                      className="alert alert-danger d-flex align-items-center py-3 mb-3 rounded-3 border-0"
-                      role="alert"
-                      style={{
-                        background: "rgba(220, 53, 69, 0.1)",
-                        color: "#dc3545",
-                        border: "1px solid rgba(220, 53, 69, 0.2)",
-                      }}
-                    >
-                      <i className="fas fa-exclamation-triangle me-2"></i>
+                    <div className="custom-alert alert-danger" role="alert">
+                      <i className="fas fa-exclamation-triangle alert-icon"></i>
                       {errorMessage}
                     </div>
                   )}
 
                   {successMessage && (
-                    <div
-                      className="alert alert-success d-flex align-items-center py-3 mb-3 rounded-3 border-0"
-                      role="alert"
-                      style={{
-                        background: "rgba(25, 135, 84, 0.1)",
-                        color: "#198754",
-                        border: "1px solid rgba(25, 135, 84, 0.2)",
-                      }}
-                    >
-                      <i className="fas fa-check-circle me-2"></i>
+                    <div className="custom-alert alert-success" role="alert">
+                      <i className="fas fa-check-circle alert-icon"></i>
                       {successMessage}
                     </div>
                   )}
@@ -254,44 +212,30 @@ const Signin = () => {
                   <Button
                     type="submit"
                     disabled={isLoading}
-                    className="w-100 py-3 rounded-3 border-0 fw-semibold fs-5 mb-4"
-                    style={{
-                      background: isLoading
-                        ? "linear-gradient(135deg, #cccccc 0%, #999999 100%)"
-                        : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                      transition: "all 0.3s ease",
-                      transform: "translateY(0)",
-                      boxShadow: "0 4px 15px rgba(102, 126, 234, 0.3)",
-                    }}
+                    className={`submit-button ${
+                      isLoading
+                        ? "submit-button-loading"
+                        : "submit-button-normal"
+                    }`}
                   >
                     {isLoading ? (
                       <>
-                        <i className="fas fa-spinner fa-spin me-2"></i>
+                        <i className="fas fa-spinner fa-spin loading-spinner"></i>
                         Signing in...
                       </>
                     ) : (
                       <>
-                        <i className="fas fa-sign-in-alt me-2"></i>
+                        <i className="fas fa-sign-in-alt submit-icon"></i>
                         Sign In
                       </>
                     )}
                   </Button>
                 </Form>
 
-                <div className="text-center border-top pt-4">
-                  <p className="text-muted mb-0">
+                <div className="form-footer">
+                  <p className="footer-text">
                     Don't have an account?{" "}
-                    <a
-                      href="/signup"
-                      className="text-decoration-none fw-semibold"
-                      style={{
-                        background:
-                          "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                        WebkitBackgroundClip: "text",
-                        WebkitTextFillColor: "transparent",
-                        backgroundClip: "text",
-                      }}
-                    >
+                    <a href="/signup" className="footer-link">
                       Sign Up
                     </a>
                   </p>

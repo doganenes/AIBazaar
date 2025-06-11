@@ -47,9 +47,9 @@ function FavoriteProductCard({
           </button>
         </div>
 
-        <div className="position-absolute top-0 end-0 m-3">
+        {/* <div className="position-absolute top-0 end-0 m-3">
           <span className="badge bg-primary fs-6 px-3 py-2">₺{price}</span>
-        </div>
+        </div> */}
       </div>
 
       <div className="card-body d-flex flex-column">
@@ -57,14 +57,14 @@ function FavoriteProductCard({
           {title}
         </h5>
 
-        <p
+        {/* <p
           className="card-text text-muted small flex-grow-1"
           style={{
             overflow: "hidden",
           }}
         >
           {description}
-        </p>
+        </p> */}
       </div>
     </div>
   );

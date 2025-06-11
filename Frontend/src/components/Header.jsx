@@ -17,7 +17,7 @@ function Header({ setSearchTerm }) {
 
   const handleSearch = () => {
     setSearchTerm(inputValue);
-    navigate("/home"); 
+    navigate("/home");
   };
 
   useEffect(() => {
@@ -44,16 +44,11 @@ function Header({ setSearchTerm }) {
   };
 
   return (
-    <nav
-      className="navbar navbar-expand-lg fixed-top shadow-lg py-3"
-      style={{
-        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-      }}
-    >
+    <nav className="navbar navbar-expand-lg fixed-top shadow-lg py-3 navbar-custom">
       <div className="container">
         <a
           className="navbar-brand d-flex align-items-center text-white"
-          href="/"
+          href="/home"
         >
           <i className="fas fa-chart-bar me-2 fs-4"></i>
           <span className="fs-3 fw-bold">AIBazaar</span>
@@ -64,35 +59,23 @@ function Header({ setSearchTerm }) {
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#navbarContent"
-          style={{ boxShadow: "none" }}
         >
           <i className="fas fa-bars text-white"></i>
         </button>
 
         <div className="collapse navbar-collapse" id="navbarContent">
-          <div
-            className="d-flex mx-auto my-3 my-lg-0"
-            style={{ width: "100%", maxWidth: "500px" }}
-          >
+          <div className="d-flex mx-auto my-3 my-lg-0" style={{ width: "100%", maxWidth: "500px" }}>
             <div className="input-group">
               <input
-                className="form-control border-0 shadow-sm"
+                className="form-control border-0 shadow-sm search-input"
                 type="search"
                 placeholder="Search Product.."
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
-                style={{
-                  borderRadius: "25px 0 0 25px",
-                  fontSize: "0.95rem",
-                }}
               />
               <button
-                className="btn btn-light border-0 shadow-sm px-4"
+                className="btn btn-light border-0 shadow-sm px-4 search-button"
                 onClick={handleSearch}
-                style={{
-                  borderRadius: "0 25px 25px 0",
-                  background: "white",
-                }}
               >
                 <i className="fas fa-search text-primary"></i>
               </button>
@@ -123,21 +106,17 @@ function Header({ setSearchTerm }) {
 
             <div className="dropdown">
               <button
-                className="btn btn-outline-light dropdown-toggle border-2 px-3"
+                className="btn btn-outline-light dropdown-toggle border-2 px-3 user-button"
                 type="button"
                 data-bs-toggle="dropdown"
-                style={{ borderRadius: "25px" }}
               >
                 <i className="fas fa-user me-1"></i>
                 {user ? `${user.firstName} ${user.lastName}` : "Loading..."}
               </button>
-              <ul
-                className="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2"
-                style={{ borderRadius: "15px" }}
-              >
+              <ul className="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2 dropdown-menu-custom">
                 <li>
                   <a
-                    className="dropdown-item py-2 text-danger"
+                    className="dropdown-item py-2 logout-link"
                     onClick={handleLogout}
                     href="/logout"
                   >

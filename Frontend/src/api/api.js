@@ -3,14 +3,14 @@ import axios from "axios";
 const BACKEND_API_BASE_URL = "https://localhost:7011";
 const AI_API_BASE_URL = "http://localhost:8000";
 
-const api = axios.create({
+export const api = axios.create({
   baseURL: BACKEND_API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-const aiApi = axios.create({
+export const aiApi = axios.create({
   baseURL: AI_API_BASE_URL,
   headers: {
     "Content-Type": "application/json",

@@ -127,15 +127,45 @@ function Favorites() {
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
               />
-              {Array.from({ length: totalPages }, (_, index) => (
+
+              {currentPage > 2 && (
+                <>
+                  <Pagination.Item onClick={() => handlePageChange(1)}>
+                    1
+                  </Pagination.Item>
+                  {currentPage > 3 && <Pagination.Ellipsis disabled />}
+                </>
+              )}
+
+              {currentPage > 1 && (
                 <Pagination.Item
-                  key={index + 1}
-                  active={index + 1 === currentPage}
-                  onClick={() => handlePageChange(index + 1)}
+                  onClick={() => handlePageChange(currentPage - 1)}
                 >
-                  {index + 1}
+                  {currentPage - 1}
                 </Pagination.Item>
-              ))}
+              )}
+
+              <Pagination.Item active>{currentPage}</Pagination.Item>
+
+              {currentPage < totalPages && (
+                <Pagination.Item
+                  onClick={() => handlePageChange(currentPage + 1)}
+                >
+                  {currentPage + 1}
+                </Pagination.Item>
+              )}
+
+              {currentPage < totalPages - 1 && (
+                <>
+                  {currentPage < totalPages - 2 && (
+                    <Pagination.Ellipsis disabled />
+                  )}
+                  <Pagination.Item onClick={() => handlePageChange(totalPages)}>
+                    {totalPages}
+                  </Pagination.Item>
+                </>
+              )}
+
               <Pagination.Next
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}

@@ -11,12 +11,12 @@ function ProductCard({ product, onFavoriteAdded }) {
       console.log("User ID from token:", userId);
 
       await addFavoriteProduct(userId, product.productID);
-      console.log("Favori ürün eklendi:", product.productID);
+      console.log("Favorite product added:", product.productID);
 
       onFavoriteAdded(`${product.productName} added to favorites!`, "success");
     } catch (error) {
       const message = error.message || "Error adding to favorites!";
-      console.error("Favori eklenirken hata oluştu:", message);
+      console.error("An error occurred:", message);
       onFavoriteAdded(message, "error");
     }
   };
@@ -48,9 +48,9 @@ function ProductCard({ product, onFavoriteAdded }) {
         </div>
 
         <div className="position-absolute top-0 end-0 m-3">
-          <span className="badge bg-primary fs-6 px-3 py-2">
+          {/* <span className="badge bg-primary fs-6 px-3 py-2">
             ₺{product.price.toFixed(2)}
-          </span>
+          </span> */}
         </div>
       </div>
 
@@ -62,7 +62,7 @@ function ProductCard({ product, onFavoriteAdded }) {
           {product.productName}
         </h5>
 
-        <p
+        {/* <p
           className="card-text text-muted small flex-grow-1"
           style={{
             display: "-webkit-box",
@@ -72,7 +72,7 @@ function ProductCard({ product, onFavoriteAdded }) {
           }}
         >
           {product.description}
-        </p>
+        </p> */}
       </div>
     </div>
   );

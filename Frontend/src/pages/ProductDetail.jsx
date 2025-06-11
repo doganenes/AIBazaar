@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import { api } from "../api/api";
 
 function ProductDetail() {
   const { id } = useParams();
@@ -9,8 +10,8 @@ function ProductDetail() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios
-      .get(`https://localhost:7011/api/Product/getProductById/${id}`)
+    api
+      .get(`/api/Product/getProductById/${id}`)
       .then((response) => {
         setProduct(response.data);
         setLoading(false);
