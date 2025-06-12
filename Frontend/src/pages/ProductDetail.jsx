@@ -78,7 +78,7 @@ function ProductDetail() {
     labels: forecastData.map((_, index) => `${index + 1}. Gün`),
     datasets: [
       {
-        label: "Fiyat Tahmini (₺)",
+        label: "Estimated price (₺)",
         data: forecastData,
         borderColor: "rgb(59, 130, 246)",
         backgroundColor: "rgba(59, 130, 246, 0.1)",
