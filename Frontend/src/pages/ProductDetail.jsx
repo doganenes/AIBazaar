@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { api, getProductById, predict_lstm } from "../api/api";
+import { getTodayDate, addDaysToDate } from "../utils/helpers";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -171,9 +172,10 @@ function ProductDetail() {
       await fetchForecastData(product.productName);
     }
   };
-
+  var todayDate = getTodayDate();
   const chartData = {
-    labels: forecastData.map((_, index) => `${index + 1}. day`),
+    labels: forecastData.map((_, index) => addDaysToDate(todayDate, index)),
+
     datasets: [
       {
         label: "Estimated price (₺)",
