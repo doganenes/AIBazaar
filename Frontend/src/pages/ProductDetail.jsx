@@ -238,13 +238,6 @@ function ProductDetail() {
               <h3 className="text-lg font-semibold text-gray-800">
                 📊 Price Prediction for 15 days
               </h3>
-              <button
-                onClick={handleRefreshForecast}
-                disabled={forecastLoading}
-                className="px-3 py-1 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {forecastLoading ? "🔄 Loading..." : "🔄 Refresh"}
-              </button>
             </div>
 
             {error && (
@@ -258,9 +251,6 @@ function ProductDetail() {
                 <div className="text-center">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
                   <p className="text-gray-600 mt-2">Calculating forecast...</p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    API: {product.productName}
-                  </p>
                 </div>
               </div>
             ) : forecastData.length > 0 ? (
