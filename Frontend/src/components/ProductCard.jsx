@@ -43,7 +43,7 @@ function ProductCard({ product, onFavoriteAdded }) {
             onClick={handleAddFavorite}
             className="btn btn-light btn-sm overlay-btn"
           >
-            <i class="fa-regular fa-heart"></i>
+            <i className="fa-regular fa-heart"></i>
           </button>
         </div>
 
