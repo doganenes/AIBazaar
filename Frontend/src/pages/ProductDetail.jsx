@@ -26,6 +26,103 @@ ChartJS.register(
   Filler
 );
 
+const DescriptionTable = ({ description }) => {
+  const parseDescription = (desc) => {
+    if (!desc) return [];
+
+    const pairs = desc.split(";");
+    return pairs
+      .map((pair) => {
+        const [key, value] = pair.split(":");
+        return {
+          key: key?.trim(),
+          value: value?.trim(),
+        };
+      })
+      .filter((item) => item.key && item.value);
+  };
+
+  const formatKey = (key) => {
+    const keyMap = {
+      storage: "Storage",
+      ram: "RAM",
+      phone_brand: "Brand",
+      phone_model: "Phone Model",
+      dimensions: "Dimensions",
+      display_size: "Display Size",
+      display_resolution: "Display Resolution",
+      os: "Operating System",
+      battery: "Battery",
+      video: "Video",
+      chipset: "Chipset",
+      cpu: "Processor",
+      gpu: "Graphics Processor",
+      ppi_density: "PPI Density",
+    };
+
+    return (
+      keyMap[key] ||
+      key.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())
+    );
+  };
+
+  const formatValue = (key, value) => {
+    switch (key) {
+      case "storage":
+        return `${value} GB`;
+      case "ram":
+        return `${value} GB`;
+      case "display_size":
+        return `${value}"`;
+      case "battery":
+        return `${value} mAh`;
+      case "ppi_density":
+        return `${value} PPI`;
+      default:
+        return value;
+    }
+  };
+
+  const specs = parseDescription(description);
+
+  if (specs.length === 0) {
+    return (
+      <div className="bg-gray-50 rounded-lg p-4">
+        <p className="text-gray-500 text-center">Product features not found</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white rounded-lg border shadow-sm">
+      <div className="px-4 py-3 border-b bg-gray-50">
+        <h3 className="text-lg font-semibold text-gray-900">
+          Product Features
+        </h3>
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <tbody className="divide-y divide-gray-200">
+            {specs.map((spec, index) => (
+              <tr key={index} className="hover:bg-gray-50">
+                <td className="px-4 py-3 text-sm font-medium text-gray-600 w-1/3">
+                  {formatKey(spec.key)}
+                </td>
+                <td className="px-4 py-3 text-sm text-gray-900">
+                  <div className="break-words">
+                    {formatValue(spec.key, spec.value)}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
 function ProductDetail() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
@@ -49,6 +146,7 @@ function ProductDetail() {
 
     fetchProduct();
   }, [id]);
+
   const fetchForecastData = async (productName) => {
     if (!productName || !productName.trim()) {
       console.warn("Product name is empty, can't get prediction data");
@@ -221,16 +319,11 @@ function ProductDetail() {
                   📈 Min price for 15 days
                 </p>
               </div>
-
-              <div className="space-y-3">
-                <div className="flex justify-between border-b pb-2">
-                  <span className="text-gray-600 font-medium">
-                    Description:
-                  </span>
-                  <span className="text-gray-900">{product.description}</span>
-                </div>
-              </div>
             </div>
+          </div>
+
+          <div className="p-8 pt-4">
+            <DescriptionTable description={product.description} />
           </div>
 
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-5 m-8 mt-4">
