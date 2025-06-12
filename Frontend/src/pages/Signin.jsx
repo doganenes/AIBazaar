@@ -58,21 +58,21 @@ const Signin = () => {
     e.preventDefault();
     const validationErrors = validate();
 
-    console.log("Form verileri gönderilmeye hazırlanıyor:", formData);
+    console.log("Form data before submission:", formData);
 
     if (Object.keys(validationErrors).length === 0) {
       setErrors({});
       setIsLoading(true);
 
       try {
-        console.log("API'ye gönderilen veriler:", formData);
+        console.log("Sending data to API:", formData);
         const response = await login(formData);
         console.log("API'den dönen yanıt:", response);
 
         if (response && response.message === "Login successful.") {
           setSuccess(true);
           localStorage.setItem("authToken", response.token);
-          console.log(`Dönen tokenimiz : ${response.token}`);
+          console.log(`Token value : ${response.token}`);
           setSuccessMessage("Login successful!");
           navigate("/home");
 
@@ -86,7 +86,7 @@ const Signin = () => {
           setSuccess(false);
         }
       } catch (error) {
-        console.error("Login hatası:", error);
+        console.error("Login error:", error);
         setErrorMessage("An error occurred while signing in.");
         setSuccess(false);
       } finally {
