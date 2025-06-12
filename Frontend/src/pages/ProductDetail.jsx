@@ -96,7 +96,7 @@ const DescriptionTable = ({ description }) => {
   return (
     <div className="bg-white rounded-lg border shadow-sm">
       <div className="px-4 py-3 border-b bg-gray-50">
-        <h3 className="text-lg font-semibold text-gray-900">
+        <h3 className="text-lg font-semibold text-gray-900 text-center">
           Product Features
         </h3>
       </div>
@@ -173,7 +173,7 @@ function ProductDetail() {
   };
 
   const chartData = {
-    labels: forecastData.map((_, index) => `${index + 1}. Gün`),
+    labels: forecastData.map((_, index) => `${index + 1}. Day`),
     datasets: [
       {
         label: "Estimated price (₺)",
@@ -329,7 +329,7 @@ function ProductDetail() {
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-5 m-8 mt-4">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-800">
-                📊 Price Prediction for 15 days
+                📈 Price Prediction for 15 days
               </h3>
             </div>
 

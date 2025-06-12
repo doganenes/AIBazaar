@@ -14,10 +14,10 @@ function FavoriteProductCard({
     try {
       const userId = await tokenToId();
       await removeFavoriteProduct(userId, productID);
-      onFavoriteRemoved(`${title} removed from favorites!`, "danger");
+      onFavoriteRemoved(`${title} removed from favorites!`, "success");
     } catch (error) {
       console.error(error.message);
-      onFavoriteRemoved("Error removing from favorites!", "warning");
+      onFavoriteRemoved("Error removing from favorites!", "danger");
     }
   };
 

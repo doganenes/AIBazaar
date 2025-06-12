@@ -20,7 +20,7 @@ function Favorites() {
   const [toast, setToast] = useState({
     show: false,
     message: "",
-    variant: "warning",
+    variant: "success",
   });
 
   useEffect(() => {
@@ -191,7 +191,7 @@ function Favorites() {
         >
           <Toast.Header closeButton>
             <strong className="me-auto">
-              {toast.variant === "danger" ? "Success" : "Fail"}
+              {toast.variant === "success" ? "Success" : "Fail"}
             </strong>
           </Toast.Header>
           <Toast.Body className="text-white">{toast.message}</Toast.Body>
