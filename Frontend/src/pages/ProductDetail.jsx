@@ -329,7 +329,7 @@ function ProductDetail() {
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-5 m-8 mt-4">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-800">
-                📈 Price Prediction for 15 days
+                📈 Price Prediction for {product.productName} in 15 days
               </h3>
             </div>
 
