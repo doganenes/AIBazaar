@@ -173,7 +173,7 @@ function ProductDetail() {
   };
 
   const chartData = {
-    labels: forecastData.map((_, index) => `${index + 1}. Day`),
+    labels: forecastData.map((_, index) => `${index + 1}. day`),
     datasets: [
       {
         label: "Estimated price (₺)",
