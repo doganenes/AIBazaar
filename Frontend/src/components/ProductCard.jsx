@@ -78,4 +78,5 @@ function ProductCard({ product, onFavoriteAdded }) {
   );
 }
 
+
 export default ProductCard;
