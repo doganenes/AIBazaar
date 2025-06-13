@@ -127,7 +127,6 @@ def predict_product_xgboost(request):
             X, y, test_size=0.2, random_state=42
         )
 
-        # Modeli tanımla
         model = xgb.XGBRegressor(
             objective="reg:squarederror",
             n_estimators=100,
@@ -140,7 +139,6 @@ def predict_product_xgboost(request):
             reg_lambda=0.1
         )
 
-        # Eğitimi başlat
         model.fit(X_train, y_train)
 
         prediction_price = model.predict(new_data)[0]
@@ -179,7 +177,7 @@ def predict_product_lstm(request):
     product_name = request.data.get('product')
 
     if not product_name:
-        return Response({"error": "Lütfen 'product' alanını POST verisinde gönderin."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error": "An error occurred!"}, status=status.HTTP_400_BAD_REQUEST)
 
     try:
         df = pd.read_csv(r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\filterNewAkakce.csv")
@@ -192,7 +190,7 @@ def predict_product_lstm(request):
         product_df = df[df["Product Name"] == product_name].sort_values("Date")
 
         if len(product_df) < 20:
-            return Response({"error": f"Yetersiz veri: {product_name}"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": f"Insufficient data: {product_name}"}, status=status.HTTP_400_BAD_REQUEST)
 
         prices = product_df["Price"].values.reshape(-1, 1)
         scaler = MinMaxScaler()
