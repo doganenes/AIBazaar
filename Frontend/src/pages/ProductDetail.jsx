@@ -309,18 +309,6 @@ function ProductDetail() {
                   {product.productName}
                 </h1>
               </div>
-
-              <div className="bg-green-50 rounded-lg p-5">
-                <h2 className="text-3xl font-bold text-green-600">
-                  {product.price.toLocaleString("tr-TR", {
-                    style: "currency",
-                    currency: "TRY",
-                  })}
-                </h2>
-                <p className="text-sm text-red-600 font-medium mt-1 flex items-center">
-                  📈 Min price for 15 days
-                </p>
-              </div>
             </div>
           </div>
 

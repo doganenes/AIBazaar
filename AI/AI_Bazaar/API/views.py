@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 from django.conf import settings
-
+from sklearn.model_selection import train_test_split
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -27,9 +27,9 @@ def predict_product_xgboost(request):
         battery = float(data.get("battery"))
         foldable = int(data.get("foldable"))
         ppi = int(data.get("ppi"))
-        os = data.get("os")
+        os = data.get("os_type")
         display_type = data.get("display_type")
-        video_resolution = data.get("video_resolution")
+        video_resolution = float(data.get("video_resolution"))
         chipset = int(data.get("chipset"))
         
         df = pd.read_csv(
@@ -43,7 +43,7 @@ def predict_product_xgboost(request):
             "battery",
             "foldable",
             "ppi_density",
-            "os",
+            "os_type",
             "display_type",
             "video_resolution",
             "chipset",
@@ -51,46 +51,32 @@ def predict_product_xgboost(request):
         df = df[features + ["price"]]
 
         os_hierarchy = {
-            "Android": 1,
-            "iOS": 2,
+            "HarmonyOS" : 1,
+            "EMUI" : 2,
+            "Android": 3,
+            "iOS": 4,
         }
 
         display_type_hierarchy = {
-            "LCD": 1,
+            "PLS LCD": 1,
             "IPS LCD": 2,
-            "OLED": 3,
+            "OLED" : 3,
             "AMOLED": 4,
             "Super AMOLED": 5,
-            "Dynamic AMOLED": 6,
-            "Super Retina": 7,
-            "LTPO OLED": 8,
+            "Dynamic LTPO AMOLED 2X": 6,
+            "Super Retina XDR OLED": 7,
+            "LTPO Super Retina XDR OLED": 8,
             "Other": 0,
         }
 
-        video_resolution_hierarchy = {
-            "480p": 1,
-            "720p": 2,
-            "HD": 2,
-            "1080p": 3,
-            "Full HD": 3,
-            "1440p": 4,
-            "QHD": 4,
-            "2K": 4,
-            "4K": 5,
-            "UHD": 5,
-            "8K": 6,
-            "Other": 0,
-        }
 
         def safe_map(value, mapping, default=0):
             return mapping.get(value, default)
 
-        df["os_encoded"] = df["os"].apply(lambda x: safe_map(x, os_hierarchy))
+        df["os_encoded"] = df["os_type"].apply(lambda x: safe_map(x, os_hierarchy))
+        df["display_type"] = df["display_type"].apply(lambda x: x.split(",")[0].strip())
         df["display_type_encoded"] = df["display_type"].apply(
             lambda x: safe_map(x, display_type_hierarchy)
-        )
-        df["video_resolution_encoded"] = df["video_resolution"].apply(
-            lambda x: safe_map(x, video_resolution_hierarchy)
         )
 
         df["chipset"] = df["chipset"].apply(
@@ -101,9 +87,7 @@ def predict_product_xgboost(request):
 
         os_encoded = safe_map(os, os_hierarchy)
         display_type_encoded = safe_map(display_type, display_type_hierarchy)
-        video_resolution_encoded = safe_map(
-            video_resolution, video_resolution_hierarchy
-        )
+        
 
         feature_columns = [
             "ram",
@@ -114,7 +98,7 @@ def predict_product_xgboost(request):
             "ppi_density",
             "os_encoded",
             "display_type_encoded",
-            "video_resolution_encoded",
+            "video_resolution",
             "chipset",
         ]
 
@@ -132,16 +116,18 @@ def predict_product_xgboost(request):
                     "ppi_density": ppi,
                     "os_encoded": os_encoded,
                     "display_type_encoded": display_type_encoded,
-                    "video_resolution_encoded": video_resolution_encoded,
+                    "video_resolution": video_resolution,
                     "chipset": chipset
                 }
             ]
         )
 
         scaler = StandardScaler()
-        X_scaled = scaler.fit_transform(X)
-        new_data_scaled = scaler.transform(new_data)
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=0.2, random_state=42
+        )
 
+        # Modeli tanımla
         model = xgb.XGBRegressor(
             objective="reg:squarederror",
             n_estimators=100,
@@ -153,18 +139,19 @@ def predict_product_xgboost(request):
             reg_alpha=0.1,
             reg_lambda=0.1
         )
-        
-        model.fit(X_scaled, y)
 
-        prediction_price = model.predict(new_data_scaled)[0]
+        # Eğitimi başlat
+        model.fit(X_train, y_train)
+
+        prediction_price = model.predict(new_data)[0]
 
         print(f"Predicted price: {round(prediction_price, 2)}")
         print(
-            f"Input encodings - OS: {os_encoded}, Display: {display_type_encoded}, Resolution: {video_resolution_encoded}"
+            f"Input encodings - OS: {os_encoded}, Display: {display_type_encoded}, Resolution: {video_resolution}"
         )
 
         feature_importance = dict(zip(feature_columns, model.feature_importances_))
-        top_features = sorted(feature_importance.items(), key=lambda x: x[1], reverse=True)[:3]
+        top_features = sorted(feature_importance.items(), key=lambda x: x[1], reverse=True)[:10]
 
         return Response(
             {
@@ -173,7 +160,7 @@ def predict_product_xgboost(request):
                 "encodings": {
                     "os": os_encoded,
                     "display_type": display_type_encoded,
-                    "video_resolution": video_resolution_encoded,
+                    "video_resolution": video_resolution,
                 },
                 "model_info": {
                     "algorithm": "XGBoost",

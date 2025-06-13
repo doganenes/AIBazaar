@@ -262,6 +262,8 @@ function GeneratePrice() {
                       required
                     >
                       <option value="">Select OS</option>
+                      <option value="HarmonyOS">HarmonyOS</option>
+                      <option value="EMUI">EMUI</option>
                       <option value="Android">Android</option>
                       <option value="iOS">iOS</option>
                     </select>
@@ -367,14 +369,14 @@ function GeneratePrice() {
                       required
                     >
                       <option value="">Select Display Type</option>
-                      <option value="LCD">LCD</option>
+                      <option value="PLS LCD">LCD</option>
                       <option value="IPS LCD">IPS LCD</option>
                       <option value="OLED">OLED</option>
                       <option value="AMOLED">AMOLED</option>
                       <option value="Super AMOLED">Super AMOLED</option>
                       <option value="Dynamic AMOLED">Dynamic AMOLED</option>
-                      <option value="Super Retina">Super Retina</option>
-                      <option value="LTPO OLED">Liquid Retina</option>
+                      <option value="Super Retina XDR OLED">Super Retina</option>
+                      <option value="LTPO Super Retina XDR OLED">Liquid Retina</option>
                     </select>
                     {formErrors.display_type && (
                       <div className="invalid-feedback">
@@ -408,9 +410,10 @@ function GeneratePrice() {
                       required
                     >
                       <option value="">Select Video Resolution</option>
-                      <option value="1080p">1080p</option>
-                      <option value="4K">4K</option>
-                      <option value="8K">8K</option>
+                      <option value="1">HD (1080p)</option>
+                      <option value="2">QHD (2K)</option>
+                      <option value="3">QHD+ (3K)</option>
+                      <option value="4">UHD (4K)</option>
                     </select>
                     {formErrors.video_resolution && (
                       <div className="invalid-feedback">
