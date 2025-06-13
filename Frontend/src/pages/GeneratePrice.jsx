@@ -1,329 +1,652 @@
-import React, { useEffect, useState, useRef } from "react";
-import { useParams } from "react-router-dom";
-import { api, getProductById, predict_lstm } from "../api/api";
-import { getTodayDate, addDaysToDate } from "../utils/helpers";
-import {
-  createChartData,
-  createChartOptions,
-  calculateStats,
-} from "../utils/helpers";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler,
-} from "chart.js";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import "../css/GeneratePrice.css";
+import { aiApi } from "../api/api";
 
-import { Line } from "react-chartjs-2";
+function GeneratePrice() {
+  const [formData, setFormData] = useState({
+    ram: "",
+    storage: "",
+    display_size: "6.2",
+    battery: "",
+    foldable: "",
+    ppi: "250",
+    os: "",
+    display_type: "",
+    video_resolution: "",
+    chipset: "",
+  });
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler
-);
+  const [predictedPrice, setPredictedPrice] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [formErrors, setFormErrors] = useState({});
+  const [formattedPrice, setFormattedPrice] = useState("");
 
-const DescriptionTable = ({ description }) => {
-  const parseDescription = (desc) => {
-    if (!desc) return [];
+  useEffect(() => {
+    if (predictedPrice !== null && predictedPrice !== undefined) {
+      const formatted =
+        new Intl.NumberFormat("tr-TR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(predictedPrice) + " ₺";
 
-    const pairs = desc.split(";");
-    return pairs
-      .map((pair) => {
-        const [key, value] = pair.split(":");
-        return {
-          key: key?.trim(),
-          value: value?.trim(),
-        };
-      })
-      .filter((item) => item.key && item.value);
-  };
+      setFormattedPrice(formatted);
+    }
+  }, [predictedPrice]);
 
-  const formatKey = (key) => {
-    const keyMap = {
-      storage: "Storage",
-      ram: "RAM",
-      phone_brand: "Brand",
-      phone_model: "Phone Model",
-      dimensions: "Dimensions",
-      display_size: "Display Size",
-      display_resolution: "Display Resolution",
-      os: "Operating System",
-      battery: "Battery",
-      video: "Video",
-      chipset: "Chipset",
-      cpu: "Processor",
-      gpu: "Graphics Processor",
-      ppi_density: "PPI Density",
-    };
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
 
-    return (
-      keyMap[key] ||
-      key.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())
-    );
-  };
-
-  const formatValue = (key, value) => {
-    switch (key) {
-      case "storage":
-        return `${value} GB`;
-      case "ram":
-        return `${value} GB`;
-      case "display_size":
-        return `${value}"`;
-      case "battery":
-        return `${value} mAh`;
-      case "ppi_density":
-        return `${value} PPI`;
-      default:
-        return value;
+    if (formErrors[e.target.name]) {
+      setFormErrors({
+        ...formErrors,
+        [e.target.name]: null,
+      });
     }
   };
 
-  const specs = parseDescription(description);
+  const validateForm = () => {
+    const errors = {};
+    const requiredFields = [
+      "ram",
+      "storage",
+      "display_size",
+      "battery",
+      "foldable",
+      "ppi",
+      "os",
+      "display_type",
+      "video_resolution",
+      "chipset",
+    ];
 
-  if (specs.length === 0) {
-    return (
-      <div className="bg-gray-50 rounded-lg p-4">
-        <p className="text-gray-500 text-center">Product features not found</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="bg-white rounded-lg border shadow-sm">
-      <div className="px-4 py-3 border-b bg-gray-50">
-        <h3 className="text-lg font-semibold text-gray-900 text-center">
-          Product Features
-        </h3>
-      </div>
-
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <tbody className="divide-y divide-gray-200">
-            {specs.map((spec, index) => (
-              <tr key={index} className="hover:bg-gray-50">
-                <td className="px-4 py-3 text-sm font-medium text-gray-600 w-1/3">
-                  {formatKey(spec.key)}
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-900">
-                  <div className="break-words">
-                    {formatValue(spec.key, spec.value)}
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-};
-
-function ProductDetail() {
-  const { id } = useParams();
-  const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [forecastData, setForecastData] = useState([]);
-  const [forecastLoading, setForecastLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        const data = await getProductById(id);
-        setProduct(data);
-        console.log("Product details:", data.productName);
-      } catch (error) {
-        console.error("Failed to fetch product details:", error);
-      } finally {
-        setLoading(false);
+    requiredFields.forEach((field) => {
+      if (!formData[field]) {
+        errors[field] = "This field is required";
       }
-    };
+    });
 
-    fetchProduct();
-  }, [id]);
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
-  const fetchForecastData = async (productName) => {
-    if (!productName || !productName.trim()) {
-      console.warn("Product name is empty, can't get prediction data");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const isValid = validateForm();
+
+    if (!isValid) {
       return;
     }
 
-    setForecastLoading(true);
-    setError(null);
+    setIsLoading(true);
 
     try {
-      const response = await predict_lstm(product.productName);
-      setForecastData(response.forecast);
+      const response = await aiApi.post(
+        "/api/predict_product_xgboost/",
+        formData
+      );
+      console.log("Backend response:", response.data);
+      setPredictedPrice(response.data.price);
     } catch (error) {
-      console.error("Failed to fetch forecast data:", error);
+      console.error("API request error:", error);
+      setPredictedPrice(null);
     } finally {
-      setForecastLoading(false);
+      setIsLoading(false);
     }
   };
 
-  const handleRefreshForecast = async () => {
-    if (product && product.productName) {
-      await fetchForecastData(product.productName);
-    }
-  };
-
-  const todayDate = getTodayDate();
-  const chartData = createChartData(forecastData, todayDate, addDaysToDate);
-  const chartOptions = createChartOptions();
-  const stats = calculateStats(forecastData);
-
-  useEffect(() => {
-    if (product && product.productName && forecastData.length === 0) {
-      fetchForecastData(product.productName);
-    }
-  }, [product]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-          <p className="text-gray-600 mt-4">Product loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!product) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-red-600 text-lg">Product not found!</p>
-      </div>
-    );
-  }
+  const isFormValid = Object.values(formData).every((value) => value !== "");
 
   return (
-    <div className="min-h-screen py-10 mt-5">
-      <div className="max-w-5xl mx-auto px-4">
-        <div className="bg-white rounded-2xl shadow-md overflow-hidden">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-8">
-            <div className="flex justify-center items-center">
-              <img
-                src={`${product.imageUrl}`}
-                alt={product.productName}
-                className="w-full max-w-sm mt-5 mb-3 h-auto rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300"
-              />
-            </div>
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-gray-800 mb-3">
+            📱 Smart Phone Price Estimator
+          </h1>
+          <p className="text-gray-600 text-lg">
+            Get instant price estimates based on your product specifications
+          </p>
+        </div>
 
-            <div className="space-y-6">
-              <div>
-                <h1 className="text-3xl font-semibold text-gray-900">
-                  {product.productName}
-                </h1>
+        <div className="row g-4">
+          <div className="col-lg-8">
+            <div className="card shadow-lg border-0 h-100">
+              <div className="card-header bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4">
+                <h3 className="card-title mb-0 d-flex align-items-center text-dark">
+                  <span className="me-3">⚙️</span>
+                  Product Specifications
+                </h3>
               </div>
-            </div>
-          </div>
-
-          <div className="p-8 pt-4">
-            <DescriptionTable description={product.description} />
-          </div>
-
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-5 m-8 mt-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
-                📈 Price Prediction for {product.productName} in 15 days
-              </h3>
-            </div>
-
-            {error && (
-              <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-                <p className="text-sm">{error}</p>
-              </div>
-            )}
-
-            {forecastLoading ? (
-              <div className="flex items-center justify-center h-64">
-                <div className="text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
-                  <p className="text-gray-600 mt-2">Calculating forecast...</p>
-                </div>
-              </div>
-            ) : forecastData.length > 0 ? (
-              <>
-                <div className="h-80 mb-4">
-                  <Line data={chartData} options={chartOptions} />
-                </div>
-
-                {stats && (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
-                    <div className="bg-white rounded-lg p-3 text-center">
-                      <div className="text-lg font-bold text-green-600">
-                        {stats.min.toLocaleString("tr-TR", {
-                          style: "currency",
-                          currency: "TRY",
-                          minimumFractionDigits: 0,
-                        })}
+              <div className="card-body p-4">
+                <div className="row g-3">
+                  <div className="col-md-6">
+                    <label className="form-label fw-semibold text-gray-700">
+                      <span className="me-2">💾</span>Storage
+                    </label>
+                    <select
+                      className={`form-select form-select-lg border-2 ${
+                        formErrors.storage ? "is-invalid" : ""
+                      }`}
+                      style={{
+                        borderColor: formErrors.storage ? "#dc3545" : "#e5e7eb",
+                        transition: "all 0.3s",
+                      }}
+                      name="storage"
+                      value={formData.storage}
+                      onChange={handleChange}
+                      onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
+                      onBlur={(e) =>
+                        (e.target.style.borderColor = formErrors.storage
+                          ? "#dc3545"
+                          : "#e5e7eb")
+                      }
+                      required
+                    >
+                      <option value="">Select Storage</option>
+                      <option value="64">64 GB</option>
+                      <option value="128">128 GB</option>
+                      <option value="256">256 GB</option>
+                      <option value="512">512 GB</option>
+                      <option value="1024">1024 GB</option>
+                    </select>
+                    {formErrors.storage && (
+                      <div className="invalid-feedback">
+                        {formErrors.storage}
                       </div>
-                      <div className="text-xs text-gray-600">Min Price</div>
-                    </div>
-                    <div className="bg-white rounded-lg p-3 text-center">
-                      <div className="text-lg font-bold text-red-600">
-                        {stats.max.toLocaleString("tr-TR", {
-                          style: "currency",
-                          currency: "TRY",
-                          minimumFractionDigits: 0,
-                        })}
-                      </div>
-                      <div className="text-xs text-gray-600">Max Price</div>
-                    </div>
-                    <div className="bg-white rounded-lg p-3 text-center">
-                      <div className="text-lg font-bold text-blue-600">
-                        {stats.avg.toLocaleString("tr-TR", {
-                          style: "currency",
-                          currency: "TRY",
-                          minimumFractionDigits: 0,
-                        })}
-                      </div>
-                      <div className="text-xs text-gray-600">Average</div>
-                    </div>
-                    <div className="bg-white rounded-lg p-3 text-center">
-                      <div
-                        className={`text-lg font-bold ${
-                          stats.trend > 0
-                            ? "text-green-600"
-                            : stats.trend < 0
-                            ? "text-red-600"
-                            : "text-gray-600"
-                        }`}
-                      >
-                        {stats.trend > 0 ? "📈" : stats.trend < 0 ? "📉" : "➡️"}{" "}
-                        {stats.trendPercent}%
-                      </div>
-                      <div className="text-xs text-gray-600">Trend</div>
-                    </div>
+                    )}
                   </div>
-                )}
-              </>
-            ) : (
-              <div className="flex items-center justify-center h-64">
-                <div className="text-center text-gray-500">
-                  <p className="text-lg">📊</p>
-                  <p>Prediction not found!</p>
+
+                  <div className="col-md-6">
+                    <label className="form-label fw-semibold text-gray-700">
+                      <span className="me-2">🧠</span>RAM
+                    </label>
+                    <select
+                      className={`form-select form-select-lg border-2 ${
+                        formErrors.ram ? "is-invalid" : ""
+                      }`}
+                      style={{
+                        borderColor: formErrors.ram ? "#dc3545" : "#e5e7eb",
+                        transition: "all 0.3s",
+                      }}
+                      name="ram"
+                      value={formData.ram}
+                      onChange={handleChange}
+                      onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
+                      onBlur={(e) =>
+                        (e.target.style.borderColor = formErrors.ram
+                          ? "#dc3545"
+                          : "#e5e7eb")
+                      }
+                      required
+                    >
+                      <option value="">Select RAM</option>
+                      <option value="4">4 GB</option>
+                      <option value="6">6 GB</option>
+                      <option value="8">8 GB</option>
+                      <option value="12">12 GB</option>
+                      <option value="16">16 GB</option>
+                    </select>
+                    {formErrors.ram && (
+                      <div className="invalid-feedback">{formErrors.ram}</div>
+                    )}
+                  </div>
+
+                  <div className="col-md-6">
+                    <label className="form-label fw-semibold text-gray-700">
+                      <span className="me-2">📐</span>Display Size
+                    </label>
+                    <input
+                      type="range"
+                      className={`form-range border-2 w-100 ${
+                        formErrors.display_size ? "is-invalid" : ""
+                      }`}
+                      min="5.5"
+                      max="7.0"
+                      step="0.1"
+                      name="display_size"
+                      value={formData.display_size}
+                      onChange={handleChange}
+                      onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
+                      onBlur={(e) =>
+                        (e.target.style.borderColor = formErrors.display_size
+                          ? "#dc3545"
+                          : "#e5e7eb")
+                      }
+                      style={{
+                        borderColor: formErrors.display_size
+                          ? "#dc3545"
+                          : "#e5e7eb",
+                        transition: "all 0.3s",
+                      }}
+                      required
+                    />
+                    <div className="d-flex justify-content-between fs-5 fw-bold">
+                      <small className="text-muted">5.5"</small>
+                      <small className="text-muted fs-5">
+                        {formData.display_size}"
+                      </small>
+                      <small className="text-muted">7.0"</small>
+                    </div>
+                    {formErrors.display_size && (
+                      <div className="invalid-feedback">
+                        {formErrors.display_size}
+                      </div>
+                    )}
+                  </div>
+                  <div className="col-md-6">
+                    <label className="form-label fw-semibold text-gray-700">
+                      <span className="me-2">🤖</span>Operating System
+                    </label>
+                    <select
+                      className={`form-select form-select-lg border-2 ${
+                        formErrors.os ? "is-invalid" : ""
+                      }`}
+                      style={{
+                        borderColor: formErrors.os ? "#dc3545" : "#e5e7eb",
+                        transition: "all 0.3s",
+                      }}
+                      name="os"
+                      value={formData.os}
+                      onChange={handleChange}
+                      onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
+                      onBlur={(e) =>
+                        (e.target.style.borderColor = formErrors.os
+                          ? "#dc3545"
+                          : "#e5e7eb")
+                      }
+                      required
+                    >
+                      <option value="">Select OS</option>
+                      <option value="HarmonyOS">HarmonyOS</option>
+                      <option value="EMUI">EMUI</option>
+                      <option value="Android">Android</option>
+                      <option value="iOS">iOS</option>
+                    </select>
+                    {formErrors.os && (
+                      <div className="invalid-feedback">{formErrors.os}</div>
+                    )}
+                  </div>
+
+                  <div className="col-md-6">
+                    <label className="form-label fw-semibold text-gray-700">
+                      <span className="me-2">🔋</span>Battery
+                    </label>
+                    <select
+                      className={`form-select form-select-lg border-2 ${
+                        formErrors.battery ? "is-invalid" : ""
+                      }`}
+                      style={{
+                        borderColor: formErrors.battery ? "#dc3545" : "#e5e7eb",
+                        transition: "all 0.3s",
+                      }}
+                      name="battery"
+                      value={formData.battery}
+                      onChange={handleChange}
+                      onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
+                      onBlur={(e) =>
+                        (e.target.style.borderColor = formErrors.battery
+                          ? "#dc3545"
+                          : "#e5e7eb")
+                      }
+                      required
+                    >
+                      <option value="">Select Battery</option>
+                      <option value="3000">3000 mAh</option>
+                      <option value="4000">4000 mAh</option>
+                      <option value="5000">5000 mAh</option>
+                    </select>
+                    {formErrors.battery && (
+                      <div className="invalid-feedback">
+                        {formErrors.battery}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="col-md-6">
+                    <label className="form-label fw-semibold text-gray-700">
+                      <span className="me-2">📱</span>Foldable
+                    </label>
+                    <select
+                      className={`form-select form-select-lg border-2 ${
+                        formErrors.foldable ? "is-invalid" : ""
+                      }`}
+                      style={{
+                        borderColor: formErrors.foldable
+                          ? "#dc3545"
+                          : "#e5e7eb",
+                        transition: "all 0.3s",
+                      }}
+                      name="foldable"
+                      value={formData.foldable}
+                      onChange={handleChange}
+                      onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
+                      onBlur={(e) =>
+                        (e.target.style.borderColor = formErrors.foldable
+                          ? "#dc3545"
+                          : "#e5e7eb")
+                      }
+                      required
+                    >
+                      <option value="">Select Foldable Status</option>
+                      <option value="1">Yes</option>
+                      <option value="0">No</option>
+                    </select>
+                    {formErrors.foldable && (
+                      <div className="invalid-feedback">
+                        {formErrors.foldable}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="col-md-6">
+                    <label className="form-label fw-semibold text-gray-700">
+                      <span className="me-2">🖥️</span>Display Type
+                    </label>
+                    <select
+                      className={`form-select form-select-lg border-2 ${
+                        formErrors.display_type ? "is-invalid" : ""
+                      }`}
+                      style={{
+                        borderColor: formErrors.display_type
+                          ? "#dc3545"
+                          : "#e5e7eb",
+                        transition: "all 0.3s",
+                      }}
+                      name="display_type"
+                      value={formData.display_type}
+                      onChange={handleChange}
+                      onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
+                      onBlur={(e) =>
+                        (e.target.style.borderColor = formErrors.display_type
+                          ? "#dc3545"
+                          : "#e5e7eb")
+                      }
+                      required
+                    >
+                      <option value="">Select Display Type</option>
+                      <option value="PLS LCD">LCD</option>
+                      <option value="IPS LCD">IPS LCD</option>
+                      <option value="OLED">OLED</option>
+                      <option value="AMOLED">AMOLED</option>
+                      <option value="Super AMOLED">Super AMOLED</option>
+                      <option value="Dynamic AMOLED">Dynamic AMOLED</option>
+                      <option value="Super Retina XDR OLED">
+                        Super Retina
+                      </option>
+                      <option value="LTPO Super Retina XDR OLED">
+                        Liquid Retina
+                      </option>
+                    </select>
+                    {formErrors.display_type && (
+                      <div className="invalid-feedback">
+                        {formErrors.display_type}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="col-md-6">
+                    <label className="form-label fw-semibold text-gray-700">
+                      <span className="me-2">🎥</span>Video Resolution
+                    </label>
+                    <select
+                      className={`form-select form-select-lg border-2 ${
+                        formErrors.video_resolution ? "is-invalid" : ""
+                      }`}
+                      style={{
+                        borderColor: formErrors.video_resolution
+                          ? "#dc3545"
+                          : "#e5e7eb",
+                        transition: "all 0.3s",
+                      }}
+                      name="video_resolution"
+                      value={formData.video_resolution}
+                      onChange={handleChange}
+                      onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
+                      onBlur={(e) =>
+                        (e.target.style.borderColor =
+                          formErrors.video_resolution ? "#dc3545" : "#e5e7eb")
+                      }
+                      required
+                    >
+                      <option value="">Select Video Resolution</option>
+                      <option value="1">HD (1080p)</option>
+                      <option value="2">QHD (2K)</option>
+                      <option value="3">QHD+ (3K)</option>
+                      <option value="4">UHD (4K)</option>
+                    </select>
+                    {formErrors.video_resolution && (
+                      <div className="invalid-feedback">
+                        {formErrors.video_resolution}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="col-md-6">
+                    <label className="form-label fw-semibold text-gray-700">
+                      <span className="me-2">🔍</span>PPI (Pixels per inch)
+                    </label>
+                    <input
+                      type="range"
+                      className={`form-range border-2 w-100 ${
+                        formErrors.ppi ? "is-invalid" : ""
+                      }`}
+                      min="250"
+                      max="500"
+                      step="25"
+                      name="ppi"
+                      value={formData.ppi}
+                      onChange={handleChange}
+                      onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
+                      onBlur={(e) =>
+                        (e.target.style.borderColor = formErrors.ppi
+                          ? "#dc3545"
+                          : "#e5e7eb")
+                      }
+                      style={{
+                        borderColor: formErrors.ppi ? "#dc3545" : "#e5e7eb",
+                        transition: "all 0.3s",
+                      }}
+                      required
+                    />
+                    <div className="d-flex justify-content-between fs-5 fw-bold">
+                      <small className="text-muted">250</small>
+                      <small className="text-muted fs-5">
+                        {formData.ppi} PPI
+                      </small>
+                      <small className="text-muted">500</small>
+                    </div>
+                    {formErrors.ppi && (
+                      <div className="invalid-feedback">{formErrors.ppi}</div>
+                    )}
+                  </div>
+
+                  <div className="col-md-6">
+                    <label className="form-label fw-semibold text-gray-700">
+                      <span className="me-2">⚡</span>Chipset Lithography (nm)
+                    </label>
+                    <select
+                      className={`form-select form-select-lg border-2 ${
+                        formErrors.chipset ? "is-invalid" : ""
+                      }`}
+                      style={{
+                        borderColor: formErrors.chipset ? "#dc3545" : "#e5e7eb",
+                        transition: "all 0.3s",
+                      }}
+                      name="chipset"
+                      value={formData.chipset}
+                      onChange={handleChange}
+                      onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
+                      onBlur={(e) =>
+                        (e.target.style.borderColor = formErrors.chipset
+                          ? "#dc3545"
+                          : "#e5e7eb")
+                      }
+                      required
+                    >
+                      <option value="">Select Chipset nm</option>
+                      <option value="3">3nm</option>
+                      <option value="4">4nm</option>
+                      <option value="5">5nm</option>
+                      <option value="6">6nm</option>
+                      <option value="7">7nm</option>
+                      <option value="8">8nm</option>
+                      <option value="9">9nm</option>
+                      <option value="10">10nm</option>
+                    </select>
+                    {formErrors.chipset && (
+                      <div className="invalid-feedback">
+                        {formErrors.chipset}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="mt-4 pt-3 border-top">
                   <button
-                    onClick={handleRefreshForecast}
-                    className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                    type="button"
+                    onClick={handleSubmit}
+                    disabled={isLoading || !isFormValid}
+                    className="btn btn-lg w-100 text-white fw-semibold py-3"
+                    style={{
+                      background:
+                        isLoading || !isFormValid
+                          ? "linear-gradient(135deg, #cccccc 0%, #999999 100%)"
+                          : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                      border: "none",
+                      borderRadius: "12px",
+                      transition: "all 0.3s ease",
+                      transform: isLoading ? "none" : "translateY(0)",
+                      boxShadow:
+                        isLoading || !isFormValid
+                          ? "none"
+                          : "0 4px 15px rgba(102, 126, 234, 0.4)",
+                      cursor:
+                        isLoading || !isFormValid ? "not-allowed" : "pointer",
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isLoading && isFormValid) {
+                        e.target.style.transform = "translateY(-2px)";
+                        e.target.style.boxShadow =
+                          "0 8px 25px rgba(102, 126, 234, 0.6)";
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isLoading && isFormValid) {
+                        e.target.style.transform = "translateY(0)";
+                        e.target.style.boxShadow =
+                          "0 4px 15px rgba(102, 126, 234, 0.4)";
+                      }
+                    }}
                   >
-                    Try Again
+                    {isLoading ? (
+                      <div className="d-flex align-items-center justify-content-center">
+                        <div
+                          className="spinner-border spinner-border-sm me-2"
+                          role="status"
+                        >
+                          <span className="visually-hidden">Loading...</span>
+                        </div>
+                        Calculating Price...
+                      </div>
+                    ) : !isFormValid ? (
+                      "Please fill all fields"
+                    ) : (
+                      <>
+                        <span className="me-2">💰</span>
+                        Get Price Estimate
+                      </>
+                    )}
                   </button>
                 </div>
               </div>
-            )}
+            </div>
+          </div>
+
+          <div className="col-lg-4">
+            <div className="card shadow-lg border-0 h-100">
+              <div className="card-header bg-gradient-to-r from-green-500 to-blue-600 text-white py-4">
+                <h3 className="card-title mb-0 d-flex align-items-center text-dark">
+                  <span className="me-3">💰</span>
+                  Price Estimation
+                </h3>
+              </div>
+              <div className="card-body p-4 d-flex flex-column justify-content-center">
+                {predictedPrice !== null ? (
+                  <div className="text-center">
+                    <div
+                      className="p-4 rounded-4 mb-4"
+                      style={{
+                        background:
+                          "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                        color: "white",
+                      }}
+                    >
+                      <h4 className="fw-light mb-2">Estimated Price</h4>
+                      <div className="display-3 fw-bold mb-2">
+                        {formattedPrice}
+                      </div>
+                    </div>
+
+                    <div
+                      className="alert alert-info border-0 mb-4"
+                      style={{
+                        backgroundColor: "#f8f9ff",
+                        color: "#4c63d2",
+                      }}
+                    >
+                      <small>
+                        This estimate is based on the specifications you
+                        provided and current market trends.
+                      </small>
+                    </div>
+
+                    <div className="row g-2 text-sm">
+                      <div className="col-12">
+                        <div className="d-flex justify-content-between align-items-center py-2 px-3 bg-light rounded">
+                          <span className="text-muted">Market Analysis</span>
+                          <span className="text-success fw-semibold">
+                            ✓ Complete
+                          </span>
+                        </div>
+                      </div>
+                      <div className="col-12">
+                        <div className="d-flex justify-content-between align-items-center py-2 px-3 bg-light rounded">
+                          <span className="text-muted">Spec Comparison</span>
+                          <span className="text-success fw-semibold">
+                            ✓ Complete
+                          </span>
+                        </div>
+                      </div>
+                      <div className="col-12">
+                        <div className="d-flex justify-content-between align-items-center py-2 px-3 bg-light rounded">
+                          <span className="text-muted">Price Calculation</span>
+                          <span className="text-success fw-semibold">
+                            ✓ Complete
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center text-muted">
+                    <div style={{ fontSize: "4rem" }} className="mb-3">
+                      📊
+                    </div>
+                    <h5 className="fw-light mb-3">
+                      Ready to calculate your product price
+                    </h5>
+                    <p className="small">
+                      Fill out all the fields to get your price estimation
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -331,4 +654,4 @@ function ProductDetail() {
   );
 }
 
-export default ProductDetail;
+export default GeneratePrice;
