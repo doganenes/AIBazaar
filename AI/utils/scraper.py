@@ -64,7 +64,7 @@ def scraping_prices(product_list):
         driver.get("https://www.akakce.com/")
         time.sleep(2)
 
-        for product_name in product_list:
+        for product_name in product_list[223:]:
             print(f"\n🔍 Ürün aranıyor: {product_name}")
             price = 0
             image = ""

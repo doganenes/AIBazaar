@@ -47,7 +47,7 @@ def scraping_prices_from_test_csv():
     driver = webdriver.Chrome(options=options)
     products = list()
 
-    for index, product_name in enumerate(product_list):
+    for index, product_name in enumerate(product_list[223:]):
         print(f"Ürün aranıyor ({index+1}/{len(product_list)}): {product_name}")
 
         # Her ürün için varsayılan değerler
@@ -186,7 +186,7 @@ def scraping_prices_from_test_csv():
         df = pd.DataFrame(
             products, columns=["Product Name", "Price (TL)", "Product Csv name"]
         )
-        df.to_csv("products3.csv", index=False, encoding="utf-8")
+        df.to_csv("products4.csv", index=False, encoding="utf-8")
         print(f"✅ {len(products)} ürün products.csv dosyasına kaydedildi")
     except Exception as e:
         print(f"❌ CSV kaydetme hatası: {str(e)}")
