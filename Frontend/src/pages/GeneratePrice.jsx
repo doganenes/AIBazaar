@@ -20,6 +20,7 @@ function GeneratePrice() {
   const [predictedPrice, setPredictedPrice] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [formErrors, setFormErrors] = useState({});
+  const [closestProduct, setClosestProduct] = useState(null);
   const [formattedPrice, setFormattedPrice] = useState("");
 
   useEffect(() => {
@@ -91,9 +92,11 @@ function GeneratePrice() {
       );
       console.log("Backend response:", response.data);
       setPredictedPrice(response.data.price);
+      setClosestProduct(response.data.closest_product || null);
     } catch (error) {
       console.error("API request error:", error);
       setPredictedPrice(null);
+      setClosestProduct(null);
     } finally {
       setIsLoading(false);
     }
@@ -587,9 +590,38 @@ function GeneratePrice() {
                       }}
                     >
                       <h4 className="fw-light mb-2">Estimated Price</h4>
-                      <div className="display-3 fw-bold mb-2">
+                      <div className="display-3 fw-bold mb-3">
                         {formattedPrice}
                       </div>
+
+                      {closestProduct && (
+                        <div
+                          className="mt-3 p-3 rounded-3"
+                          style={{
+                            backgroundColor: "rgba(255, 255, 255, 0.2)",
+                            backdropFilter: "blur(10px)",
+                            border: "1px solid rgba(255, 255, 255, 0.3)",
+                          }}
+                        >
+                          <div className="d-flex align-items-center justify-content-center mb-2">
+                            <span
+                              className="me-2"
+                              style={{ fontSize: "1.2rem" }}
+                            >
+                              📱
+                            </span>
+                            <small className="fw-light">
+                              Most Similar Device
+                            </small>
+                          </div>
+                          <div
+                            className="fw-semibold"
+                            style={{ fontSize: "1.1rem" }}
+                          >
+                            {closestProduct}
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     <div
@@ -600,15 +632,25 @@ function GeneratePrice() {
                       }}
                     >
                       <small>
+                        <strong>💡 Prediction Info:</strong>
+                        <br />
                         This estimate is based on the specifications you
                         provided and current market trends.
+                        {closestProduct && (
+                          <>
+                            <br />
+                            <strong>Similar device:</strong> {closestProduct}
+                          </>
+                        )}
                       </small>
                     </div>
 
                     <div className="row g-2 text-sm">
                       <div className="col-12">
                         <div className="d-flex justify-content-between align-items-center py-2 px-3 bg-light rounded">
-                          <span className="text-muted">Market Analysis</span>
+                          <span className="text-muted">
+                            <span className="me-2">📊</span>Market Analysis
+                          </span>
                           <span className="text-success fw-semibold">
                             ✓ Complete
                           </span>
@@ -616,7 +658,9 @@ function GeneratePrice() {
                       </div>
                       <div className="col-12">
                         <div className="d-flex justify-content-between align-items-center py-2 px-3 bg-light rounded">
-                          <span className="text-muted">Spec Comparison</span>
+                          <span className="text-muted">
+                            <span className="me-2">🔍</span>Spec Comparison
+                          </span>
                           <span className="text-success fw-semibold">
                             ✓ Complete
                           </span>
@@ -624,24 +668,39 @@ function GeneratePrice() {
                       </div>
                       <div className="col-12">
                         <div className="d-flex justify-content-between align-items-center py-2 px-3 bg-light rounded">
-                          <span className="text-muted">Price Calculation</span>
+                          <span className="text-muted">
+                            <span className="me-2">💰</span>Price Calculation
+                          </span>
                           <span className="text-success fw-semibold">
                             ✓ Complete
                           </span>
                         </div>
                       </div>
+                      {closestProduct && (
+                        <div className="col-12">
+                          <div className="d-flex justify-content-between align-items-center py-2 px-3 bg-light rounded">
+                            <span className="text-muted">
+                              <span className="me-2">📱</span>Device Matching
+                            </span>
+                            <span className="text-success fw-semibold">
+                              ✓ Found
+                            </span>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ) : (
                   <div className="text-center text-muted">
-                    <div style={{ fontSize: "4rem" }} className="mb-3">
+                    <div className="mb-3 fs-1">
                       📊
                     </div>
                     <h5 className="fw-light mb-3">
                       Ready to calculate your product price
                     </h5>
                     <p className="small">
-                      Fill out all the fields to get your price estimation
+                      Fill out all the fields to get your price estimation and
+                      find the most similar device in our database.
                     </p>
                   </div>
                 )}
