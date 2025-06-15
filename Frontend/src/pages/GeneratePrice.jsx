@@ -562,7 +562,6 @@ function GeneratePrice() {
           </div>
 
           <div className="col-lg-4 mt-5">
-            {/* Price Estimation Card */}
             <div className="card shadow-lg border-0 mb-4">
               <div className="card-header bg-gradient-to-r from-green-500 to-blue-600 text-white py-4">
                 <h3 className="card-title mb-0 d-flex align-items-center text-dark">
@@ -634,7 +633,6 @@ function GeneratePrice() {
               </div>
             </div>
 
-            {/* Most Similar Device Card */}
             {closestProduct && (
               <div className="card shadow-lg border-0">
                 <div className="card-header bg-gradient-to-r from-orange-500 to-red-600 text-white py-4">
@@ -695,7 +693,6 @@ function GeneratePrice() {
               </div>
             )}
 
-            {/* Placeholder for when no similar device is found */}
             {predictedPrice !== null && !closestProduct && (
               <div className="card shadow-lg border-0">
                 <div className="card-header bg-gradient-to-r from-gray-500 to-gray-600 text-white py-4">
