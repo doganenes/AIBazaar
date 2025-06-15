@@ -22,22 +22,17 @@ const Home = ({ searchTerm }) => {
   const [filteredProducts, setFilteredProducts] = useState([]);
 
   useEffect(() => {
-    const token = localStorage.getItem("authToken");
-    if (!token) {
-      navigate("/signin");
-    } else {
-      getAllProducts()
-        .then((data) => {
-          setProducts(data);
-          setFilteredProducts(data);
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.error("Error loading products:", err);
-          setLoading(false);
-        });
-    }
-  }, [navigate]);
+    getAllProducts()
+      .then((data) => {
+        setProducts(data);
+        setFilteredProducts(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error loading products:", err);
+        setLoading(false);
+      });
+  }, []);
 
   const showToast = (message, type = "success") => {
     setToast({ show: true, message, type });

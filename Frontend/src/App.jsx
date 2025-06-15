@@ -13,6 +13,7 @@ import ProductDetail from "../src/pages/ProductDetail";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Footer from "../src/components/Footer";
 import { useState } from "react";
+import PrivateRoute from "./components/PrivateRoute";
 
 function App() {
   const location = useLocation();
@@ -27,13 +28,15 @@ function App() {
       <Container className="flex-grow-1">
         <Routes>
           <Route path="/" element={<Signin />} />
-          <Route path="/home" element={<Home searchTerm={searchTerm} />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/signin" element={<Signin />} />
-          <Route path="/generatePrice" element={<GeneratePrice />} />
-          <Route path="/favorites" element={<Favorites />} />
-          <Route path="/productDetail/:id" element={<ProductDetail />} />
-          <Route path="*" element={<NotFound />} />
+          <Route element={<PrivateRoute />}>
+            <Route path="/home" element={<Home searchTerm={searchTerm} />} />
+            <Route path="/generatePrice" element={<GeneratePrice />} />
+            <Route path="/favorites" element={<Favorites />} />
+            <Route path="/productDetail/:id" element={<ProductDetail />} />
+            <Route path="*" element={<NotFound />} />
+          </Route>
         </Routes>
       </Container>
 
