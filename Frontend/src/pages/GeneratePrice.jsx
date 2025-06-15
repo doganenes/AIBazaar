@@ -105,19 +105,10 @@ function GeneratePrice() {
   const isFormValid = Object.values(formData).every((value) => value !== "");
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-3">
-            📱 Smart Phone Price Estimator
-          </h1>
-          <p className="text-gray-600 text-lg">
-            Get instant price estimates based on your product specifications
-          </p>
-        </div>
-
-        <div className="row g-4">
-          <div className="col-lg-8">
+    <div className="min-h-screen bg-gray-50 py-8 mt-5">
+      <div className="container forecastContainer mx-auto px-4 mt-5">
+        <div className="row g-4 mt-5">
+          <div className="col-lg-8 mt-5">
             <div className="card shadow-lg border-0 h-100">
               <div className="card-header bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4">
                 <h3 className="card-title mb-0 d-flex align-items-center text-dark">
@@ -570,8 +561,9 @@ function GeneratePrice() {
             </div>
           </div>
 
-          <div className="col-lg-4">
-            <div className="card shadow-lg border-0 h-100">
+          <div className="col-lg-4 mt-5">
+            {/* Price Estimation Card */}
+            <div className="card shadow-lg border-0 mb-4">
               <div className="card-header bg-gradient-to-r from-green-500 to-blue-600 text-white py-4">
                 <h3 className="card-title mb-0 d-flex align-items-center text-dark">
                   <span className="me-3">💰</span>
@@ -593,56 +585,6 @@ function GeneratePrice() {
                       <div className="display-3 fw-bold mb-3">
                         {formattedPrice}
                       </div>
-
-                      {closestProduct && (
-                        <div
-                          className="mt-3 p-3 rounded-3"
-                          style={{
-                            backgroundColor: "rgba(255, 255, 255, 0.2)",
-                            backdropFilter: "blur(10px)",
-                            border: "1px solid rgba(255, 255, 255, 0.3)",
-                          }}
-                        >
-                          <div className="d-flex align-items-center justify-content-center mb-2">
-                            <span
-                              className="me-2"
-                              style={{ fontSize: "1.2rem" }}
-                            >
-                              📱
-                            </span>
-                            <small className="fw-light">
-                              Most Similar Device
-                            </small>
-                          </div>
-                          <div
-                            className="fw-semibold"
-                            style={{ fontSize: "1.1rem" }}
-                          >
-                            {closestProduct}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    <div
-                      className="alert alert-info border-0 mb-4"
-                      style={{
-                        backgroundColor: "#f8f9ff",
-                        color: "#4c63d2",
-                      }}
-                    >
-                      <small>
-                        <strong>💡 Prediction Info:</strong>
-                        <br />
-                        This estimate is based on the specifications you
-                        provided and current market trends.
-                        {closestProduct && (
-                          <>
-                            <br />
-                            <strong>Similar device:</strong> {closestProduct}
-                          </>
-                        )}
-                      </small>
                     </div>
 
                     <div className="row g-2 text-sm">
@@ -676,36 +618,105 @@ function GeneratePrice() {
                           </span>
                         </div>
                       </div>
-                      {closestProduct && (
-                        <div className="col-12">
-                          <div className="d-flex justify-content-between align-items-center py-2 px-3 bg-light rounded">
-                            <span className="text-muted">
-                              <span className="me-2">📱</span>Device Matching
-                            </span>
-                            <span className="text-success fw-semibold">
-                              ✓ Found
-                            </span>
-                          </div>
-                        </div>
-                      )}
                     </div>
                   </div>
                 ) : (
                   <div className="text-center text-muted">
-                    <div className="mb-3 fs-1">
-                      📊
-                    </div>
+                    <div className="mb-3 fs-1">📊</div>
                     <h5 className="fw-light mb-3">
                       Ready to calculate your product price
                     </h5>
                     <p className="small">
-                      Fill out all the fields to get your price estimation and
-                      find the most similar device in our database.
+                      Fill out all the fields to get your price estimation.
                     </p>
                   </div>
                 )}
               </div>
             </div>
+
+            {/* Most Similar Device Card */}
+            {closestProduct && (
+              <div className="card shadow-lg border-0">
+                <div className="card-header bg-gradient-to-r from-orange-500 to-red-600 text-white py-4">
+                  <h3 className="card-title mb-0 d-flex align-items-center text-dark">
+                    <span className="me-3">📱</span>
+                    Most Similar Device
+                  </h3>
+                </div>
+                <div className="card-body p-4">
+                  <div className="text-center">
+                    <div
+                      className="p-4 rounded-4 mb-3"
+                      style={{
+                        background:
+                          "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+                        color: "white",
+                      }}
+                    >
+                      <div className="mb-3 fs-1">📱</div>
+                      <h4 className="fw-light mb-2">Closest Match</h4>
+                      <div className="fw-bold fs-4">
+                        <a 
+                          href="/" 
+                          className="text-white text-decoration-none"
+                          style={{
+                            textShadow: "0 2px 4px rgba(0,0,0,0.3)"
+                          }}
+                        >
+                          {closestProduct}
+                        </a>
+                      </div>
+                    </div>
+
+                    <div className="row g-2">
+                      <div className="col-12">
+                        <div className="d-flex justify-content-between align-items-center py-2 px-3 bg-light rounded">
+                          <span className="text-muted">
+                            <span className="me-2">🔍</span>Device Matching
+                          </span>
+                          <span className="text-success fw-semibold">
+                            ✓ Found
+                          </span>
+                        </div>
+                      </div>
+                      <div className="col-12">
+                        <div className="d-flex justify-content-between align-items-center py-2 px-3 bg-light rounded">
+                          <span className="text-muted">
+                            <span className="me-2">📊</span>Similarity Score
+                          </span>
+                          <span className="text-primary fw-semibold">
+                            High Match
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Placeholder for when no similar device is found */}
+            {predictedPrice !== null && !closestProduct && (
+              <div className="card shadow-lg border-0">
+                <div className="card-header bg-gradient-to-r from-gray-500 to-gray-600 text-white py-4">
+                  <h3 className="card-title mb-0 d-flex align-items-center text-dark">
+                    <span className="me-3">📱</span>
+                    Most Similar Device
+                  </h3>
+                </div>
+                <div className="card-body p-4">
+                  <div className="text-center text-muted">
+                    <div className="mb-3 fs-1">🔍</div>
+                    <h5 className="fw-light mb-3">
+                      No similar device found
+                    </h5>
+                    <p className="small">
+                      Your configuration is unique! No close matches were found in our database.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
