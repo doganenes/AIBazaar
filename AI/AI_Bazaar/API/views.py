@@ -48,7 +48,7 @@ def predict_product_xgboost(request):
             "video_resolution",
             "chipset",
         ]
-        df = df[features + ["price"]]
+        df = df[features + ["price", "phone_model"]]
 
         os_hierarchy = {
             "HarmonyOS" : 1,
@@ -150,6 +150,10 @@ def predict_product_xgboost(request):
 
         feature_importance = dict(zip(feature_columns, model.feature_importances_))
         top_features = sorted(feature_importance.items(), key=lambda x: x[1], reverse=True)[:10]
+        
+        df["price_diff"] = (df["price"] - prediction_price).abs()
+        closest_product = df.loc[df["price_diff"].idxmin()]
+
 
         return Response(
             {
@@ -163,7 +167,8 @@ def predict_product_xgboost(request):
                 "model_info": {
                     "algorithm": "XGBoost",
                     "top_features": [{"feature": feat, "importance": round(imp, 4)} for feat, imp in top_features]
-                }
+                },
+                "closest_product": closest_product["phone_model"]
             }
         )
 
