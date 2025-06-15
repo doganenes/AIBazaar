@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { api, getProductById, predict_lstm } from "../api/api";
-import { getTodayDate, addDaysToDate } from "../utils/helpers";
+import { getTodayDate, addDaysToDate } from "../utils/dateUtils";
 import {
   createChartData,
   createChartOptions,
   calculateStats,
-} from "../utils/helpers";
+} from "../utils/chartUtils";
 import {
   Chart as ChartJS,
   CategoryScale,
