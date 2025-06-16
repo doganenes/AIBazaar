@@ -25,8 +25,8 @@ function ProductCard({ product, onFavoriteAdded }) {
     <div className="card h-100 border-0 shadow-sm product-card">
       <div className="position-relative overflow-hidden">
         <img
-          src={"https://placehold.co/600x400"}
-          className="card-img-top"
+          src={product.imageUrl}
+          className="card-img-top object-fit-fill rounded"
           style={{ height: "250px", objectFit: "cover" }}
           alt={product.productName}
         />

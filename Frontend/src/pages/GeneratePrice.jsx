@@ -633,15 +633,15 @@ function GeneratePrice() {
               </div>
             </div>
 
-            {closestProduct && (
-              <div className="card shadow-lg border-0">
-                <div className="card-header bg-gradient-to-r from-orange-500 to-red-600 text-white py-4">
-                  <h3 className="card-title mb-0 d-flex align-items-center text-dark">
-                    <span className="me-3">📱</span>
-                    Most Similar Device
-                  </h3>
-                </div>
-                <div className="card-body p-4">
+            <div className="card shadow-lg border-0">
+              <div className="card-header bg-gradient-to-r from-orange-500 to-red-600 text-white py-4">
+                <h3 className="card-title mb-0 d-flex align-items-center text-dark">
+                  <span className="me-3">📱</span>
+                  Most Similar Device
+                </h3>
+              </div>
+              <div className="card-body p-4">
+                {closestProduct ? (
                   <div className="text-center">
                     <div
                       className="p-4 rounded-4 mb-3"
@@ -689,19 +689,7 @@ function GeneratePrice() {
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            )}
-
-            {predictedPrice !== null && !closestProduct && (
-              <div className="card shadow-lg border-0">
-                <div className="card-header bg-gradient-to-r from-gray-500 to-gray-600 text-white py-4">
-                  <h3 className="card-title mb-0 d-flex align-items-center text-dark">
-                    <span className="me-3">📱</span>
-                    Most Similar Device
-                  </h3>
-                </div>
-                <div className="card-body p-4">
+                ) : predictedPrice !== null ? (
                   <div className="text-center text-muted">
                     <div className="mb-3 fs-1">🔍</div>
                     <h5 className="fw-light mb-3">
@@ -711,9 +699,19 @@ function GeneratePrice() {
                       Your configuration is unique! No close matches were found in our database.
                     </p>
                   </div>
-                </div>
+                ) : (
+                  <div className="text-center text-muted">
+                    <div className="mb-3 fs-1">📱</div>
+                    <h5 className="fw-light mb-3">
+                      Similar device will appear here
+                    </h5>
+                    <p className="small">
+                      After price calculation, we'll show you the most similar device in our database.
+                    </p>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
         </div>
       </div>
