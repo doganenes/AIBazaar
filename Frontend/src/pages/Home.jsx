@@ -41,8 +41,7 @@ const Home = ({ searchTerm }) => {
   useEffect(() => {
     const filtered = products.filter(
       (product) =>
-        product.productName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.description?.toLowerCase().includes(searchTerm.toLowerCase())
+        product.productName?.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredProducts(filtered);
     setCurrentPage(1);

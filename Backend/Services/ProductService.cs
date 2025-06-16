@@ -49,16 +49,6 @@ namespace Backend.Services
                 query = query.Where(p => p.ProductName.ToLower().Contains(dto.ProductName.ToLower()));
             }
 
-            if (!string.IsNullOrWhiteSpace(dto.Description))
-            {
-                query = query.Where(p => p.Description.ToLower().Contains(dto.Description.ToLower()));
-            }
-
-            if (!string.IsNullOrWhiteSpace(dto.ImageUrl))
-            {
-                query = query.Where(p => p.ImageUrl.ToLower().Contains(dto.ImageUrl.ToLower()));
-            }
-
             return await query.ToListAsync();
         }
 

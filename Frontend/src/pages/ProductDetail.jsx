@@ -236,9 +236,9 @@ function ProductDetail() {
 
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-5 m-8 mt-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
+              <h4 className="text-lg font-semibold text-gray-800">
                 📈 Price Prediction for {product.productName} in 15 days
-              </h3>
+              </h4>
             </div>
 
             {error && (
@@ -256,45 +256,52 @@ function ProductDetail() {
               </div>
             ) : forecastData.length > 0 ? (
               <>
-                <div className="h-80 mb-4">
-                  <Line data={chartData} options={chartOptions} />
+                <div className="h-80 mb-5">
+                  <Line data={chartData} options={chartOptions}/>
                 </div>
 
                 {stats && (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
-                    <div className="bg-white rounded-lg p-3 text-center">
-                      <div className="text-lg font-bold text-green-600">
+                  <div className="d-flex flex-wrap mt-5">
+                    <div className="bg-white rounded-lg p-3 px-5 text-center shadow-sm col-12 col-md-6 col-lg-3">
+                      <div className="text-base sm:text-lg font-bold text-green-600">
                         {stats.min.toLocaleString("tr-TR", {
                           style: "currency",
                           currency: "TRY",
                           minimumFractionDigits: 0,
                         })}
                       </div>
-                      <div className="text-xs text-gray-600">Min Price</div>
+                      <div className="text-xs text-gray-600 mt-1">
+                        Min Price
+                      </div>
                     </div>
-                    <div className="bg-white rounded-lg p-3 text-center">
-                      <div className="text-lg font-bold text-red-600">
+
+                    <div className="bg-white rounded-lg p-3 px-5 text-center shadow-sm col-12 col-md-6 col-lg-3">
+                      <div className="text-base sm:text-lg font-bold text-red-600">
                         {stats.max.toLocaleString("tr-TR", {
                           style: "currency",
                           currency: "TRY",
                           minimumFractionDigits: 0,
                         })}
                       </div>
-                      <div className="text-xs text-gray-600">Max Price</div>
+                      <div className="text-xs text-gray-600 mt-1">
+                        Max Price
+                      </div>
                     </div>
-                    <div className="bg-white rounded-lg p-3 text-center">
-                      <div className="text-lg font-bold text-blue-600">
+
+                    <div className="bg-white rounded-lg p-3 px-5 text-center shadow-sm col-12 col-md-6 col-lg-3">
+                      <div className="text-base sm:text-lg font-bold text-blue-600">
                         {stats.avg.toLocaleString("tr-TR", {
                           style: "currency",
                           currency: "TRY",
                           minimumFractionDigits: 0,
                         })}
                       </div>
-                      <div className="text-xs text-gray-600">Average</div>
+                      <div className="text-xs text-gray-600 mt-1">Average</div>
                     </div>
-                    <div className="bg-white rounded-lg p-3 text-center">
+
+                    <div className="bg-white rounded-lg p-3 text-center shadow-sm col-12 col-md-6 col-lg-3">
                       <div
-                        className={`text-lg font-bold ${
+                        className={`text-base sm:text-lg font-bold ${
                           stats.trend > 0
                             ? "text-green-600"
                             : stats.trend < 0
@@ -305,7 +312,7 @@ function ProductDetail() {
                         {stats.trend > 0 ? "📈" : stats.trend < 0 ? "📉" : "➡️"}{" "}
                         {stats.trendPercent}%
                       </div>
-                      <div className="text-xs text-gray-600">Trend</div>
+                      <div className="text-xs text-gray-600 mt-1">Trend</div>
                     </div>
                   </div>
                 )}
