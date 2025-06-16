@@ -654,11 +654,11 @@ function GeneratePrice() {
                       <div className="mb-3 fs-1">📱</div>
                       <h4 className="fw-light mb-2">Closest Match</h4>
                       <div className="fw-bold fs-4">
-                        <a 
-                          href="/" 
+                        <a
+                          href="/"
                           className="text-white text-decoration-none"
                           style={{
-                            textShadow: "0 2px 4px rgba(0,0,0,0.3)"
+                            textShadow: "0 2px 4px rgba(0,0,0,0.3)",
                           }}
                         >
                           {closestProduct}
@@ -670,7 +670,7 @@ function GeneratePrice() {
                       <div className="col-12">
                         <div className="d-flex justify-content-between align-items-center py-2 px-3 bg-light rounded">
                           <span className="text-muted">
-                            <span className="me-2">🔍</span>Device Matching
+                            <span className="me-2">🔗</span>Device Matching
                           </span>
                           <span className="text-success fw-semibold">
                             ✓ Found
@@ -678,25 +678,17 @@ function GeneratePrice() {
                         </div>
                       </div>
                       <div className="col-12">
-                        <div className="d-flex justify-content-between align-items-center py-2 px-3 bg-light rounded">
-                          <span className="text-muted">
-                            <span className="me-2">📊</span>Similarity Score
-                          </span>
-                          <span className="text-primary fw-semibold">
-                            High Match
-                          </span>
-                        </div>
+                        <div className="d-flex justify-content-between align-items-center py-2 px-3 bg-light rounded"></div>
                       </div>
                     </div>
                   </div>
                 ) : predictedPrice !== null ? (
                   <div className="text-center text-muted">
                     <div className="mb-3 fs-1">🔍</div>
-                    <h5 className="fw-light mb-3">
-                      No similar device found
-                    </h5>
+                    <h5 className="fw-light mb-3">No similar device found</h5>
                     <p className="small">
-                      Your configuration is unique! No close matches were found in our database.
+                      Your configuration is unique! No close matches were found
+                      in our database.
                     </p>
                   </div>
                 ) : (
@@ -706,7 +698,8 @@ function GeneratePrice() {
                       Similar device will appear here
                     </h5>
                     <p className="small">
-                      After price calculation, we'll show you the most similar device in our database.
+                      After price calculation, we'll show you the most similar
+                      device in our database.
                     </p>
                   </div>
                 )}
