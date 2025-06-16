@@ -46,7 +46,7 @@ feature_ids = {
 
 all_phones = []
 
-for page_num in range(1, 2):
+for page_num in range(1, 12):
     ua = user_agents[(page_num - 1) % len(user_agents)]
 
     options = uc.ChromeOptions()
