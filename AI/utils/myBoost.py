@@ -24,17 +24,17 @@ data = {
     "Battery": [4000, 3000, 4500, 5000, 2800, 4000, 5000, 3500, 4500, 4200],
     "Processor": [
         "Snapdragon",
-        "A14",
+        "A15",
         "Snapdragon",
         "Exynos",
-        "A13",
+        "A17",
         "Snapdragon",
         "Exynos",
         "A15",
         "Snapdragon",
         "Exynos",
     ],
-    "Price": [700, 999, 400, 850, 799, 350, 1200, 1099, 500, 750],
+    "Price": [700, 999, 400, 850, 999, 350, 1200, 1099, 500, 750],
 }
 
 df = pd.DataFrame(data)
