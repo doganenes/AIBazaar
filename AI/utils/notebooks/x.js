@@ -33,20 +33,25 @@ async function fetchProductById(id) {
     }
 }
 
-function readIdsFromCsv(filePath) {
+function readProductsFromCsv(filePath) {
     return new Promise((resolve, reject) => {
-        const ids = [];
+        const products = [];
         fs.createReadStream(filePath)
             .pipe(csv())
             .on('data', (row) => {
-                if (row.ProductID) ids.push(row.ProductID);
+                if (row.ProductID && row.ProductName) {
+                    products.push({
+                        id: row.ProductID,
+                        name: row.ProductName
+                    });
+                }
             })
-            .on('end', () => resolve(ids))
+            .on('end', () => resolve(products))
             .on('error', reject);
     });
 }
 
-function parseHtmlToRecords(productId, html) {
+function parseHtmlToRecords(productId, productName, html) {
     let str;
     if (typeof html === 'string') {
         str = html;
@@ -56,33 +61,27 @@ function parseHtmlToRecords(productId, html) {
         str = String(html);
     }
 
-    // Gereksiz çift tırnakları tek tırnağa indir
     str = str.replace(/""/g, '"');
-
-    // Başta sondaki tırnakları temizle
     const cleanStr = str.replace(/^"|"$/g, '');
-
     const parts = cleanStr.split(',');
 
     const records = [];
     for (let i = 0; i < parts.length; i += 3) {
-        // date ve price değerlerini gereksiz karakterlerden temizle
         let date = parts[i];
         let price = parts[i + 1];
 
         if (date) {
-            // date'den baştaki [ ve tırnakları kaldır
             date = date.replace(/^\[?"?/, '').replace(/"?$/, '');
         }
 
         if (price) {
-            // price'dan baştaki tırnakları kaldır
             price = price.replace(/^"*/, '').replace(/"*$/, '');
         }
 
         if (date && price) {
             records.push({
                 productId,
+                productName,
                 date,
                 price
             });
@@ -93,21 +92,22 @@ function parseHtmlToRecords(productId, html) {
 }
 
 
-
-async function fetchAllProducts(ids) {
+async function fetchAllProducts(productInfos) {
     const allRecords = [];
-    for (const id of ids) {
+    for (const product of productInfos) {
         try {
-            const html = await fetchProductById(id);
-            const records = parseHtmlToRecords(id, html);
+            const html = await fetchProductById(product.id);
+            const records = parseHtmlToRecords(product.id, product.name, html);
             allRecords.push(...records);
-            console.log(`ID ${id} verisi alındı. ${records.length} kayıt eklendi.`);
+            console.log(`ID ${product.id} (${product.name}) verisi alındı. ${records.length} kayıt eklendi.`);
         } catch (error) {
-            console.error(`ID ${id} için hata:`, error);
+            console.error(`ID ${product.id} için hata:`, error);
         }
     }
     return allRecords;
 }
+
+
 
 async function writeProductsToCsv(products) {
     const csvWriter = createCsvWriter({
@@ -115,6 +115,10 @@ async function writeProductsToCsv(products) {
         header: [{
                 id: 'productId',
                 title: 'ProductID'
+            },
+            {
+                id: 'productName',
+                title: 'ProductName'
             },
             {
                 id: 'date',
@@ -128,14 +132,16 @@ async function writeProductsToCsv(products) {
     });
 
     await csvWriter.writeRecords(products);
-    console.log('CSV dosyası başarıyla yazıldı.');
+    console.log('✅ CSV dosyası başarıyla yazıldı.');
 }
 
 (async () => {
     try {
-        const ids = await readIdsFromCsv('epeyProductListid.csv');
-        console.log(`Toplam ${ids.length} ID bulundu.`);
-        const products = await fetchAllProducts(ids);
+        const productsInfo = await readProductsFromCsv('epeyProductListid.csv');
+
+       
+        const products = await fetchAllProducts(productsInfo);
+
         await writeProductsToCsv(products);
     } catch (error) {
         console.error('Hata:', error);
