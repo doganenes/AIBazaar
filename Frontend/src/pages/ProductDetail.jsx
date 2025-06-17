@@ -52,20 +52,20 @@ const DescriptionTable = ({ description }) => {
 
   const formatKey = (key) => {
     const keyMap = {
-      storage: "Depolama",
+      storage: "Storage",
       ram: "RAM",
-      phone_brand: "Marka",
+      phone_brand: "Brand",
       phone_model: "Model",
-      dimensions: "Boyutlar",
-      display_size: "Ekran Boyutu",
-      display_resolution: "Ekran Çözünürlüğü",
-      os: "İşletim Sistemi",
-      battery: "Batarya",
+      dimensions: "Dimensions",
+      display_size: "Display Size",
+      display_resolution: "Display Resolution",
+      os: "Operating System",
+      battery: "Battery",
       video: "Video",
-      chipset: "Yonga Seti",
-      cpu: "İşlemci",
-      gpu: "Grafik İşlemci",
-      ppi_density: "PPI Yoğunluğu",
+      chipset: "Chipset",
+      cpu: "Processor",
+      gpu: "Graphics Processor",
+      ppi_density: "PPI Density",
     };
 
     return (
@@ -96,7 +96,7 @@ const DescriptionTable = ({ description }) => {
   if (specs.length === 0) {
     return (
       <div className="alert alert-info text-center">
-        <p>Ürün özellikleri bulunamadı</p>
+        <p>Features not found!</p>
       </div>
     );
   }
@@ -106,11 +106,11 @@ const DescriptionTable = ({ description }) => {
       <div className="card-header bg-primary text-white">
         <h5 className="card-title mb-0">
           <i className="fas fa-info-circle me-2"></i>
-          Ürün Özellikleri
+          Features
         </h5>
       </div>
       <div className="card-body p-0">
-        <table className="table table-striped table-hover mb-0">
+        <table className="table table-bordered table-hover mb-0">
           <tbody>
             {specs.map((spec, index) => (
               <tr key={index}>
@@ -234,7 +234,7 @@ function ProductDetail() {
       <div className="row g-4">
         <div className="col-lg-8">
           <div className="bg-white rounded shadow-sm p-4 h-100">
-            <h5 className="fw-semibold mb-3">📈 15 Günlük Fiyat Tahmini</h5>
+            <h5 className="fw-semibold mb-3">📈 Price Forecast For 15 Days</h5>
 
             {error && <div className="alert alert-danger small">{error}</div>}
 
