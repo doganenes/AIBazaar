@@ -50,20 +50,20 @@ const DescriptionTable = ({ description }) => {
 
   const formatKey = (key) => {
     const keyMap = {
-      storage: "Storage",
+      storage: "Depolama",
       ram: "RAM",
-      phone_brand: "Brand",
-      phone_model: "Phone Model",
-      dimensions: "Dimensions",
-      display_size: "Display Size",
-      display_resolution: "Display Resolution",
-      os: "Operating System",
-      battery: "Battery",
+      phone_brand: "Marka",
+      phone_model: "Model",
+      dimensions: "Boyutlar",
+      display_size: "Ekran Boyutu",
+      display_resolution: "Ekran Çözünürlüğü",
+      os: "İşletim Sistemi",
+      battery: "Batarya",
       video: "Video",
-      chipset: "Chipset",
-      cpu: "Processor",
-      gpu: "Graphics Processor",
-      ppi_density: "PPI Density",
+      chipset: "Yonga Seti",
+      cpu: "İşlemci",
+      gpu: "Grafik İşlemci",
+      ppi_density: "PPI Yoğunluğu",
     };
 
     return (
@@ -93,33 +93,29 @@ const DescriptionTable = ({ description }) => {
 
   if (specs.length === 0) {
     return (
-      <div className="bg-gray-50 rounded-lg p-4">
-        <p className="text-gray-500 text-center">Product features not found</p>
+      <div className="alert alert-info text-center">
+        <p>Ürün özellikleri bulunamadı</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-lg border shadow-sm">
-      <div className="px-4 py-3 border-b bg-gray-50">
-        <h3 className="text-lg font-semibold text-gray-900 text-center">
-          Product Features
-        </h3>
+    <div className="card h-100">
+      <div className="card-header bg-primary text-white">
+        <h5 className="card-title mb-0">
+          <i className="fas fa-info-circle me-2"></i>
+          Ürün Özellikleri
+        </h5>
       </div>
-
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <tbody className="divide-y divide-gray-200">
+      <div className="card-body p-0">
+        <table className="table table-striped table-hover mb-0">
+          <tbody>
             {specs.map((spec, index) => (
-              <tr key={index} className="hover:bg-gray-50">
-                <td className="px-4 py-3 text-sm font-medium text-gray-600 w-1/3">
+              <tr key={index}>
+                <td className="fw-medium text-muted" style={{ width: "40%" }}>
                   {formatKey(spec.key)}
                 </td>
-                <td className="px-4 py-3 text-sm text-gray-900">
-                  <div className="break-words">
-                    {formatValue(spec.key, spec.value)}
-                  </div>
-                </td>
+                <td className="fw-bold">{formatValue(spec.key, spec.value)}</td>
               </tr>
             ))}
           </tbody>
@@ -194,7 +190,7 @@ function ProductDetail() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-          <p className="text-gray-600 mt-4">Product loading...</p>
+          <p className="text-gray-600 mt-4">Ürün yükleniyor...</p>
         </div>
       </div>
     );
@@ -203,132 +199,156 @@ function ProductDetail() {
   if (!product) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-red-600 text-lg">Product not found!</p>
+        <p className="text-red-600 text-lg">Ürün bulunamadı!</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen py-10 mt-5">
-      <div className="max-w-5xl mx-auto px-4">
-        <div className="bg-white rounded-2xl shadow-md overflow-hidden">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-8">
-            <div className="flex justify-center items-center">
-              <img
-                src={`${product.imageUrl}`}
-                alt={product.productName}
-                className="w-full max-w-sm mt-5 mb-3 h-auto rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300"
-              />
-            </div>
+    <div className="container mt-5 py-5 min-vh-100 bg-light">
+      <div className="bg-white rounded shadow-sm p-4 mb-4">
+        <h1 className="h3 fw-bold mb-2">{product.productName}</h1>
+      </div>
 
-            <div className="space-y-6">
-              <div>
-                <h1 className="text-3xl font-semibold text-gray-900">
-                  {product.productName}
-                </h1>
-              </div>
-            </div>
+      <div className="row g-4 mb-4">
+        <div className="col-lg-6">
+          <div className="bg-white rounded shadow-sm p-4 h-100 d-flex justify-content-center align-items-center">
+            <img
+              src={product.imageUrl}
+              alt={product.productName}
+              className="img-fluid rounded shadow-sm"
+              style={{ maxHeight: "400px", objectFit: "contain" }}
+            />
           </div>
+        </div>
 
-          <div className="p-8 pt-4">
+        <div className="col-lg-6">
+          <div className="bg-white rounded shadow-sm p-4 h-100">
             <DescriptionTable description={product.description} />
           </div>
+        </div>
+      </div>
 
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-5 m-8 mt-4">
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="text-lg font-semibold text-gray-800">
-                📈 Price Prediction for {product.productName} in 15 days
-              </h4>
-            </div>
+      <div className="row g-4">
+        <div className="col-lg-8">
+          <div className="bg-white rounded shadow-sm p-4 h-100">
+            <h5 className="fw-semibold mb-3">📈 15 Günlük Fiyat Tahmini</h5>
 
-            {error && (
-              <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-                <p className="text-sm">{error}</p>
-              </div>
-            )}
+            {error && <div className="alert alert-danger small">{error}</div>}
 
             {forecastLoading ? (
-              <div className="flex items-center justify-center h-64">
+              <div
+                className="d-flex justify-content-center align-items-center"
+                style={{ height: "300px" }}
+              >
                 <div className="text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
-                  <p className="text-gray-600 mt-2">Calculating forecast...</p>
+                  <div
+                    className="spinner-border text-primary mb-3"
+                    role="status"
+                  ></div>
+                  <p className="text-muted">Tahmin hesaplanıyor...</p>
                 </div>
               </div>
             ) : forecastData.length > 0 ? (
-              <>
-                <div className="h-80 mb-5">
-                  <Line data={chartData} options={chartOptions}/>
-                </div>
-
-                {stats && (
-                  <div className="d-flex flex-wrap mt-5">
-                    <div className="bg-white rounded-lg p-3 px-5 text-center shadow-sm col-12 col-md-6 col-lg-3">
-                      <div className="text-base sm:text-lg font-bold text-green-600">
-                        {stats.min.toLocaleString("tr-TR", {
-                          style: "currency",
-                          currency: "TRY",
-                          minimumFractionDigits: 0,
-                        })}
-                      </div>
-                      <div className="text-xs text-gray-600 mt-1">
-                        Min Price
-                      </div>
-                    </div>
-
-                    <div className="bg-white rounded-lg p-3 px-5 text-center shadow-sm col-12 col-md-6 col-lg-3">
-                      <div className="text-base sm:text-lg font-bold text-red-600">
-                        {stats.max.toLocaleString("tr-TR", {
-                          style: "currency",
-                          currency: "TRY",
-                          minimumFractionDigits: 0,
-                        })}
-                      </div>
-                      <div className="text-xs text-gray-600 mt-1">
-                        Max Price
-                      </div>
-                    </div>
-
-                    <div className="bg-white rounded-lg p-3 px-5 text-center shadow-sm col-12 col-md-6 col-lg-3">
-                      <div className="text-base sm:text-lg font-bold text-blue-600">
-                        {stats.avg.toLocaleString("tr-TR", {
-                          style: "currency",
-                          currency: "TRY",
-                          minimumFractionDigits: 0,
-                        })}
-                      </div>
-                      <div className="text-xs text-gray-600 mt-1">Average</div>
-                    </div>
-
-                    <div className="bg-white rounded-lg p-3 text-center shadow-sm col-12 col-md-6 col-lg-3">
-                      <div
-                        className={`text-base sm:text-lg font-bold ${
-                          stats.trend > 0
-                            ? "text-green-600"
-                            : stats.trend < 0
-                            ? "text-red-600"
-                            : "text-gray-600"
-                        }`}
-                      >
-                        {stats.trend > 0 ? "📈" : stats.trend < 0 ? "📉" : "➡️"}{" "}
-                        {stats.trendPercent}%
-                      </div>
-                      <div className="text-xs text-gray-600 mt-1">Trend</div>
-                    </div>
-                  </div>
-                )}
-              </>
+              <div style={{ height: "300px" }}>
+                <Line data={chartData} options={chartOptions} />
+              </div>
             ) : (
-              <div className="flex items-center justify-center h-64">
-                <div className="text-center text-gray-500">
-                  <p className="text-lg">📊</p>
-                  <p>Prediction not found!</p>
-                  <button
-                    onClick={handleRefreshForecast}
-                    className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                  >
-                    Try Again
-                  </button>
+              <div
+                className="text-center text-muted"
+                style={{ height: "300px" }}
+              >
+                <div className="fs-1">📊</div>
+                <p className="mb-2">Tahmin bulunamadı!</p>
+                <button
+                  onClick={handleRefreshForecast}
+                  className="btn btn-primary"
+                >
+                  Tekrar Dene
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="col-lg-4">
+          <div className="bg-white rounded shadow-sm p-4 h-100">
+            <h5 className="fw-semibold mb-3">📊 Fiyat İstatistikleri</h5>
+
+            {stats && forecastData.length > 0 ? (
+              <div className="row g-3">
+                <div className="col-sm-6">
+                  <div className="bg-success bg-opacity-10 border border-success rounded p-3">
+                    <div className="h4 text-success fw-bold mb-1">
+                      {stats.min.toLocaleString("tr-TR", {
+                        style: "currency",
+                        currency: "TRY",
+                        minimumFractionDigits: 0,
+                      })}
+                    </div>
+                    <div className="small text-success">En Düşük Fiyat</div>
+                  </div>
                 </div>
+
+                <div className="col-sm-6">
+                  <div className="bg-danger bg-opacity-10 border border-danger rounded p-3">
+                    <div className="h4 text-danger fw-bold mb-1">
+                      {stats.max.toLocaleString("tr-TR", {
+                        style: "currency",
+                        currency: "TRY",
+                        minimumFractionDigits: 0,
+                      })}
+                    </div>
+                    <div className="small text-danger">En Yüksek Fiyat</div>
+                  </div>
+                </div>
+
+                <div className="col-sm-6">
+                  <div className="bg-primary bg-opacity-10 border border-primary rounded p-3">
+                    <div className="h4 text-primary fw-bold mb-1">
+                      {stats.avg.toLocaleString("tr-TR", {
+                        style: "currency",
+                        currency: "TRY",
+                        minimumFractionDigits: 0,
+                      })}
+                    </div>
+                    <div className="small text-primary">Ortalama Fiyat</div>
+                  </div>
+                </div>
+
+                <div className="col-sm-6">
+                  <div
+                    className={`border rounded p-3 ${
+                      stats.trend > 0
+                        ? "bg-success bg-opacity-10 border-success"
+                        : stats.trend < 0
+                        ? "bg-danger bg-opacity-10 border-danger"
+                        : "bg-secondary bg-opacity-10 border-secondary"
+                    }`}
+                  >
+                    <div
+                      className={`h4 fw-bold mb-1 ${
+                        stats.trend > 0
+                          ? "text-success"
+                          : stats.trend < 0
+                          ? "text-danger"
+                          : "text-secondary"
+                      }`}
+                    >
+                      {stats.trend > 0 ? "📈" : stats.trend < 0 ? "📉" : "➡️"}{" "}
+                      {stats.trendPercent}%
+                    </div>
+                    <div className="small">Fiyat Trendi</div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div
+                className="text-center text-muted"
+                style={{ height: "100px" }}
+              >
+                <div className="fs-2">📉</div>
+                <p>İstatistik verisi yok</p>
               </div>
             )}
           </div>

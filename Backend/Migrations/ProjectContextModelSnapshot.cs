@@ -81,13 +81,16 @@ namespace Backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PriceHistoryID"));
 
-                    b.Property<decimal>("Price")
+                    b.Property<decimal?>("Price")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("ProductID")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("RecordDate")
+                    b.Property<string>("ProductName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("RecordDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("PriceHistoryID");
