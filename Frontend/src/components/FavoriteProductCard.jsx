@@ -25,7 +25,7 @@ function FavoriteProductCard({
     <div className="card h-100 border-0 shadow-sm product-card">
       <div className="position-relative overflow-hidden">
         <img
-          src={"https://placehold.co/600x400"}
+          src={imageUrl}
           className="card-img-top"
           style={{ height: "250px", objectFit: "cover" }}
           alt={title}

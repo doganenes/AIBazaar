@@ -32,6 +32,8 @@ ChartJS.register(
   Filler
 );
 
+import { capitalizeEachWord } from "../utils/detailUtils";
+
 const DescriptionTable = ({ description }) => {
   const parseDescription = (desc) => {
     if (!desc) return [];
@@ -113,7 +115,7 @@ const DescriptionTable = ({ description }) => {
             {specs.map((spec, index) => (
               <tr key={index}>
                 <td className="fw-medium text-muted" style={{ width: "40%" }}>
-                  {formatKey(spec.key)}
+                  {capitalizeEachWord(formatKey(spec.key))}
                 </td>
                 <td className="fw-bold">{formatValue(spec.key, spec.value)}</td>
               </tr>
@@ -273,10 +275,10 @@ function ProductDetail() {
 
         <div className="col-lg-4">
           <div className="bg-white rounded shadow-sm p-4 h-100">
-            <h5 className="fw-semibold mb-3">📊 Fiyat İstatistikleri</h5>
+            <h5 className="fw-semibold mb-5">📊 Price Statistics</h5>
 
             {stats && forecastData.length > 0 ? (
-              <div className="row g-3">
+              <div className="row g-3 mt-5">
                 <div className="col-sm-6">
                   <div className="bg-success bg-opacity-10 border border-success rounded p-3">
                     <div className="h4 text-success fw-bold mb-1">
@@ -286,7 +288,7 @@ function ProductDetail() {
                         minimumFractionDigits: 0,
                       })}
                     </div>
-                    <div className="small text-success">En Düşük Fiyat</div>
+                    <div className="small text-success">Min Price</div>
                   </div>
                 </div>
 
@@ -299,7 +301,7 @@ function ProductDetail() {
                         minimumFractionDigits: 0,
                       })}
                     </div>
-                    <div className="small text-danger">En Yüksek Fiyat</div>
+                    <div className="small text-danger">Max Price</div>
                   </div>
                 </div>
 
@@ -312,7 +314,7 @@ function ProductDetail() {
                         minimumFractionDigits: 0,
                       })}
                     </div>
-                    <div className="small text-primary">Ortalama Fiyat</div>
+                    <div className="small text-primary">Average</div>
                   </div>
                 </div>
 
@@ -338,7 +340,17 @@ function ProductDetail() {
                       {stats.trend > 0 ? "📈" : stats.trend < 0 ? "📉" : "➡️"}{" "}
                       {stats.trendPercent}%
                     </div>
-                    <div className="small">Fiyat Trendi</div>
+                    <div
+                      className={`${
+                        stats.trend > 0
+                          ? "text-success"
+                          : stats.trend < 0
+                          ? "text-danger"
+                          : "text-secondary"
+                      }`}
+                    >
+                      Trend
+                    </div>
                   </div>
                 </div>
               </div>

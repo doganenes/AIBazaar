@@ -185,14 +185,13 @@ def predict_product_lstm(request):
         return Response({"error": "An error occurred!"}, status=status.HTTP_400_BAD_REQUEST)
 
     try:
-        df = pd.read_csv(r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\filterNewAkakce.csv")
+        df = pd.read_csv(r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\notebooks\LSTMPriceHistory.csv")
         print(df.head())
-        df["Price"] = df["Price"].apply(lambda x: int(str(x).replace(" TL", "").split(",")[0].replace(".", "")))
         df["Price"] = df["Price"].astype(int)
-        df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
-        df = df.dropna(subset=["Date"])
+        df["RecordDate"] = pd.to_datetime(df["RecordDate"], errors="coerce")
+        df = df.dropna(subset=["RecordDate"])
 
-        product_df = df[df["Product Name"] == product_name].sort_values("Date")
+        product_df = df[df["ProductName"] == product_name].sort_values("RecordDate")
 
         if len(product_df) < 20:
             return Response({"error": f"Insufficient data: {product_name}"}, status=status.HTTP_400_BAD_REQUEST)
