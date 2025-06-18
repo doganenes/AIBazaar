@@ -179,59 +179,76 @@ def predict_product_xgboost(request):
 
 @api_view(['POST'])
 def predict_product_lstm(request):
+    MODEL_DIR = r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\models"
+    DATA_PATH = r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\notebooks\LSTMPriceHistory.csv"
+    LOOK_BACK = 5
+    MIN_DATA_POINTS = 20
+
     product_name = request.data.get('product')
 
     if not product_name:
-        return Response({"error": "An error occurred!"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({
+            "error": "Product name is required!",
+            "example": {"product": "iPhone 14"}
+        }, status=status.HTTP_400_BAD_REQUEST)
 
     try:
-        df = pd.read_csv(r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\notebooks\LSTMPriceHistory.csv")
-        print(df.head())
-        df["Price"] = df["Price"].astype(int)
+        df = pd.read_csv(DATA_PATH)
+        df["Price"] = pd.to_numeric(df["Price"], errors="coerce") 
         df["RecordDate"] = pd.to_datetime(df["RecordDate"], errors="coerce")
-        df = df.dropna(subset=["RecordDate"])
+        df = df.dropna(subset=["RecordDate", "Price"])
 
         product_df = df[df["ProductName"] == product_name].sort_values("RecordDate")
 
-        if len(product_df) < 20:
-            return Response({"error": f"Insufficient data: {product_name}"}, status=status.HTTP_400_BAD_REQUEST)
+        if len(product_df) < MIN_DATA_POINTS:
+            return Response({
+                "error": f"Insufficient data for {product_name} (need at least {MIN_DATA_POINTS} records)",
+                "records_available": len(product_df)
+            }, status=status.HTTP_400_BAD_REQUEST)
 
         prices = product_df["Price"].values.reshape(-1, 1)
+        last_real_price = float(prices[-1][0])
+
         scaler = MinMaxScaler()
         prices_scaled = scaler.fit_transform(prices)
 
-        look_back = 5
-
         x, y = [], []
-        for i in range(len(prices_scaled) - look_back):
-            x.append(prices_scaled[i:i+look_back])
-            y.append(prices_scaled[i+look_back])
+        for i in range(len(prices_scaled) - LOOK_BACK):
+            x.append(prices_scaled[i:i+LOOK_BACK])
+            y.append(prices_scaled[i+LOOK_BACK])
 
         x = np.array(x)
         y = np.array(y)
 
         model = Sequential()
-        model.add(LSTM(64, input_shape=(look_back, 1)))
+        model.add(LSTM(64, input_shape=(LOOK_BACK, 1)))
         model.add(Dense(1))
         model.compile(loss='mean_squared_error', optimizer='adam')
         model.fit(x, y, epochs=20, batch_size=4, verbose=0)
 
-
-        input_seq = prices_scaled[-look_back:]
-        input_seq = input_seq.reshape((1, look_back, 1))
+        # 5. Tahmin yap
+        input_seq = prices_scaled[-LOOK_BACK:]
+        input_seq = input_seq.reshape((1, LOOK_BACK, 1))
 
         forecast_scaled = []
         for _ in range(15):
-            pred = model.predict(input_seq)[0]
+            pred = model.predict(input_seq, verbose=0)[0]
             forecast_scaled.append(pred[0])
             input_seq = np.append(input_seq[:, 1:, :], [[[pred[0]]]], axis=1)
 
-        forecast = scaler.inverse_transform(np.array(forecast_scaled).reshape(-1, 1)).flatten().tolist()
-
+        forecast = scaler.inverse_transform(np.array(forecast_scaled).reshape(-1, 1))
+        forecast = np.maximum(forecast, 0).flatten().tolist() 
+        
         return Response({
+            "success": True,
             "product": product_name,
-            "forecast": forecast
+            "last_real_price": last_real_price,
+            "forecast_15_days": forecast,
+            "prediction_days": 15
         })
 
     except Exception as e:
-        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({
+            "error": f"Prediction failed: {str(e)}",
+            "product": product_name
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
