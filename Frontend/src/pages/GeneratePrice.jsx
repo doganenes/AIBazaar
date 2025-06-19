@@ -10,11 +10,12 @@ function GeneratePrice() {
     display_size: "6.2",
     battery: "",
     foldable: "",
-    ppi: "250",
+    ppi: "375",
     os: "",
     display_type: "",
     video_resolution: "",
     chipset: "",
+    camera: "104", 
   });
 
   const [predictedPrice, setPredictedPrice] = useState(null);
@@ -56,11 +57,11 @@ function GeneratePrice() {
       "storage",
       "display_size",
       "battery",
-      "foldable",
+      "foldable", // quick_charge yerine foldable
       "ppi",
       "os",
       "display_type",
-      "video_resolution",
+      "camera",
       "chipset",
     ];
 
@@ -157,7 +158,7 @@ function GeneratePrice() {
 
                   <div className="col-md-6">
                     <label className="form-label fw-semibold text-gray-700">
-                      <span className="me-2">🧠</span>RAM
+                      <span className="me-2">📟	</span>RAM
                     </label>
                     <select
                       className={`form-select form-select-lg border-2 ${
@@ -385,37 +386,41 @@ function GeneratePrice() {
 
                   <div className="col-md-6">
                     <label className="form-label fw-semibold text-gray-700">
-                      <span className="me-2">🎥</span>Video Resolution
+                      <span className="me-2">📷</span>Camera (MP)
                     </label>
-                    <select
-                      className={`form-select form-select-lg border-2 ${
-                        formErrors.video_resolution ? "is-invalid" : ""
+                    <input
+                      type="range"
+                      className={`form-range border-2 w-100 ${
+                        formErrors.camera ? "is-invalid" : ""
                       }`}
-                      style={{
-                        borderColor: formErrors.video_resolution
-                          ? "#dc3545"
-                          : "#e5e7eb",
-                        transition: "all 0.3s",
-                      }}
-                      name="video_resolution"
-                      value={formData.video_resolution}
+                      min="8"
+                      max="200"
+                      step="1"
+                      name="camera"
+                      value={formData.camera}
                       onChange={handleChange}
                       onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
                       onBlur={(e) =>
-                        (e.target.style.borderColor =
-                          formErrors.video_resolution ? "#dc3545" : "#e5e7eb")
+                        (e.target.style.borderColor = formErrors.camera
+                          ? "#dc3545"
+                          : "#e5e7eb")
                       }
+                      style={{
+                        borderColor: formErrors.camera ? "#dc3545" : "#e5e7eb",
+                        transition: "all 0.3s",
+                      }}
                       required
-                    >
-                      <option value="">Select Video Resolution</option>
-                      <option value="1">HD (1080p)</option>
-                      <option value="2">QHD (2K)</option>
-                      <option value="3">QHD+ (3K)</option>
-                      <option value="4">UHD (4K)</option>
-                    </select>
-                    {formErrors.video_resolution && (
+                    />
+                    <div className="d-flex justify-content-between fs-5 fw-bold">
+                      <small className="text-muted">8 MP</small>
+                      <small className="text-muted fs-5">
+                        {formData.camera} MP
+                      </small>
+                      <small className="text-muted">200 MP</small>
+                    </div>
+                    {formErrors.camera && (
                       <div className="invalid-feedback">
-                        {formErrors.video_resolution}
+                        {formErrors.camera}
                       </div>
                     )}
                   </div>
@@ -461,7 +466,7 @@ function GeneratePrice() {
 
                   <div className="col-md-6">
                     <label className="form-label fw-semibold text-gray-700">
-                      <span className="me-2">⚡</span>Chipset Lithography (nm)
+                      <span className="me-2">🔲</span>Chipset Lithography (nm)
                     </label>
                     <select
                       className={`form-select form-select-lg border-2 ${
