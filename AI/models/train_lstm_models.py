@@ -6,132 +6,90 @@ from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
 
+
 class LSTMModelTrainer:
     def __init__(self, data_path, model_dir):
         self.data_path = data_path
         self.model_dir = model_dir
         self.look_back = 5
-        
-        # Model dizinini oluştur
+
         os.makedirs(model_dir, exist_ok=True)
-    
+
     def load_data(self):
-        """CSV dosyasını yükle ve temizle"""
         df = pd.read_csv(self.data_path)
         df["Price"] = pd.to_numeric(df["Price"], errors="coerce")
         df["RecordDate"] = pd.to_datetime(df["RecordDate"], errors="coerce")
         df = df.dropna(subset=["RecordDate", "Price"])
         return df
-    
+
     def prepare_sequences(self, prices_scaled):
-        """LSTM için sequence verilerini hazırla"""
         x, y = [], []
         for i in range(len(prices_scaled) - self.look_back):
-            x.append(prices_scaled[i:i+self.look_back])
-            y.append(prices_scaled[i+self.look_back])
+            x.append(prices_scaled[i : i + self.look_back])
+            y.append(prices_scaled[i + self.look_back])
         return np.array(x), np.array(y)
-    
+
     def create_model(self):
-        """LSTM modelini oluştur"""
         model = Sequential()
         model.add(LSTM(64, input_shape=(self.look_back, 1)))
         model.add(Dense(1))
-        model.compile(loss='mean_squared_error', optimizer='adam')
+        model.compile(loss="mean_squared_error", optimizer="adam")
         return model
-    
-    def train_product_model(self, product_name, product_df):
-        """Belirli bir ürün için model eğit"""
-        print(f"Training model for: {product_name}")
-        
-        # Fiyat verilerini hazırla
-        prices = product_df["Price"].values.reshape(-1, 1)
-        
-        # Scaler fit et ve kaydet
+
+    def train_general_model(self, min_data_points=100):
+        df = self.load_data()
+        df = df.sort_values("RecordDate")
+        df = df.drop_duplicates(subset=["RecordDate", "ProductName"])
+
+        prices = df["Price"].values.reshape(-1, 1)
+
+        if len(prices) < min_data_points:
+            print(
+                f"Not enough total data: {len(prices)} rows (min required: {min_data_points})"
+            )
+            return False
+
         scaler = MinMaxScaler()
         prices_scaled = scaler.fit_transform(prices)
-        
-        # Sequence verilerini hazırla
+
         x, y = self.prepare_sequences(prices_scaled)
-        
-        if len(x) == 0:
-            print(f"Not enough data for {product_name}")
-            return False
-        
-        # Model eğit
+
         model = self.create_model()
         model.fit(x, y, epochs=50, batch_size=4, verbose=1)
-        
-        # Model ve scaler'ı kaydet
-        model_path = os.path.join(self.model_dir, f"{product_name}_lstm_model.h5")
-        scaler_path = os.path.join(self.model_dir, f"{product_name}_scaler.pkl")
-        
+
+        model_path = os.path.join(self.model_dir, "general_lstm_model.h5")
+        scaler_path = os.path.join(self.model_dir, "general_scaler.pkl")
+
         model.save(model_path)
-        with open(scaler_path, 'wb') as f:
+        with open(scaler_path, "wb") as f:
             pickle.dump(scaler, f)
-        
-        print(f"Model saved: {model_path}")
-        print(f"Scaler saved: {scaler_path}")
+
+        print(f"General model saved: {model_path}")
+        print(f"General scaler saved: {scaler_path}")
         return True
-    
-    def train_all_products(self, min_data_points=20):
-        """Tüm ürünler için model eğit"""
-        df = self.load_data()
-        
-        # Ürün listesini al
-        products = df['ProductName'].unique()
-        print(f"Found {len(products)} unique products")
-        
-        successful_trainings = 0
-        failed_trainings = 0
-        
-        for product in products:
-            product_df = df[df["ProductName"] == product].sort_values("RecordDate")
-            
-            if len(product_df) >= min_data_points:
-                success = self.train_product_model(product, product_df)
-                if success:
-                    successful_trainings += 1
-                else:
-                    failed_trainings += 1
-            else:
-                print(f"Skipping {product}: Only {len(product_df)} data points (need {min_data_points})")
-                failed_trainings += 1
-        
-        print(f"\nTraining Summary:")
-        print(f"Successful: {successful_trainings}")
-        print(f"Failed/Skipped: {failed_trainings}")
-        
-        return successful_trainings, failed_trainings
-    
-    def get_available_products(self):
-        """Eğitilmiş modeli olan ürünleri listele"""
-        models = []
-        for file in os.listdir(self.model_dir):
-            if file.endswith('_lstm_model.h5'):
-                product_name = file.replace('_lstm_model.h5', '')
-                models.append(product_name)
-        return models
+
+    def get_available_model(self):
+        return (
+            "general_lstm_model.h5"
+            if os.path.exists(os.path.join(self.model_dir, "general_lstm_model.h5"))
+            else None
+        )
+
 
 def main():
-    # Dosya yolları
-    DATA_PATH = r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\notebooks\LSTMPriceHistory.csv"
-    MODEL_DIR = r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\models"
-    
-    # Trainer oluştur
+    DATA_PATH = r"C:\\Users\\EXCALIBUR\\Desktop\\projects\\Okul Ödevler\\AIBazaar\\AI\\utils\\notebooks\\LSTMPriceHistory.csv"
+    MODEL_DIR = r"C:\\Users\\EXCALIBUR\\Desktop\\projects\\Okul Ödevler\\AIBazaar\\AI\\utils\\models"
+
     trainer = LSTMModelTrainer(DATA_PATH, MODEL_DIR)
-    
-    # Tüm ürünler için model eğit
-    print("Starting LSTM model training for all products...")
-    successful, failed = trainer.train_all_products(min_data_points=20)
-    
-    # Eğitilmiş modelleri listele
-    available_models = trainer.get_available_products()
-    print(f"\nAvailable trained models: {len(available_models)}")
-    for model in available_models[:10]:  # İlk 10'unu göster
-        print(f"- {model}")
-    
-    if len(available_models) > 10:
-        print(f"... and {len(available_models) - 10} more")
+
+    print("Training general LSTM model on all product price history...")
+    success = trainer.train_general_model(min_data_points=100)
+
+    if success:
+        print("✅ General model training completed successfully.")
+    else:
+        print("❌ General model training failed.")
+
 
 if __name__ == "__main__":
     main()
