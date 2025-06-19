@@ -5,6 +5,7 @@ import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
+from tensorflow.keras.models import load_model
 
 class LSTMModelTrainer:
     def __init__(self, data_path, model_dir):
@@ -95,13 +96,51 @@ class LSTMModelTrainer:
         return successful_trainings, failed_trainings
     
     def get_available_products(self):
-        """Eğitilmiş modeli olan ürünleri listele"""
         models = []
         for file in os.listdir(self.model_dir):
             if file.endswith('_lstm_model.h5'):
                 product_name = file.replace('_lstm_model.h5', '')
                 models.append(product_name)
         return models
+    
+    def predict_price(self, product_name, steps=1):
+        model_path = os.path.join(self.model_dir, r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\models\general_lstm_model.h5")
+        scaler_path = os.path.join(self.model_dir, r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\models\general_scaler.pkl")
+
+        if not os.path.exists(model_path) or not os.path.exists(scaler_path):
+            raise FileNotFoundError("General LSTM model or scaler not found.")
+
+        model = load_model(model_path)
+        with open(scaler_path, 'rb') as f:
+            scaler = pickle.load(f)
+
+        df = self.load_data()
+        product_df = df[df["ProductName"] == product_name].sort_values("RecordDate")
+
+        if len(product_df) < self.look_back:
+            raise ValueError(f"Not enough data to make prediction for: {product_name}")
+
+        prices = product_df["Price"].values.reshape(-1, 1)
+        prices_scaled = scaler.transform(prices)
+        last_sequence = prices_scaled[-self.look_back:].reshape(1, self.look_back, 1)
+
+        predictions = []
+        current_sequence = last_sequence
+
+        for _ in range(steps):
+            next_price_scaled = model.predict(current_sequence, verbose=0)[0][0]
+            predictions.append(next_price_scaled)
+            current_sequence = np.append(current_sequence[:, 1:, :], [[[next_price_scaled]]], axis=1)
+
+        predictions = scaler.inverse_transform(np.array(predictions).reshape(-1, 1)).flatten()
+
+        return {
+            "product": product_name,
+            "steps": steps,
+            "predicted_prices": [round(float(p), 2) for p in predictions]
+        }
+
+
 
 def main():
     DATA_PATH = r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\notebooks\LSTMPriceHistory.csv"
