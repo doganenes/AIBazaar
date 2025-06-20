@@ -8,7 +8,7 @@ import os
 
 class PhonePricePredictionModel:
     def __init__(self, csv_path=None):
-        self.csv_path = csv_path or r"C:\Users\pc\Desktop\AIbazaar\AIBazaar\AI\utils\notebooks\product_specs_en.csv"
+        self.csv_path = csv_path or r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\notebooks\Product.csv"
         self.model = None
         self.scaler = StandardScaler()
         self.feature_columns = [

@@ -12,14 +12,14 @@ from rest_framework import status
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
-from trainers.train_lstm_models import LSTMModelTrainer
+# from trainers.train_lstm_models import LSTMModelTrainer
 import xgboost as xgb
 from tensorflow.keras.models import load_model
 
-lstm_trainer = LSTMModelTrainer(
-    data_path=r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\notebooks\LSTMPriceHistory.csv",
-    model_dir=r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\models"
-)
+# lstm_trainer = LSTMModelTrainer(
+#     data_path=r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\notebooks\LSTMPriceHistory.csv",
+#     model_dir=r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\models"
+# )
 
 
 @api_view(["POST"])
@@ -27,7 +27,6 @@ def predict_product_xgboost(request):
     data = request.data
 
     try:
-        # Extract data with frontend's exact field names
         ram = float(data.get("RAM"))
         storage = float(data.get("Storage"))
         display_size = float(data.get("Display Size"))
@@ -40,8 +39,29 @@ def predict_product_xgboost(request):
         chipset = int(data.get("CPU Manufacturing"))
 
         df = pd.read_csv(
-            r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\LSTMProduct.csv"
+            r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\notebooks\Product.csv"
         )
+
+        df.rename(
+        columns={
+            "RAM": "ram",
+            "Internal Storage": "storage",
+            "Display Size": "display_size",
+            "Battery Capacity": "battery",
+            "Fast Charging": "quick_charge",
+            "Pixel Density": "ppi_density",
+            "Operating System": "os_type",
+            "Display Technology": "display_type",
+            "Camera Resolution": "camera",
+            "CPU Manufacturing": "chipset",
+            "Price": "price",
+            "5G" : "5g",
+            "Model": "phone_model",
+            "Refresh Rate": "refresh_rate"
+        },
+        inplace=True
+    )
+
 
         features = [
             "ram",
@@ -54,16 +74,16 @@ def predict_product_xgboost(request):
             "display_type",
             "camera",
             "chipset",
+            "5g",
+            "refresh_rate"
         ]
         df = df[features + ["price", "phone_model"]]
 
-        # OS hierarchy mapping (matches frontend options)
         os_hierarchy = {
             "Android": 1,
             "iOS": 2,
         }
 
-        # Display technology hierarchy (matches frontend options exactly)
         display_type_hierarchy = {
             "PLS LCD": 1,
             "IPS LCD": 2,
@@ -79,14 +99,12 @@ def predict_product_xgboost(request):
         def safe_map(value, mapping, default=0):
             return mapping.get(value, default)
 
-        # Prepare the dataset
         df["os_encoded"] = df["os_type"].apply(lambda x: safe_map(x, os_hierarchy))
         df["display_type"] = df["display_type"].apply(lambda x: x.split(",")[0].strip())
         df["display_type_encoded"] = df["display_type"].apply(
             lambda x: safe_map(x, display_type_hierarchy)
         )
 
-        # Encode the incoming values
         os_encoded = safe_map(os, os_hierarchy)
         display_type_encoded = safe_map(display_type, display_type_hierarchy)
 
@@ -101,12 +119,13 @@ def predict_product_xgboost(request):
             "display_type_encoded",
             "camera",
             "chipset",
+            "5g",
+            "refresh_rate"
         ]
 
         X = df[feature_columns]
         y = df["price"]
 
-        # Prepare new data point with frontend's structure
         new_data = pd.DataFrame(
             [
                 {
@@ -120,6 +139,8 @@ def predict_product_xgboost(request):
                     "display_type_encoded": display_type_encoded,
                     "camera": camera,
                     "chipset": chipset,
+                    "5g": 1 if data.get("5G") == "Yes" else 0,
+                    "refresh_rate": int(data.get("Refresh Rate", 60)),
                 }
             ]
         )
@@ -133,28 +154,28 @@ def predict_product_xgboost(request):
         # Initialize and train XGBoost model
         model = xgb.XGBRegressor(
             objective="reg:squarederror",
-            n_estimators=100,
-            max_depth=6,
-            learning_rate=0.1,
+            n_estimators=150,          
+            max_depth=8,                
+            learning_rate=0.05,         
             random_state=42,
-            subsample=0.8,
-            colsample_bytree=0.8,
-            reg_alpha=0.1,
-            reg_lambda=0.1,
-        )
+            subsample=0.7,              
+            colsample_bytree=0.7,       
+            reg_alpha=0.05,              
+            reg_lambda=0.05,            
+            min_child_weight=1,         
+            gamma=0,                   
+            importance_type='gain'     
+    )
 
         model.fit(X_train, y_train)
 
-        # Make prediction
         prediction_price = model.predict(scaler.transform(new_data))[0]
 
-        # Get feature importance
         feature_importance = dict(zip(feature_columns, model.feature_importances_))
         top_features = sorted(
             feature_importance.items(), key=lambda x: x[1], reverse=True
         )[:10]
 
-        # Find closest product
         df["price_diff"] = (df["price"] - prediction_price).abs()
         closest_product = df.loc[df["price_diff"].idxmin()]
 
@@ -181,17 +202,17 @@ def predict_product_xgboost(request):
         print(f"Error in XGBoost prediction: {str(e)}")
         return Response({"error": str(e)}, status=400)
 
-@api_view(["POST"])
-def predict_product_lstm(request):
-    try:
-        product_name = request.data.get("product")
-        steps = int(request.data.get("steps", 15))
+# @api_view(["POST"])
+# def predict_product_lstm(request):
+#     try:
+#         product_name = request.data.get("product")
+#         steps = int(request.data.get("steps", 15))
 
-        if not product_name:
-            return Response({"error": "Product name is required."}, status=400)
+#         if not product_name:
+#             return Response({"error": "Product name is required."}, status=400)
 
-        result = lstm_trainer.predict_price(product_name, steps)
-        return Response(result)
+#         result = lstm_trainer.predict_price(product_name, steps)
+#         return Response(result)
 
-    except Exception as e:
-        return Response({"error": str(e)}, status=400)
+#     except Exception as e:
+#         return Response({"error": str(e)}, status=400)

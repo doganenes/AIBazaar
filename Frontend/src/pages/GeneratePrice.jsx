@@ -5,16 +5,18 @@ import { aiApi } from "../api/api";
 
 function GeneratePrice() {
   const [formData, setFormData] = useState({
-    RAM: "",
-    Storage: "",
+    "RAM": "",
+    "Storage": "",
     "Display Size": "6.2",
     "Battery Capacity": "",
     "Quick Charge": "",
     "Pixel Density": "375",
     "Operating System": "",
     "Display Technology": "",
-    camera: "104",
+    "Camera": "104",
     "CPU Manufacturing": "",
+    "5G": "",
+    "Refresh Rate": "",
   });
 
   const [predictedPrice, setPredictedPrice] = useState(null);
@@ -56,12 +58,14 @@ function GeneratePrice() {
       "Storage",
       "Display Size",
       "Battery Capacity",
-      "Quick Charge", 
+      "Quick Charge",
       "Pixel Density",
       "Operating System",
       "Display Technology",
       "camera",
       "CPU Manufacturing",
+      "5G",
+      "Refresh Rate",
     ];
 
     requiredFields.forEach((field) => {
@@ -118,7 +122,6 @@ function GeneratePrice() {
               </div>
               <div className="card-body p-4">
                 <div className="row g-3">
-  
                   <div className="col-md-6">
                     <label className="form-label fw-semibold text-gray-700">
                       <span className="me-2">💾</span>Storage
@@ -243,7 +246,9 @@ function GeneratePrice() {
                         formErrors["Operating System"] ? "is-invalid" : ""
                       }`}
                       style={{
-                        borderColor: formErrors["Operating System"] ? "#dc3545" : "#e5e7eb",
+                        borderColor: formErrors["Operating System"]
+                          ? "#dc3545"
+                          : "#e5e7eb",
                         transition: "all 0.3s",
                       }}
                       name="Operating System"
@@ -251,20 +256,22 @@ function GeneratePrice() {
                       onChange={handleChange}
                       onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
                       onBlur={(e) =>
-                        (e.target.style.borderColor = formErrors["Operating System"]
+                        (e.target.style.borderColor = formErrors[
+                          "Operating System"
+                        ]
                           ? "#dc3545"
                           : "#e5e7eb")
                       }
                       required
                     >
                       <option value="">Select OS</option>
-                      <option value="HarmonyOS">HarmonyOS</option>
-                      <option value="EMUI">EMUI</option>
                       <option value="Android">Android</option>
                       <option value="iOS">iOS</option>
                     </select>
                     {formErrors["Operating System"] && (
-                      <div className="invalid-feedback">{formErrors["Operating System"]}</div>
+                      <div className="invalid-feedback">
+                        {formErrors["Operating System"]}
+                      </div>
                     )}
                   </div>
 
@@ -277,7 +284,9 @@ function GeneratePrice() {
                         formErrors["Battery Capacity"] ? "is-invalid" : ""
                       }`}
                       style={{
-                        borderColor: formErrors["Battery Capacity"] ? "#dc3545" : "#e5e7eb",
+                        borderColor: formErrors["Battery Capacity"]
+                          ? "#dc3545"
+                          : "#e5e7eb",
                         transition: "all 0.3s",
                       }}
                       name="Battery Capacity"
@@ -285,7 +294,9 @@ function GeneratePrice() {
                       onChange={handleChange}
                       onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
                       onBlur={(e) =>
-                        (e.target.style.borderColor = formErrors["Battery Capacity"]
+                        (e.target.style.borderColor = formErrors[
+                          "Battery Capacity"
+                        ]
                           ? "#dc3545"
                           : "#e5e7eb")
                       }
@@ -358,25 +369,20 @@ function GeneratePrice() {
                       onChange={handleChange}
                       onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
                       onBlur={(e) =>
-                        (e.target.style.borderColor = formErrors["Display Technology"]
+                        (e.target.style.borderColor = formErrors[
+                          "Display Technology"
+                        ]
                           ? "#dc3545"
                           : "#e5e7eb")
                       }
                       required
                     >
                       <option value="">Select Display Technology</option>
-                      <option value="PLS LCD">LCD</option>
                       <option value="IPS LCD">IPS LCD</option>
                       <option value="OLED">OLED</option>
                       <option value="AMOLED">AMOLED</option>
                       <option value="Super AMOLED">Super AMOLED</option>
                       <option value="Dynamic AMOLED">Dynamic AMOLED</option>
-                      <option value="Super Retina XDR OLED">
-                        Super Retina
-                      </option>
-                      <option value="LTPO Super Retina XDR OLED">
-                        Liquid Retina
-                      </option>
                     </select>
                     {formErrors["Display Technology"] && (
                       <div className="invalid-feedback">
@@ -443,12 +449,16 @@ function GeneratePrice() {
                       onChange={handleChange}
                       onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
                       onBlur={(e) =>
-                        (e.target.style.borderColor = formErrors["Pixel Density"]
+                        (e.target.style.borderColor = formErrors[
+                          "Pixel Density"
+                        ]
                           ? "#dc3545"
                           : "#e5e7eb")
                       }
                       style={{
-                        borderColor: formErrors["Pixel Density"] ? "#dc3545" : "#e5e7eb",
+                        borderColor: formErrors["Pixel Density"]
+                          ? "#dc3545"
+                          : "#e5e7eb",
                         transition: "all 0.3s",
                       }}
                       required
@@ -461,7 +471,9 @@ function GeneratePrice() {
                       <small className="text-muted">500</small>
                     </div>
                     {formErrors["Pixel Density"] && (
-                      <div className="invalid-feedback">{formErrors["Pixel Density"]}</div>
+                      <div className="invalid-feedback">
+                        {formErrors["Pixel Density"]}
+                      </div>
                     )}
                   </div>
 
@@ -474,7 +486,9 @@ function GeneratePrice() {
                         formErrors["CPU Manufacturing"] ? "is-invalid" : ""
                       }`}
                       style={{
-                        borderColor: formErrors["CPU Manufacturing"] ? "#dc3545" : "#e5e7eb",
+                        borderColor: formErrors["CPU Manufacturing"]
+                          ? "#dc3545"
+                          : "#e5e7eb",
                         transition: "all 0.3s",
                       }}
                       name="CPU Manufacturing"
@@ -482,7 +496,9 @@ function GeneratePrice() {
                       onChange={handleChange}
                       onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
                       onBlur={(e) =>
-                        (e.target.style.borderColor = formErrors["CPU Manufacturing"]
+                        (e.target.style.borderColor = formErrors[
+                          "CPU Manufacturing"
+                        ]
                           ? "#dc3545"
                           : "#e5e7eb")
                       }
@@ -501,6 +517,76 @@ function GeneratePrice() {
                     {formErrors["CPU Manufacturing"] && (
                       <div className="invalid-feedback">
                         {formErrors["CPU Manufacturing"]}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="col-md-6">
+                    <label className="form-label fw-semibold text-gray-700">
+                      <span className="me-2">📶</span>5G
+                    </label>
+                    <select
+                      className={`form-select form-select-lg border-2 ${
+                        formErrors["5G"] ? "is-invalid" : ""
+                      }`}
+                      style={{
+                        borderColor: formErrors["5G"] ? "#dc3545" : "#e5e7eb",
+                        transition: "all 0.3s",
+                      }}
+                      name="5G"
+                      value={formData["5G"]}
+                      onChange={handleChange}
+                      onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
+                      onBlur={(e) =>
+                        (e.target.style.borderColor = formErrors["5G"]
+                          ? "#dc3545"
+                          : "#e5e7eb")
+                      }
+                      required
+                    >
+                      <option value="">Select 5G Status</option>
+                      <option value="1">Yes</option>
+                      <option value="0">No</option>
+                    </select>
+                    {formErrors["5G"] && (
+                      <div className="invalid-feedback">{formErrors["5G"]}</div>
+                    )}
+                  </div>
+
+                  <div className="col-md-6">
+                    <label className="form-label fw-semibold text-gray-700">
+                      <span className="me-2">🔄</span>Refresh Rate
+                    </label>
+                    <select
+                      className={`form-select form-select-lg border-2 ${
+                        formErrors["Refresh Rate"] ? "is-invalid" : ""
+                      }`}
+                      style={{
+                        borderColor: formErrors["Refresh Rate"]
+                          ? "#dc3545"
+                          : "#e5e7eb",
+                        transition: "all 0.3s",
+                      }}
+                      name="Refresh Rate"
+                      value={formData["Refresh Rate"]}
+                      onChange={handleChange}
+                      onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
+                      onBlur={(e) =>
+                        (e.target.style.borderColor = formErrors["Refresh Rate"]
+                          ? "#dc3545"
+                          : "#e5e7eb")
+                      }
+                      required
+                    >
+                      <option value="">Select Refresh Rate (Hz)</option>
+                      <option value="60">60 Hz</option>
+                      <option value="90">90 Hz</option>
+                      <option value="120">120 Hz</option>
+                      <option value="144">144 Hz</option>
+                    </select>
+                    {formErrors["Refresh Rate"] && (
+                      <div className="invalid-feedback">
+                        {formErrors["Refresh Rate"]}
                       </div>
                     )}
                   </div>
