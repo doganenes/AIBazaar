@@ -78,7 +78,7 @@ function Favorites() {
   return (
     <Container className="favorites-container">
       {favoriteProducts.length > 0 && (
-        <h2 className="mb-4 mt-3">My Favorite Products</h2>
+        <h2 className="mb-5 mt-3">My Favorite Products</h2>
       )}
 
       {favoriteProducts.length === 0 ? (

@@ -103,9 +103,14 @@ const DescriptionTable = ({ description }) => {
 
   return (
     <div className="card h-100">
-      <div className="card-header bg-secondary text-white">
+      <div
+        className="card-header text-white"
+        style={{
+          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+        }}
+      >
         <h5 className="card-title mb-0">
-          <i className="fas fa-info-circle me-2"></i>
+          <i className="fas fa-list-ul me-2 p-2"></i>
           Features
         </h5>
       </div>
@@ -163,8 +168,7 @@ function ProductDetail() {
     try {
       const response = await predict_lstm(product.productName);
       console.log("API Response:", response); // Debug için
-      
-      // API yanıtından predicted_prices'ı al ve forecastData olarak ayarla
+
       if (response && response.predicted_prices) {
         setForecastData(response.predicted_prices);
       } else {
