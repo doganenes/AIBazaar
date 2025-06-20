@@ -26,7 +26,7 @@ user_agents = [
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_2_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Safari/605.1.15",
 ]
 
-base_url = "https://www.epey.com/akilli-telefonlar/e/YTo0OntpOjE4NzA7YTozOntpOjA7czo3OiIyNTE1MDkzIjtpOjE7czo3OiIyMzg2NTQ3IjtpOjI7czo3OiIyMTk5NDE1Ijt9czo3OiJnYXJhbnRpIjthOjE6e2k6MDtzOjE6IjEiO31pOjE0O2E6Mjp7aTowO3M6MToiNCI7aToxO3M6MjoiMjQiO31zOjQ6Im96ZWwiO2E6MTp7aTowO3M6Nzoic2F0aXN0YSI7fX1fYjowOw==/"
+base_url = "https://www.epey.com/akilli-telefonlar/e/YTo0OntpOjE4NzA7YTozOntpOjA7czo3OiIyNTE1MDkzIjtpOjE7czo3OiIyMzg2NTQ3IjtpOjI7czo3OiIyMTk5NDE1Ijt9czo3OiJnYXJhbnRpIjthOjE6e2k6MDtzOjE6IjEiO31zOjU6ImZpeWF0IjthOjI6e2k6MDtzOjQ6IjUwMDAiO2k6MTtzOjY6IjExOTAwMCI7fWk6MTQ7YToyOntpOjA7czoxOiI0IjtpOjE7czoyOiIyNCI7fX1fTjs=/"
 productIds = []
 
 for page_num in range(1, 12):
@@ -50,12 +50,19 @@ for page_num in range(1, 12):
     if container:
         ul_elements = container.find_all("ul")
         print(f"Sayfa {page_num} UL id'leri:")
-        for ul in ul_elements:
+        for ul in ul_elements[1:]:
             productImg = None
             ul_id = ul.get("id")
             if ul_id and ul_id not in productIds:
                 productImg = ul.find("img")
-                productImgLink = productImg.get("src")
+                if productImg:
+                    productImgLink = productImg.get("src").replace("k_", "b_")
+                    
+                    if "reklam" in productImgLink:
+                        continue
+                else:
+                    productImgLink = None
+
                 a_tag = ul.find("a", class_="urunadi")
                 if a_tag:
                     productTitle = a_tag.get("title")

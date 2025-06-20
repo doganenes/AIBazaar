@@ -1,7 +1,5 @@
 ProductID,ProductImage,ProductName
-960603,https://resim.epey.com/reklam/1549_1543172477_ust.jpg?v=5,Samsung Galaxy A16 5G
 966543,https://resim.epey.com/966543/b_xiaomi-15-ultra-2.png,Xiaomi 15 Ultra Cep Telefonu
-968566,https://resim.epey.com/968566/b_oneplus-13-1.png,OnePlus 13 Cep Telefonu
 968786,https://resim.epey.com/968786/b_honor-magic7-pro-11.png,Honor Magic7 Pro (PTP-N49) Cep Telefonu
 960937,https://resim.epey.com/960937/b_vivo-x200-pro-1.png,Vivo X200 Pro Cep Telefonu
 960862,https://resim.epey.com/960862/b_apple-iphone-16-pro-max-1tb-2.png,Apple iPhone 16 Pro Max 1 TB Cep Telefonu
@@ -62,7 +60,6 @@ ProductID,ProductImage,ProductName
 959779,https://resim.epey.com/959779/b_apple-iphone-16-2.png,Apple iPhone 16 128 GB Cep Telefonu
 958540,https://resim.epey.com/958540/b_xiaomi-14t-1.png,Xiaomi 14T 256 GB Cep Telefonu
 963088,https://resim.epey.com/963088/b_nubia-red-magic-9s-pro-512gb-2.png,Nubia Red Magic 9S Pro 16 GB / 512 GB Cep Telefonu
-968061,https://resim.epey.com/reklam/1593_13906980_ust.jpg?v=5,Huawei Nova 13 Pro
 934802,https://resim.epey.com/934802/b_huawei-pura-70-ultra-18.png,Huawei Pura 70 Ultra (HBP-LX9) Cep Telefonu
 890830,https://resim.epey.com/890830/b_xiaomi-13t-pro-5.png,Xiaomi 13T Pro Cep Telefonu
 986894,https://resim.epey.com/986894/b_poco-x7-pro-512gb-2.png,Poco X7 Pro 12 GB / 512 GB Cep Telefonu
@@ -94,7 +91,6 @@ ProductID,ProductImage,ProductName
 894506,https://resim.epey.com/894506/b_apple-iphone-15-plus-2.png,Apple iPhone 15 Plus Cep Telefonu
 895863,https://resim.epey.com/895863/b_apple-iphone-15-256gb-1.png,Apple iPhone 15 256 GB Cep Telefonu
 940647,https://resim.epey.com/940647/b_realme-gt-6t-1.png,realme GT 6T (RMX3853) Cep Telefonu
-687645,https://resim.epey.com/reklam/1590_1464856833_ust.png?v=5,Samsung Galaxy S20 FE
 940908,https://resim.epey.com/940908/b_poco-f6-512gb-5.png,Poco F6 12 GB / 512 GB Cep Telefonu
 845148,https://resim.epey.com/845148/b_samsung-galaxy-s23-2.png,Samsung Galaxy S23 (SM-S911B) Cep Telefonu
 873950,https://resim.epey.com/873950/b_poco-f5-pro-512gb-1.png,Poco F5 Pro 512 GB Cep Telefonu
@@ -105,7 +101,6 @@ ProductID,ProductImage,ProductName
 919029,https://resim.epey.com/919029/b_poco-x6-pro-512gb-1.png,Poco X6 Pro 12 GB / 512 GB Cep Telefonu
 871839,https://resim.epey.com/871839/b_samsung-galaxy-z-flip5-2.png,Samsung Galaxy Z Flip 5 256 GB (SM-F731B) Cep Telefonu
 993997,https://resim.epey.com/993997/b_vivo-v50-2.png,Vivo V50 5G (V2427) Cep Telefonu
-934550,https://resim.epey.com/934550/b_poco-f6-5.png,Poco F6 Cep Telefonu
 987058,https://resim.epey.com/987058/b_redmi-note-14-pro-plus-3.png,Redmi Note 14 Pro+ Cep Telefonu
 899244,https://resim.epey.com/899244/b_samsung-galaxy-s23-fe-256gb-2.png,Samsung Galaxy S23 FE 256 GB Cep Telefonu
 872854,https://resim.epey.com/872854/b_oneplus-nord-3-1.png,OnePlus Nord 3 (CPH2493) Cep Telefonu
@@ -119,7 +114,7 @@ ProductID,ProductImage,ProductName
 930734,https://resim.epey.com/930734/b_vivo-v30-512gb-4.png,Vivo V30 512 GB Cep Telefonu
 894931,https://resim.epey.com/894931/b_redmi-note-13-pro-1.png,Redmi Note 13 Pro 5G 12 GB / 512 GB Cep Telefonu
 942114,https://resim.epey.com/942114/b_realme-12-pro-plus-512gb-12.png,realme 12 Pro+ 12 GB / 512 GB (RMX3840) Cep Telefonu
-846678,https://resim.epey.com/846678/b_poco-f5-1.png,Poco F5 Cep Telefonu
+968061,https://resim.epey.com/968061/b_huawei-nova-13-pro-1.png,Huawei Nova 13 Pro 512 GB (MIS-LX9) Cep Telefonu
 922717,https://resim.epey.com/922717/b_vivo-v30-4.png,Vivo V30 (V2318) Cep Telefonu
 937597,https://resim.epey.com/937597/b_redmi-note-13-pro-5g-1.png,Redmi Note 13 Pro 5G 12 GB / 256 GB Cep Telefonu
 969507,https://resim.epey.com/969507/b_honor-200-256gb-1.png,Honor 200 8 GB / 256 GB Cep Telefonu
@@ -127,11 +122,9 @@ ProductID,ProductImage,ProductName
 968448,https://resim.epey.com/968448/b_samsung-galaxy-a56-5g-4.png,Samsung Galaxy A56 5G 256 GB (SM-A566B) Cep Telefonu
 951882,https://resim.epey.com/951882/b_poco-x6-2.png,Poco X6 5G 512 GB Cep Telefonu
 1006492,https://resim.epey.com/1006492/b_huawei-nova-13-pro-1.png,Huawei Nova 13 Pro 256 GB Cep Telefonu
-977394,https://resim.epey.com/977394/b_poco-x7-1.png,Poco X7 Cep Telefonu
 931661,https://resim.epey.com/931661/b_samsung-galaxy-a55-5g-256gb-1.png,Samsung Galaxy A55 5G 256 GB Cep Telefonu
 988496,https://resim.epey.com/988496/b_oppo-reno13-f-5g-1.png,Oppo Reno13 F 5G (CPH2699) Cep Telefonu
 982813,https://resim.epey.com/982813/b_redmi-note-13-pro-5g-1.png,Redmi Note 13 Pro 5G 8 GB / 256 GB Cep Telefonu
-917844,https://resim.epey.com/917844/b_poco-x6-5g-2.png,Poco X6 5G 256 GB Cep Telefonu
 921556,https://resim.epey.com/921556/b_realme-12-pro-plus-12.png,realme 12 Pro+ (RMX3840) Cep Telefonu
 1001256,https://resim.epey.com/1001256/b_samsung-galaxy-a56-5g-4.png,Samsung Galaxy A56 5G 128 GB Cep Telefonu
 988959,https://resim.epey.com/988959/b_honor-magic7-lite-20.png,Honor Magic7 Lite 512 GB Cep Telefonu
@@ -181,7 +174,6 @@ ProductID,ProductImage,ProductName
 866686,https://resim.epey.com/866686/b_realme-11-pro-1.png,realme 11 Pro (RMX3771) Cep Telefonu
 926288,https://resim.epey.com/926288/b_tecno-camon-30-2.png,Tecno Camon 30 (CL6) Cep Telefonu
 988896,https://resim.epey.com/988896/b_redmi-note-14-256gb-6.png,Redmi Note 14 256 GB Cep Telefonu
-930162,https://resim.epey.com/930162/b_infinix-note-40-4.png,Infinix Note 40 (X6853) Cep Telefonu
 877145,https://resim.epey.com/877145/b_samsung-galaxy-m34-5g-4.png,Samsung Galaxy M34 5G (SM-M346B2/DS) Cep Telefonu
 889975,https://resim.epey.com/889975/b_general-mobile-phoenix-5g-7.png,General Mobile GM Phoneix 5G (G901) Cep Telefonu
 900052,https://resim.epey.com/900052/b_infinix-zero-30-4g-2.png,Infinix Zero 30 4G (X6731B) Cep Telefonu
@@ -206,10 +198,12 @@ ProductID,ProductImage,ProductName
 913942,https://resim.epey.com/913942/b_tecno-spark-20-pro-1.png,Tecno Spark 20 Pro 8 GB (KJ6) Cep Telefonu
 859458,https://resim.epey.com/859458/b_oneplus-nord-ce-3-lite-1.png,OnePlus Nord CE 3 Lite (CPH2465) Cep Telefonu
 889977,https://resim.epey.com/889977/b_general-mobile-gm-24-pro-14.png,General Mobile GM 24 Pro (G514) Cep Telefonu
+960603,https://resim.epey.com/960603/b_samsung-galaxy-a16-5g-6.png,Samsung Galaxy A16 5G (SM-A166B) Cep Telefonu
 933491,https://resim.epey.com/933491/b_vivo-v30-lite-12.png,Vivo V30 Lite Cep Telefonu
 859061,https://resim.epey.com/859061/b_redmi-note-12s-1.png,Redmi Note 12S Cep Telefonu
 884833,https://resim.epey.com/884833/b_realme-11-4g-4.png,realme 11 4G 256 GB (RMX3636) Cep Telefonu
 910129,https://resim.epey.com/910129/b_infinix-hot-40-pro-1.png,Infinix Hot 40 Pro 256 GB (X6837) Cep Telefonu
+868717,https://resim.epey.com/868717/b_infinix-note-30-4.png,Infinix Note 30 128 GB (X6833B) Cep Telefonu
 866331,https://resim.epey.com/866331/b_tecno-camon-20-10.png,Tecno Camon 20 (CK6n) Cep Telefonu
 974759,https://resim.epey.com/974759/b_samsung-galaxy-a16-256gb-5.png,Samsung Galaxy A16 8 GB / 256 GB Cep Telefonu
 918685,https://resim.epey.com/918685/b_samsung-galaxy-a15-256gb-5.png,Samsung Galaxy A15 8 GB / 256 GB Cep Telefonu
@@ -293,7 +287,6 @@ ProductID,ProductImage,ProductName
 952611,https://resim.epey.com/952611/b_samsung-galaxy-a06-2.png,Samsung Galaxy A06 (SM-A065F) Cep Telefonu
 859745,https://resim.epey.com/859745/b_tecno-spark-10-4.png,Tecno Spark 10 4 GB (KI5q) Cep Telefonu
 895495,https://resim.epey.com/895495/b_vivo-y17s-2.png,Vivo Y17s 4 GB Cep Telefonu
-885956,https://resim.epey.com/885956/b_omix-x5-128gb-1.png,Omix X5 128 GB / 4 GB Cep Telefonu
 925068,https://resim.epey.com/925068/b_itel-s23-256gb-1.png,itel S23 256 GB Cep Telefonu
 859751,https://resim.epey.com/859751/b_tecno-spark-10c-4.png,Tecno Spark 10C (KI5k) Cep Telefonu
 870747,https://resim.epey.com/870747/b_realme-c53-2.png,realme C53 4 GB / 128 GB (RMX3760) Cep Telefonu
@@ -309,9 +302,7 @@ ProductID,ProductImage,ProductName
 859340,https://resim.epey.com/859340/b_infinix-hot-30i-1.png,Infinix Hot 30i (X669) Cep Telefonu
 861952,https://resim.epey.com/861952/b_omix-x5-1.png,Omix X5 64 GB / 4 GB Cep Telefonu
 919738,https://resim.epey.com/919738/b_realme-note-50-2.png,realme Note 50 (RMX3834) Cep Telefonu
-907940,https://resim.epey.com/907940/b_tecno-spark-go-2021-1.png,Tecno Spark Go 2024 (BG6) Cep Telefonu
 939142,https://resim.epey.com/939142/b_infinix-hot-30i-asya-1.png,Infinix Hot 30i 4 GB / 128 GB Cep Telefonu
-868456,https://resim.epey.com/868456/b_oukitel-c32-5.png,Oukitel C32 Cep Telefonu
 921588,https://resim.epey.com/921588/b_infinix-smart-8-pro-3.png,Infinix Smart 8 Pro 4 GB (X6525B) Cep Telefonu
 863928,https://resim.epey.com/863928/b_general-mobile-gm-23-9.png,General Mobile GM 23 (G316) Cep Telefonu
 892993,https://resim.epey.com/892993/b_samsung-galaxy-a05-1.png,Samsung Galaxy A05 64 GB (SM-A055F) Cep Telefonu
@@ -324,20 +315,28 @@ ProductID,ProductImage,ProductName
 1013014,https://resim.epey.com/1013014/b_honor-400-12-256gb-8.png,Honor 400 12 GB (DNY-NX9) Cep Telefonu
 1008074,https://resim.epey.com/1008074/b_samsung-galaxy-s25-edge-512gb-1.png,Samsung Galaxy S25 Edge 512 GB (SM-S937B) Cep Telefonu
 983834,https://resim.epey.com/983834/b_samsung-galaxy-s25-edge-1.png,Samsung Galaxy S25 Edge (SM-S937B) Cep Telefonu
+1013676,https://resim.epey.com/1013676/b_tecno-camon-40-12-256gb-2.png,Tecno Camon 40 256 GB Cep Telefonu
 1004721,https://resim.epey.com/1004721/b_infinix-hot-50-256gb-1.png,Infinix Hot 50 8 GB / 256 GB Cep Telefonu
-999318,https://resim.epey.com/999318/b_oppo-a5-pro-4g-3.png,Oppo A5 Pro Cep Telefonu
-997847,https://resim.epey.com/997847/b_tecno-camon-40-2.png,Tecno Camon 40 (CM5) Cep Telefonu
+999318,https://resim.epey.com/999318/b_oppo-a5-pro-4g-3.png,Oppo A5 Pro (CPH2711) Cep Telefonu
+997848,https://resim.epey.com/997848/b_tecno-camon-40-premier-2.png,Tecno Camon 40 Premier 5G (CM8) Cep Telefonu
+997847,https://resim.epey.com/997847/b_tecno-camon-40-2.png,Tecno Camon 40 256 GB (CM5) Cep Telefonu
 1007990,https://resim.epey.com/1007990/b_infinix-hot-50-6-256gb-1.png,Infinix Hot 50 6 GB / 256 GB Cep Telefonu
 965099,https://resim.epey.com/965099/b_hiking-a45-8gb-2.png,Hiking A45 8 GB Cep Telefonu
-984514,https://resim.epey.com/984514/b_hiking-a45-4gb-2.png,Hiking A45 4GB 4 GB Cep Telefonu
 963903,https://resim.epey.com/963903/b_infinix-hot-50-1.png,Infinix Hot 50 8 GB / 128 GB (X6882) Cep Telefonu
 953989,https://resim.epey.com/953989/b_general-mobile-era-50-256gb-1.png,General Mobile Era 50 256 GB Cep Telefonu
 953981,https://resim.epey.com/953981/b_general-mobile-era-50-1.png,General Mobile Era 50 128 GB Cep Telefonu
 953985,https://resim.epey.com/953985/b_general-mobile-era-30-1.png,General Mobile Era 30 Cep Telefonu
 955429,https://resim.epey.com/955429/b_mipo-m59-1.png,Mipo M59 Cep Telefonu
-951764,https://resim.epey.com/951764/b_hiking-a45-2.png,Hiking A45 6 GB Cep Telefonu
-961051,https://resim.epey.com/961051/b_reeder-s23-pro-max-128gb-7.png,Reeder S23 Pro Max 6 GB / 128 GB Cep Telefonu
 948348,https://resim.epey.com/948348/b_mipo-m46-plus-5.png,Mipo M46 Plus Cep Telefonu
 935581,https://resim.epey.com/935581/b_casper-via-m40-4.png,Casper VIA M40 Cep Telefonu
 941524,https://resim.epey.com/941524/b_zte-nubia-focus-5g-1.png,ZTE nubia Focus 5G Cep Telefonu
 936131,https://resim.epey.com/936131/b_ovion-v20-pro-1.png,Ovion V20 Pro Cep Telefonu
+925999,https://resim.epey.com/925999/b_reeder-s19-max-pro-s-edge-2.png,Reeder S19 Max Pro S Edge Cep Telefonu
+921063,https://resim.epey.com/921063/b_casper-via-x40-2.png,Casper VIA X40 Cep Telefonu
+986554,https://resim.epey.com/986554/b_infinix-note-12-pro-1.png,Infinix Note 12 Pro 4G Cep Telefonu
+921462,https://resim.epey.com/921462/b_omix-x6-2.png,Omix X6 Cep Telefonu
+909684,https://resim.epey.com/909684/b_redmi-13c-5g-1.png,Redmi 13C 5G 4 GB Cep Telefonu
+909734,https://resim.epey.com/909734/b_mipo-m33-1.png,Mipo M33 Cep Telefonu
+909853,https://resim.epey.com/909853/b_mipo-m17-1.png,Mipo M17 Cep Telefonu
+909735,https://resim.epey.com/909735/b_mipo-m25-1.png,Mipo M25 Cep Telefonu
+913941,https://resim.epey.com/913941/b_reeder-s23-pro-max-512gb-7.png,Reeder S23 Pro Max 8 GB / 512 GB Cep Telefonu

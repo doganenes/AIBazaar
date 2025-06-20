@@ -29,7 +29,7 @@ user_agents = [
     "Mozilla/5.0 (Linux; Android 9; Redmi Note 8 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.5481.77 Mobile Safari/537.36",
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_2_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Safari/605.1.15",
 ]
-base_url = "https://www.epey.com/akilli-telefonlar/e/YTo0OntpOjE4NzA7YTozOntpOjA7czo3OiIyNTE1MDkzIjtpOjE7czo3OiIyMzg2NTQ3IjtpOjI7czo3OiIyMTk5NDE1Ijt9czo3OiJnYXJhbnRpIjthOjE6e2k6MDtzOjE6IjEiO31pOjE0O2E6Mjp7aTowO3M6MToiNCI7aToxO3M6MjoiMjQiO31zOjQ6Im96ZWwiO2E6MTp7aTowO3M6Nzoic2F0aXN0YSI7fX1fYjowOw==/"
+base_url = "https://www.epey.com/akilli-telefonlar/e/YTo0OntpOjE4NzA7YTozOntpOjA7czo3OiIyNTE1MDkzIjtpOjE7czo3OiIyMzg2NTQ3IjtpOjI7czo3OiIyMTk5NDE1Ijt9czo3OiJnYXJhbnRpIjthOjE6e2k6MDtzOjE6IjEiO31zOjU6ImZpeWF0IjthOjI6e2k6MDtzOjQ6IjUwMDAiO2k6MTtzOjY6IjExOTAwMCI7fWk6MTQ7YToyOntpOjA7czoxOiI0IjtpOjE7czoyOiIyNCI7fX1fTjs=/"
 feature_ids = {
     "Ekran Boyutu": "id1",
     "Ekran Teknolojisi": "id4",
@@ -42,6 +42,7 @@ feature_ids = {
     "Dahili Hafıza": "id21",
     "Hızlı Şarj Desteği": "id6104",
     "Ekran Yenileme Hızı": "id6737",
+    "5G":"id5711"
 }
 
 all_phones = []
@@ -93,12 +94,11 @@ for page_num in range(1, 12):
 
             product_link = a_tag.get("href")
             if product_link.startswith("https://track.adform.net"):
-                    continue
+                continue
 
             if not product_link.startswith("http"):
                 product_link = "https://www.epey.com" + product_link
 
-            
             # Yeni sayfaya gidelim
             driver.get(product_link)
 
@@ -118,8 +118,20 @@ for page_num in range(1, 12):
             time.sleep(random.uniform(2, 4))
 
             detail_soup = BeautifulSoup(driver.page_source, "html.parser")
+            price_tag = detail_soup.select_one(
+                "#fiyatlar > div.fiyatlar > div.fiyat.fiyat-1 span.urun_fiyat"
+            )
+            productPrice = (
+                price_tag.get_text(strip=True)
+                .split(" TL")[0]
+                .replace(".", "")
+                .split(",")[0]
+            )
+            if productPrice:
+                print(f"Ürün: {phoneModel}, Fiyat: {productPrice} TL")
 
             features = []
+            features.append(f"Model: {phoneModel}")
             for label, id_ in feature_ids.items():
                 li = detail_soup.find("li", id=id_)
                 if li:
@@ -128,7 +140,8 @@ for page_num in range(1, 12):
                         value = deger.get_text(strip=True)
                         features.append(f"{label}: {value}")
 
-            features.append(f"Model: {phoneModel}")
+           
+            features.append(f"Price: {productPrice}")
             description = "; ".join(features)
 
             all_phones.append(
