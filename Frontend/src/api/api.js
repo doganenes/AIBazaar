@@ -144,15 +144,15 @@ export const removeFavoriteProduct = async (userId, productId) => {
   }
 };
 
-export const predict_lstm = async (productName) => {
+export const predict_lstm = async (productId) => {
   try {
     const response = await aiApi.post("/api/predict_product_lstm/", {
-      product: productName,
+      productId: productId,
     });
 
     return response.data;
-  } catch (error) { 
-    console.error("API error occurred:",error.response?.data || error.message);
+  } catch (error) {
+    console.error("API error occurred:", error.response?.data || error.message);
     throw error;
   }
 };

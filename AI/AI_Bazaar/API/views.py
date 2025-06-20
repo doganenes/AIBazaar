@@ -202,17 +202,24 @@ def predict_product_xgboost(request):
         print(f"Error in XGBoost prediction: {str(e)}")
         return Response({"error": str(e)}, status=400)
 
+
+    
 @api_view(["POST"])
 def predict_product_lstm(request):
     try:
-        product_name = request.data.get("product")
-        steps = int(request.data.get("steps", 15))
+        product_id = request.data.get("productId")
+        if product_id is None:
+            return Response({"error": "productId is required."}, status=status.HTTP_400_BAD_REQUEST)
 
-        if not product_name:
-            return Response({"error": "Product name is required."}, status=400)
+        df = lstm_trainer.load_data()
+        product_df = df[df["ProductID"] == int(product_id)]
 
-        result = lstm_trainer.predict_price(product_name, steps)
-        return Response(result)
+        if product_df.empty:
+            return Response({"error": "Product not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        result = lstm_trainer.predict_price(product_id=product_id, steps=15)
+
+        return Response(result, status=status.HTTP_200_OK)
 
     except Exception as e:
-        return Response({"error": str(e)}, status=400)
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

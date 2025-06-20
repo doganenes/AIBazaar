@@ -134,12 +134,13 @@ const DescriptionTable = ({ description }) => {
 
 function ProductDetail() {
   const { id } = useParams();
+  console.log("Product ID from URL:", id);
+  const [productId, setProductId] = useState(id);
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [forecastData, setForecastData] = useState([]);
   const [forecastLoading, setForecastLoading] = useState(false);
   const [error, setError] = useState(null);
-
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -156,9 +157,9 @@ function ProductDetail() {
     fetchProduct();
   }, [id]);
 
-  const fetchForecastData = async (productName) => {
-    if (!productName || !productName.trim()) {
-      console.warn("Product name is empty, can't get prediction data");
+  const fetchForecastData = async (productId) => {
+    if (!productId) {
+      console.warn("Product ID is empty, can't get prediction data");
       return;
     }
 
@@ -166,18 +167,18 @@ function ProductDetail() {
     setError(null);
 
     try {
-      const response = await predict_lstm(product.productName);
-      console.log("API Response:", response); // Debug için
+      const response = await predict_lstm(productId);
+      console.log("API Response:", response);
 
       if (response && response.predicted_prices) {
         setForecastData(response.predicted_prices);
       } else {
-        setError("Tahmin verisi bulunamadı");
+        setError("Forecast not found for this product");
         setForecastData([]);
       }
     } catch (error) {
       console.error("Failed to fetch forecast data:", error);
-      setError("Tahmin verisi alınırken hata oluştu");
+      setError("Error occurred while fetching forecast data");
       setForecastData([]);
     } finally {
       setForecastLoading(false);
@@ -185,8 +186,8 @@ function ProductDetail() {
   };
 
   const handleRefreshForecast = async () => {
-    if (product && product.productName) {
-      await fetchForecastData(product.productName);
+    if (product && productId) {
+      await fetchForecastData(productId);
     }
   };
 
@@ -196,8 +197,8 @@ function ProductDetail() {
   const stats = calculateStats(forecastData);
 
   useEffect(() => {
-    if (product && product.productName && forecastData.length === 0) {
-      fetchForecastData(product.productName);
+    if (product && productId && forecastData.length === 0) {
+      fetchForecastData(productId);
     }
   }, [product]);
 
@@ -206,7 +207,7 @@ function ProductDetail() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-          <p className="text-gray-600 mt-4">Ürün yükleniyor...</p>
+          <p className="text-gray-600 mt-4">Loading product...</p>
         </div>
       </div>
     );
@@ -215,7 +216,7 @@ function ProductDetail() {
   if (!product) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-red-600 text-lg">Ürün bulunamadı!</p>
+        <p className="text-red-600 text-lg">Product not found!</p>
       </div>
     );
   }
@@ -275,12 +276,12 @@ function ProductDetail() {
                 style={{ height: "300px" }}
               >
                 <div className="fs-1">📊</div>
-                <p className="mb-2">Tahmin bulunamadı!</p>
+                <p className="mb-2">Forecast not found!</p>
                 <button
                   onClick={handleRefreshForecast}
                   className="btn btn-primary"
                 >
-                  Tekrar Dene
+                  Try Again
                 </button>
               </div>
             )}
@@ -387,7 +388,7 @@ function ProductDetail() {
                 style={{ height: "100px" }}
               >
                 <div className="fs-2">📉</div>
-                <p>İstatistik verisi yok</p>
+                <p>Stats not found</p>
               </div>
             )}
           </div>
