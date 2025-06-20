@@ -46,12 +46,6 @@ function ProductCard({ product, onFavoriteAdded }) {
             <i className="fa-regular fa-heart"></i>
           </button>
         </div>
-
-        <div className="position-absolute top-0 end-0 m-3">
-          {/* <span className="badge bg-primary fs-6 px-3 py-2">
-            ₺{product.price.toFixed(2)}
-          </span> */}
-        </div>
       </div>
 
       <div className="card-body d-flex flex-column">
@@ -61,18 +55,6 @@ function ProductCard({ product, onFavoriteAdded }) {
         >
           {product.productName}
         </h5>
-
-        {/* <p
-          className="card-text text-muted small flex-grow-1"
-          style={{
-            display: "-webkit-box",
-            WebkitLineClamp: 3,
-            WebkitBoxOrient: "vertical",
-            overflow: "hidden",
-          }}
-        >
-          {product.description}
-        </p> */}
       </div>
     </div>
   );

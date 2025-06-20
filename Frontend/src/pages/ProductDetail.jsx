@@ -249,7 +249,7 @@ function ProductDetail() {
       <div className="row g-4">
         <div className="col-lg-8">
           <div className="bg-white rounded shadow-sm p-4 h-100">
-            <h5 className="fw-semibold mb-3">📈 Price Forecast For 15 Days</h5>
+            <h5 className="fw-semibold mb-3">📈 Price Forecast for {product.productName} in 15 Days</h5>
 
             {error && <div className="alert alert-danger small">{error}</div>}
 

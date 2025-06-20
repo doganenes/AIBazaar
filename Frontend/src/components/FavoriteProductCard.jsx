@@ -1,12 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { removeFavoriteProduct, tokenToId } from "../api/api";
+import "../css/FavoriteProductCard.css";
 
 function FavoriteProductCard({
   productID,
   title,
-  description,
-  price,
   imageUrl,
   onFavoriteRemoved,
 }) {
