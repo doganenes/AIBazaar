@@ -56,9 +56,9 @@ class LSTMModelTrainer:
         model = self.create_model()
         model.fit(x, y, epochs=50, batch_size=4, verbose=1)
         
-        model_path = os.path.join(self.model_dir, f"C:\Users\pc\Desktop\AIbazaar\AIBazaar\AI\AI_Bazaar\models\general_lstm_model.h5")
-        scaler_path = os.path.join(self.model_dir, f"C:\Users\pc\Desktop\AIbazaar\AIBazaar\AI\AI_Bazaar\models\general_scaler.pklgit ")
-        
+        model_path = os.path.join(self.model_dir, r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\models\general_lstm_model.h5")
+        scaler_path = os.path.join(self.model_dir, r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\models\general_scaler.pkl")
+
         model.save(model_path)
         with open(scaler_path, 'wb') as f:
             pickle.dump(scaler, f)

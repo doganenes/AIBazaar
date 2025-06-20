@@ -12,14 +12,14 @@ from rest_framework import status
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
-# from trainers.train_lstm_models import LSTMModelTrainer
+from trainers.train_lstm_models import LSTMModelTrainer
 import xgboost as xgb
 from tensorflow.keras.models import load_model
 
-# lstm_trainer = LSTMModelTrainer(
-#     data_path=r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\notebooks\LSTMPriceHistory.csv",
-#     model_dir=r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\models"
-# )
+lstm_trainer = LSTMModelTrainer(
+    data_path=r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\notebooks\LSTMPriceHistory.csv",
+    model_dir=r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\models"
+)
 
 
 @api_view(["POST"])
@@ -202,17 +202,17 @@ def predict_product_xgboost(request):
         print(f"Error in XGBoost prediction: {str(e)}")
         return Response({"error": str(e)}, status=400)
 
-# @api_view(["POST"])
-# def predict_product_lstm(request):
-#     try:
-#         product_name = request.data.get("product")
-#         steps = int(request.data.get("steps", 15))
+@api_view(["POST"])
+def predict_product_lstm(request):
+    try:
+        product_name = request.data.get("product")
+        steps = int(request.data.get("steps", 15))
 
-#         if not product_name:
-#             return Response({"error": "Product name is required."}, status=400)
+        if not product_name:
+            return Response({"error": "Product name is required."}, status=400)
 
-#         result = lstm_trainer.predict_price(product_name, steps)
-#         return Response(result)
+        result = lstm_trainer.predict_price(product_name, steps)
+        return Response(result)
 
-#     except Exception as e:
-#         return Response({"error": str(e)}, status=400)
+    except Exception as e:
+        return Response({"error": str(e)}, status=400)

@@ -13,7 +13,7 @@ function GeneratePrice() {
     "Pixel Density": "375",
     "Operating System": "",
     "Display Technology": "",
-    "Camera": "104",
+    "camera": "104",
     "CPU Manufacturing": "",
     "5G": "",
     "Refresh Rate": "",
