@@ -103,7 +103,7 @@ const DescriptionTable = ({ description }) => {
 
   return (
     <div className="card h-100">
-      <div className="card-header bg-primary text-white">
+      <div className="card-header bg-secondary text-white">
         <h5 className="card-title mb-0">
           <i className="fas fa-info-circle me-2"></i>
           Features
@@ -162,9 +162,19 @@ function ProductDetail() {
 
     try {
       const response = await predict_lstm(product.productName);
-      setForecastData(response.forecast);
+      console.log("API Response:", response); // Debug için
+      
+      // API yanıtından predicted_prices'ı al ve forecastData olarak ayarla
+      if (response && response.predicted_prices) {
+        setForecastData(response.predicted_prices);
+      } else {
+        setError("Tahmin verisi bulunamadı");
+        setForecastData([]);
+      }
     } catch (error) {
       console.error("Failed to fetch forecast data:", error);
+      setError("Tahmin verisi alınırken hata oluştu");
+      setForecastData([]);
     } finally {
       setForecastLoading(false);
     }
@@ -248,7 +258,7 @@ function ProductDetail() {
                     className="spinner-border text-primary mb-3"
                     role="status"
                   ></div>
-                  <p className="text-muted">Tahmin hesaplanıyor...</p>
+                  <p className="text-muted">Loading graph...</p>
                 </div>
               </div>
             ) : forecastData.length > 0 ? (
@@ -277,7 +287,20 @@ function ProductDetail() {
           <div className="bg-white rounded shadow-sm p-4 h-100">
             <h5 className="fw-semibold mb-5">📊 Price Statistics</h5>
 
-            {stats && forecastData.length > 0 ? (
+            {forecastLoading ? (
+              <div
+                className="d-flex justify-content-center align-items-center"
+                style={{ height: "200px" }}
+              >
+                <div className="text-center">
+                  <div
+                    className="spinner-border text-primary mb-3"
+                    role="status"
+                  ></div>
+                  <p className="text-muted">Loading stats...</p>
+                </div>
+              </div>
+            ) : stats && forecastData.length > 0 ? (
               <div className="row g-3 mt-5">
                 <div className="col-sm-6">
                   <div className="bg-success bg-opacity-10 border border-success rounded p-3">
@@ -341,7 +364,7 @@ function ProductDetail() {
                       {stats.trendPercent}%
                     </div>
                     <div
-                      className={`${
+                      className={`small ${
                         stats.trend > 0
                           ? "text-success"
                           : stats.trend < 0

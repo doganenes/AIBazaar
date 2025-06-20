@@ -27,7 +27,7 @@ function ProductCard({ product, onFavoriteAdded }) {
         <img
           src={product.imageUrl}
           className="card-img-top object-fit-fill rounded"
-          style={{ height: "250px", width:"200px", objectFit: "cover" }}
+          style={{ height: "250px", width:"150px", objectFit: "contain" }}
           alt={product.productName}
         />
 

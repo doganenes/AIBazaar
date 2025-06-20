@@ -5,17 +5,16 @@ import { aiApi } from "../api/api";
 
 function GeneratePrice() {
   const [formData, setFormData] = useState({
-    ram: "",
-    storage: "",
-    display_size: "6.2",
-    battery: "",
-    foldable: "",
-    ppi: "375",
-    os: "",
-    display_type: "",
-    video_resolution: "",
-    chipset: "",
-    camera: "104", 
+    RAM: "",
+    Storage: "",
+    "Display Size": "6.2",
+    "Battery Capacity": "",
+    "Quick Charge": "",
+    "Pixel Density": "375",
+    "Operating System": "",
+    "Display Technology": "",
+    camera: "104",
+    "CPU Manufacturing": "",
   });
 
   const [predictedPrice, setPredictedPrice] = useState(null);
@@ -53,16 +52,16 @@ function GeneratePrice() {
   const validateForm = () => {
     const errors = {};
     const requiredFields = [
-      "ram",
-      "storage",
-      "display_size",
-      "battery",
-      "foldable", // quick_charge yerine foldable
-      "ppi",
-      "os",
-      "display_type",
+      "RAM",
+      "Storage",
+      "Display Size",
+      "Battery Capacity",
+      "Quick Charge", 
+      "Pixel Density",
+      "Operating System",
+      "Display Technology",
       "camera",
-      "chipset",
+      "CPU Manufacturing",
     ];
 
     requiredFields.forEach((field) => {
@@ -119,24 +118,25 @@ function GeneratePrice() {
               </div>
               <div className="card-body p-4">
                 <div className="row g-3">
+  
                   <div className="col-md-6">
                     <label className="form-label fw-semibold text-gray-700">
                       <span className="me-2">💾</span>Storage
                     </label>
                     <select
                       className={`form-select form-select-lg border-2 ${
-                        formErrors.storage ? "is-invalid" : ""
+                        formErrors.Storage ? "is-invalid" : ""
                       }`}
                       style={{
-                        borderColor: formErrors.storage ? "#dc3545" : "#e5e7eb",
+                        borderColor: formErrors.Storage ? "#dc3545" : "#e5e7eb",
                         transition: "all 0.3s",
                       }}
-                      name="storage"
-                      value={formData.storage}
+                      name="Storage"
+                      value={formData.Storage}
                       onChange={handleChange}
                       onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
                       onBlur={(e) =>
-                        (e.target.style.borderColor = formErrors.storage
+                        (e.target.style.borderColor = formErrors.Storage
                           ? "#dc3545"
                           : "#e5e7eb")
                       }
@@ -149,31 +149,31 @@ function GeneratePrice() {
                       <option value="512">512 GB</option>
                       <option value="1024">1024 GB</option>
                     </select>
-                    {formErrors.storage && (
+                    {formErrors.Storage && (
                       <div className="invalid-feedback">
-                        {formErrors.storage}
+                        {formErrors.Storage}
                       </div>
                     )}
                   </div>
 
                   <div className="col-md-6">
                     <label className="form-label fw-semibold text-gray-700">
-                      <span className="me-2">📟	</span>RAM
+                      <span className="me-2">📟</span>RAM
                     </label>
                     <select
                       className={`form-select form-select-lg border-2 ${
-                        formErrors.ram ? "is-invalid" : ""
+                        formErrors.RAM ? "is-invalid" : ""
                       }`}
                       style={{
-                        borderColor: formErrors.ram ? "#dc3545" : "#e5e7eb",
+                        borderColor: formErrors.RAM ? "#dc3545" : "#e5e7eb",
                         transition: "all 0.3s",
                       }}
-                      name="ram"
-                      value={formData.ram}
+                      name="RAM"
+                      value={formData.RAM}
                       onChange={handleChange}
                       onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
                       onBlur={(e) =>
-                        (e.target.style.borderColor = formErrors.ram
+                        (e.target.style.borderColor = formErrors.RAM
                           ? "#dc3545"
                           : "#e5e7eb")
                       }
@@ -186,8 +186,8 @@ function GeneratePrice() {
                       <option value="12">12 GB</option>
                       <option value="16">16 GB</option>
                     </select>
-                    {formErrors.ram && (
-                      <div className="invalid-feedback">{formErrors.ram}</div>
+                    {formErrors.RAM && (
+                      <div className="invalid-feedback">{formErrors.RAM}</div>
                     )}
                   </div>
 
@@ -198,22 +198,22 @@ function GeneratePrice() {
                     <input
                       type="range"
                       className={`form-range border-2 w-100 ${
-                        formErrors.display_size ? "is-invalid" : ""
+                        formErrors["Display Size"] ? "is-invalid" : ""
                       }`}
                       min="5.5"
                       max="7.0"
                       step="0.1"
-                      name="display_size"
-                      value={formData.display_size}
+                      name="Display Size"
+                      value={formData["Display Size"]}
                       onChange={handleChange}
                       onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
                       onBlur={(e) =>
-                        (e.target.style.borderColor = formErrors.display_size
+                        (e.target.style.borderColor = formErrors["Display Size"]
                           ? "#dc3545"
                           : "#e5e7eb")
                       }
                       style={{
-                        borderColor: formErrors.display_size
+                        borderColor: formErrors["Display Size"]
                           ? "#dc3545"
                           : "#e5e7eb",
                         transition: "all 0.3s",
@@ -223,34 +223,35 @@ function GeneratePrice() {
                     <div className="d-flex justify-content-between fs-5 fw-bold">
                       <small className="text-muted">5.5"</small>
                       <small className="text-muted fs-5">
-                        {formData.display_size}"
+                        {formData["Display Size"]}"
                       </small>
                       <small className="text-muted">7.0"</small>
                     </div>
-                    {formErrors.display_size && (
+                    {formErrors["Display Size"] && (
                       <div className="invalid-feedback">
-                        {formErrors.display_size}
+                        {formErrors["Display Size"]}
                       </div>
                     )}
                   </div>
+
                   <div className="col-md-6">
                     <label className="form-label fw-semibold text-gray-700">
                       <span className="me-2">🤖</span>Operating System
                     </label>
                     <select
                       className={`form-select form-select-lg border-2 ${
-                        formErrors.os ? "is-invalid" : ""
+                        formErrors["Operating System"] ? "is-invalid" : ""
                       }`}
                       style={{
-                        borderColor: formErrors.os ? "#dc3545" : "#e5e7eb",
+                        borderColor: formErrors["Operating System"] ? "#dc3545" : "#e5e7eb",
                         transition: "all 0.3s",
                       }}
-                      name="os"
-                      value={formData.os}
+                      name="Operating System"
+                      value={formData["Operating System"]}
                       onChange={handleChange}
                       onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
                       onBlur={(e) =>
-                        (e.target.style.borderColor = formErrors.os
+                        (e.target.style.borderColor = formErrors["Operating System"]
                           ? "#dc3545"
                           : "#e5e7eb")
                       }
@@ -262,108 +263,108 @@ function GeneratePrice() {
                       <option value="Android">Android</option>
                       <option value="iOS">iOS</option>
                     </select>
-                    {formErrors.os && (
-                      <div className="invalid-feedback">{formErrors.os}</div>
+                    {formErrors["Operating System"] && (
+                      <div className="invalid-feedback">{formErrors["Operating System"]}</div>
                     )}
                   </div>
 
                   <div className="col-md-6">
                     <label className="form-label fw-semibold text-gray-700">
-                      <span className="me-2">🔋</span>Battery
+                      <span className="me-2">🔋</span>Battery Capacity
                     </label>
                     <select
                       className={`form-select form-select-lg border-2 ${
-                        formErrors.battery ? "is-invalid" : ""
+                        formErrors["Battery Capacity"] ? "is-invalid" : ""
                       }`}
                       style={{
-                        borderColor: formErrors.battery ? "#dc3545" : "#e5e7eb",
+                        borderColor: formErrors["Battery Capacity"] ? "#dc3545" : "#e5e7eb",
                         transition: "all 0.3s",
                       }}
-                      name="battery"
-                      value={formData.battery}
+                      name="Battery Capacity"
+                      value={formData["Battery Capacity"]}
                       onChange={handleChange}
                       onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
                       onBlur={(e) =>
-                        (e.target.style.borderColor = formErrors.battery
+                        (e.target.style.borderColor = formErrors["Battery Capacity"]
                           ? "#dc3545"
                           : "#e5e7eb")
                       }
                       required
                     >
-                      <option value="">Select Battery</option>
+                      <option value="">Select Battery Capacity</option>
                       <option value="3000">3000 mAh</option>
                       <option value="4000">4000 mAh</option>
                       <option value="5000">5000 mAh</option>
                     </select>
-                    {formErrors.battery && (
+                    {formErrors["Battery Capacity"] && (
                       <div className="invalid-feedback">
-                        {formErrors.battery}
+                        {formErrors["Battery Capacity"]}
                       </div>
                     )}
                   </div>
 
                   <div className="col-md-6">
                     <label className="form-label fw-semibold text-gray-700">
-                      <span className="me-2">📱</span>Foldable
+                      <span className="me-2">⚡</span>Quick Charge
                     </label>
                     <select
                       className={`form-select form-select-lg border-2 ${
-                        formErrors.foldable ? "is-invalid" : ""
+                        formErrors["Quick Charge"] ? "is-invalid" : ""
                       }`}
                       style={{
-                        borderColor: formErrors.foldable
+                        borderColor: formErrors["Quick Charge"]
                           ? "#dc3545"
                           : "#e5e7eb",
                         transition: "all 0.3s",
                       }}
-                      name="foldable"
-                      value={formData.foldable}
+                      name="Quick Charge"
+                      value={formData["Quick Charge"]}
                       onChange={handleChange}
                       onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
                       onBlur={(e) =>
-                        (e.target.style.borderColor = formErrors.foldable
+                        (e.target.style.borderColor = formErrors["Quick Charge"]
                           ? "#dc3545"
                           : "#e5e7eb")
                       }
                       required
                     >
-                      <option value="">Select Foldable Status</option>
+                      <option value="">Select Quick Charge</option>
                       <option value="1">Yes</option>
                       <option value="0">No</option>
                     </select>
-                    {formErrors.foldable && (
+                    {formErrors["Quick Charge"] && (
                       <div className="invalid-feedback">
-                        {formErrors.foldable}
+                        {formErrors["Quick Charge"]}
                       </div>
                     )}
                   </div>
 
                   <div className="col-md-6">
                     <label className="form-label fw-semibold text-gray-700">
-                      <span className="me-2">🖥️</span>Display Type
+                      <span className="me-2">🖥️</span>Display Technology
                     </label>
                     <select
                       className={`form-select form-select-lg border-2 ${
-                        formErrors.display_type ? "is-invalid" : ""
+                        formErrors["Display Technology"] ? "is-invalid" : ""
                       }`}
                       style={{
-                        borderColor: formErrors.display_type
+                        borderColor: formErrors["Display Technology"]
                           ? "#dc3545"
                           : "#e5e7eb",
                         transition: "all 0.3s",
                       }}
-                      name="display_type"
-                      value={formData.display_type}
+                      name="Display Technology"
+                      value={formData["Display Technology"]}
                       onChange={handleChange}
                       onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
                       onBlur={(e) =>
-                        (e.target.style.borderColor = formErrors.display_type
+                        (e.target.style.borderColor = formErrors["Display Technology"]
                           ? "#dc3545"
                           : "#e5e7eb")
                       }
                       required
                     >
-                      <option value="">Select Display Type</option>
+                      <option value="">Select Display Technology</option>
                       <option value="PLS LCD">LCD</option>
                       <option value="IPS LCD">IPS LCD</option>
                       <option value="OLED">OLED</option>
@@ -377,9 +378,9 @@ function GeneratePrice() {
                         Liquid Retina
                       </option>
                     </select>
-                    {formErrors.display_type && (
+                    {formErrors["Display Technology"] && (
                       <div className="invalid-feedback">
-                        {formErrors.display_type}
+                        {formErrors["Display Technology"]}
                       </div>
                     )}
                   </div>
@@ -427,27 +428,27 @@ function GeneratePrice() {
 
                   <div className="col-md-6">
                     <label className="form-label fw-semibold text-gray-700">
-                      <span className="me-2">🔍</span>PPI (Pixels per inch)
+                      <span className="me-2">🔍</span>Pixel Density (PPI)
                     </label>
                     <input
                       type="range"
                       className={`form-range border-2 w-100 ${
-                        formErrors.ppi ? "is-invalid" : ""
+                        formErrors["Pixel Density"] ? "is-invalid" : ""
                       }`}
                       min="250"
                       max="500"
                       step="25"
-                      name="ppi"
-                      value={formData.ppi}
+                      name="Pixel Density"
+                      value={formData["Pixel Density"]}
                       onChange={handleChange}
                       onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
                       onBlur={(e) =>
-                        (e.target.style.borderColor = formErrors.ppi
+                        (e.target.style.borderColor = formErrors["Pixel Density"]
                           ? "#dc3545"
                           : "#e5e7eb")
                       }
                       style={{
-                        borderColor: formErrors.ppi ? "#dc3545" : "#e5e7eb",
+                        borderColor: formErrors["Pixel Density"] ? "#dc3545" : "#e5e7eb",
                         transition: "all 0.3s",
                       }}
                       required
@@ -455,39 +456,39 @@ function GeneratePrice() {
                     <div className="d-flex justify-content-between fs-5 fw-bold">
                       <small className="text-muted">250</small>
                       <small className="text-muted fs-5">
-                        {formData.ppi} PPI
+                        {formData["Pixel Density"]} PPI
                       </small>
                       <small className="text-muted">500</small>
                     </div>
-                    {formErrors.ppi && (
-                      <div className="invalid-feedback">{formErrors.ppi}</div>
+                    {formErrors["Pixel Density"] && (
+                      <div className="invalid-feedback">{formErrors["Pixel Density"]}</div>
                     )}
                   </div>
 
                   <div className="col-md-6">
                     <label className="form-label fw-semibold text-gray-700">
-                      <span className="me-2">🔲</span>Chipset Lithography (nm)
+                      <span className="me-2">🔲</span>CPU Manufacturing (nm)
                     </label>
                     <select
                       className={`form-select form-select-lg border-2 ${
-                        formErrors.chipset ? "is-invalid" : ""
+                        formErrors["CPU Manufacturing"] ? "is-invalid" : ""
                       }`}
                       style={{
-                        borderColor: formErrors.chipset ? "#dc3545" : "#e5e7eb",
+                        borderColor: formErrors["CPU Manufacturing"] ? "#dc3545" : "#e5e7eb",
                         transition: "all 0.3s",
                       }}
-                      name="chipset"
-                      value={formData.chipset}
+                      name="CPU Manufacturing"
+                      value={formData["CPU Manufacturing"]}
                       onChange={handleChange}
                       onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
                       onBlur={(e) =>
-                        (e.target.style.borderColor = formErrors.chipset
+                        (e.target.style.borderColor = formErrors["CPU Manufacturing"]
                           ? "#dc3545"
                           : "#e5e7eb")
                       }
                       required
                     >
-                      <option value="">Select Chipset nm</option>
+                      <option value="">Select CPU Manufacturing</option>
                       <option value="3">3nm</option>
                       <option value="4">4nm</option>
                       <option value="5">5nm</option>
@@ -497,9 +498,9 @@ function GeneratePrice() {
                       <option value="9">9nm</option>
                       <option value="10">10nm</option>
                     </select>
-                    {formErrors.chipset && (
+                    {formErrors["CPU Manufacturing"] && (
                       <div className="invalid-feedback">
-                        {formErrors.chipset}
+                        {formErrors["CPU Manufacturing"]}
                       </div>
                     )}
                   </div>

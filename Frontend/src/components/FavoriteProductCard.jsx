@@ -27,7 +27,7 @@ function FavoriteProductCard({
         <img
           src={imageUrl}
           className="card-img-top"
-          style={{ height: "250px", objectFit: "cover" }}
+          style={{ height: "250px",width:"150px", objectFit: "contain" }}
           alt={title}
         />
 
@@ -46,25 +46,12 @@ function FavoriteProductCard({
             <i class="fa-solid fa-heart text-danger"></i>
           </button>
         </div>
-
-        {/* <div className="position-absolute top-0 end-0 m-3">
-          <span className="badge bg-primary fs-6 px-3 py-2">₺{price}</span>
-        </div> */}
       </div>
 
       <div className="card-body d-flex flex-column">
         <h5 className="card-title fw-bold text-truncate" title={title}>
           {title}
         </h5>
-
-        {/* <p
-          className="card-text text-muted small flex-grow-1"
-          style={{
-            overflow: "hidden",
-          }}
-        >
-          {description}
-        </p> */}
       </div>
     </div>
   );
