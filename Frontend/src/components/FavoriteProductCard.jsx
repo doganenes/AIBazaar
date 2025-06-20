@@ -27,7 +27,7 @@ function FavoriteProductCard({
         <img
           src={imageUrl}
           className="card-img-top"
-          style={{ height: "250px",width:"150px", objectFit: "contain" }}
+          style={{ height: "300px",width:"150px", objectFit: "contain" }}
           alt={title}
         />
 
