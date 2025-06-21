@@ -16,10 +16,10 @@ from trainers.train_lstm_models import LSTMModelTrainer
 import xgboost as xgb
 from tensorflow.keras.models import load_model
 
-lstm_trainer = LSTMModelTrainer(
-    data_path=r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\notebooks\LSTMPriceHistory.csv",
-    model_dir=r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\models"
-)
+# lstm_trainer = LSTMModelTrainer(
+#    data_path=r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\notebooks\LSTMPriceHistory.csv",
+#    model_dir=r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\models"
+# )
 
 
 @api_view(["POST"])
@@ -40,11 +40,8 @@ def predict_product_xgboost(request):
         chipset = int(data.get("CPU Manufacturing"))
 
         df = pd.read_csv(
-            r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\notebooks\Product.csv"
+            r"C:\Users\pc\Desktop\AIbazaar\AIBazaar\AI\utils\notebooks\Product.csv"
         )
-        print("DataFrame:", df)
-
-        print("DataFrame columns:", df.columns)
 
         df.rename(
         columns={
@@ -65,7 +62,6 @@ def predict_product_xgboost(request):
         },
         inplace=True
     )
-
 
         features = [
             "ram",
@@ -179,29 +175,98 @@ def predict_product_xgboost(request):
         )[:10]
 
         df["price_diff"] = (df["price"] - prediction_price).abs()
-        df = df[(df["price_diff"] <= prediction_price * 1.1) & (df["price_diff"] >= prediction_price * 0.9)]
+        df = df[(df["price_diff"] <= prediction_price * 1.15) & (df["price_diff"] >= prediction_price * 0.85)]
 
         df["os_type"] = df["os_type"].str.strip().str.lower()
         os = os.strip().lower()
 
         df["display_type"] = df["display_type"].str.strip().str.lower()
         display_type = display_type.strip().lower()
+        print("Filtered DataFrame after price difference:", df.head(5))
+        df.to_csv("filtered_products.csv", index=False)
+        tolerance = 0.9
+        print("collums ",df.columns)
+        tolerance = 25  # %20 aralık
 
-        tolerance = 0.5
-
-        df = df[
+        filtered_df = df[
             (df["ram"].between(ram * (1 - tolerance), ram * (1 + tolerance))) &
             (df["storage"].between(storage * (1 - tolerance), storage * (1 + tolerance))) &
             (df["display_size"].between(display_size * (1 - tolerance), display_size * (1 + tolerance))) &
             (df["battery"].between(battery * (1 - tolerance), battery * (1 + tolerance))) &
-            (df["quick_charge"] == quick_charge) & 
+            (df["quick_charge"] == quick_charge) &
             (df["ppi_density"].between(ppi * (1 - tolerance), ppi * (1 + tolerance))) &
             (df["camera"].between(camera * (1 - tolerance), camera * (1 + tolerance))) &
             (df["chipset"].between(chipset * (1 - tolerance), chipset * (1 + tolerance))) &
             (df["os_type"] == os) &
             (df["display_type"] == display_type)
         ]
+        
+        # Eğer filtreleme sonucu telefon bulunamazsa, toleransı artır
+        if filtered_df.empty:
+            print(f"Tolerance %{tolerance*100} ile telefon bulunamadı, tolerance artırılıyor...")
+            for new_tolerance in [0.3, 0.4, 0.5]:
+                filtered_df = df[
+                    (df["ram"].between(ram * (1 - new_tolerance), ram * (1 + new_tolerance))) &
+                    (df["storage"].between(storage * (1 - new_tolerance), storage * (1 + new_tolerance))) &
+                    (df["display_size"].between(display_size * (1 - new_tolerance), display_size * (1 + new_tolerance))) &
+                    (df["battery"].between(battery * (1 - new_tolerance), battery * (1 + new_tolerance))) &
+                    (df["ppi_density"].between(ppi * (1 - new_tolerance), ppi * (1 + new_tolerance))) &
+                    (df["camera"].between(camera * (1 - new_tolerance), camera * (1 + new_tolerance))) &
+                    (df["chipset"].between(chipset * (1 - new_tolerance), chipset * (1 + new_tolerance)))
+                ]
+                
+                # Kategorik özellikler için ayrı filtreleme
+                if not filtered_df.empty:
+                    # Önce kategorik özellikleri de kontrol et
+                    exact_match = filtered_df[
+                        (filtered_df["quick_charge"] == quick_charge) &
+                        (filtered_df["os_type"] == os) &
+                        (filtered_df["display_type"] == display_type)
+                    ]
+                    
+                    if not exact_match.empty:
+                        filtered_df = exact_match
+                        break
+                    else:
+                        # Kategorik özelliklerden taviz ver
+                        print(f"Kategorik özellikler tam eşleşmiyor, tolerance %{new_tolerance*100} ile devam ediliyor...")
+                        break
+        
+        # Hala telefon bulunamazsa, sadece en önemli özelliklere odaklan
+        if filtered_df.empty:
+            print("Hiçbir telefon bulunamadı, sadece temel özelliklere göre arama yapılıyor...")
+            filtered_df = df[
+                (df["ram"].between(ram * 0.7, ram * 1.3)) &
+                (df["storage"].between(storage * 0.7, storage * 1.3)) &
+                (df["battery"].between(battery * 0.7, battery * 1.3))
+            ]
+        
+        if filtered_df.empty:
+            return None, "Hiçbir uygun telefon bulunamadı!"
+        
+        # Filtrelenmiş telefonlar arasından en yakınını bul
+        user_values = np.array([ram, storage, display_size, battery, ppi, camera, chipset])
+        
+        distances = []
+        for idx, phone in filtered_df.iterrows():
+            phone_values = np.array([
+                phone['ram'], phone['storage'], phone['display_size'], 
+                phone['battery'], phone['ppi_density'], phone['camera'], phone['chipset']
+            ])
+            
+            # Normalize edilmiş mesafe hesapla
+            normalized_diff = abs(phone_values - user_values) / user_values
+            distance = np.mean(normalized_diff)  # Ortalama yüzde fark
+            distances.append(distance)
+        
+        # En küçük mesafeye sahip telefonu seç
+        best_index = np.argmin(distances)
+        best_phone = filtered_df.iloc[best_index]
+        best_distance = distances[best_index]
 
+
+
+        print("Filtered DataFrame:", df)
         if df.empty:
             return Response({"error": "No similar product found after filtering."}, status=status.HTTP_404_NOT_FOUND)
 
@@ -231,7 +296,7 @@ def predict_product_xgboost(request):
         print(f"Error in XGBoost prediction: {str(e)}")
         return Response({"error": str(e)}, status=400)
 
-    
+'''    
 @api_view(["POST"])
 def predict_product_lstm(request):
     try:
@@ -251,3 +316,4 @@ def predict_product_lstm(request):
 
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+'''

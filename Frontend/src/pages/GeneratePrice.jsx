@@ -104,7 +104,7 @@ function GeneratePrice() {
       console.log("Backend response:", response.data);
       setPredictedPrice(response.price);
       setClosestProduct(response.closest_product);
-      setClosestProductId(response.closest_product.id);
+      setClosestProductId(response.closest_product_id);
     } catch (error) {
       console.error("API request error:", error);
       setPredictedPrice(null);
