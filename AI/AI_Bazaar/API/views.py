@@ -85,14 +85,12 @@ def predict_product_xgboost(request):
         }
 
         display_type_hierarchy = {
-            "PLS LCD": 1,
-            "IPS LCD": 2,
-            "OLED": 3,
-            "AMOLED": 4,
-            "Super AMOLED": 5,
-            "Dynamic AMOLED": 6,
-            "Super Retina XDR OLED": 7,
-            "LTPO Super Retina XDR OLED": 8,
+            "IPS LCD": 1.00,
+            "PLS LCD": 1.09,
+            "OLED": 8.02,
+            "AMOLED": 2.92,
+            "Super AMOLED": 2.28,
+            "Dynamic AMOLED": 6.04,
             "Other": 0,
         }
 
@@ -176,7 +174,7 @@ def predict_product_xgboost(request):
             feature_importance.items(), key=lambda x: x[1], reverse=True
         )[:10]
 
-        df["price_diff"] = (df["price"] - prediction_price).abs()
+        df["price_diff"] = (df["price"] - prediction_price).abs()        
         closest_product = df.loc[df["price_diff"].idxmin()]
 
         return Response(
