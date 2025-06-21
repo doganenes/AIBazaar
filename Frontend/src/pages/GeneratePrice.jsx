@@ -2,18 +2,21 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../css/GeneratePrice.css";
 import { aiApi, predict_xgboost } from "../api/api";
+import { useNavigate } from "react-router-dom";
 
 function GeneratePrice() {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
-    "RAM": "",
-    "Storage": "",
+    RAM: "",
+    Storage: "",
     "Display Size": "6.2",
     "Battery Capacity": "",
     "Quick Charge": "",
     "Pixel Density": "375",
     "Operating System": "",
     "Display Technology": "",
-    "camera": "104",
+    camera: "104",
     "CPU Manufacturing": "",
     "5G": "",
     "Refresh Rate": "",
@@ -23,6 +26,7 @@ function GeneratePrice() {
   const [isLoading, setIsLoading] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   const [closestProduct, setClosestProduct] = useState(null);
+  const [closestProductId, setClosestProductId] = useState(null);
   const [formattedPrice, setFormattedPrice] = useState("");
 
   useEffect(() => {
@@ -49,6 +53,10 @@ function GeneratePrice() {
         [e.target.name]: null,
       });
     }
+  };
+
+  const handleClick = (id) => {
+    navigate(`/productdetail/${id}`);
   };
 
   const validateForm = () => {
@@ -94,6 +102,7 @@ function GeneratePrice() {
       console.log("Backend response:", response.data);
       setPredictedPrice(response.data.price);
       setClosestProduct(response.data.closest_product);
+      setClosestProductId(response.data.closest_product.id);
     } catch (error) {
       console.error("API request error:", error);
       setPredictedPrice(null);
@@ -744,7 +753,7 @@ function GeneratePrice() {
                       <h4 className="fw-light mb-2">Closest Match</h4>
                       <div className="fw-bold fs-4">
                         <a
-                          href="/"
+                          onClick={handleClick(closestProductId)}
                           className="text-white text-decoration-none"
                           style={{
                             textShadow: "0 2px 4px rgba(0,0,0,0.3)",
