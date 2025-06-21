@@ -25,6 +25,7 @@ lstm_trainer = LSTMModelTrainer(
 @api_view(["POST"])
 def predict_product_xgboost(request):
     data = request.data
+    print("Received data:", data)
 
     try:
         ram = float(data.get("RAM"))
@@ -41,8 +42,9 @@ def predict_product_xgboost(request):
         df = pd.read_csv(
             r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\notebooks\Product.csv"
         )
+        print("DataFrame:", df)
 
-        print(df.columns)
+        print("DataFrame columns:", df.columns)
 
         df.rename(
         columns={
@@ -152,7 +154,6 @@ def predict_product_xgboost(request):
             X_scaled, y, test_size=0.2, random_state=42
         )
 
-        # Initialize and train XGBoost model
         model = xgb.XGBRegressor(
             objective="reg:squarederror",
             n_estimators=150,          
@@ -177,12 +178,19 @@ def predict_product_xgboost(request):
             feature_importance.items(), key=lambda x: x[1], reverse=True
         )[:10]
 
-        df["price_diff"] = (df["price"] - prediction_price).abs()        
-        df = df[df["price_diff"] <= prediction_price * 0.1]
+        df["price_diff"] = (df["price"] - prediction_price).abs()
+        df = df[(df["price_diff"] <= prediction_price * 1.1) & (df["price_diff"] >= prediction_price * 0.9)]
 
-        tolerance = 0.3
+        df["os_type"] = df["os_type"].str.strip().str.lower()
+        os = os.strip().lower()
 
-        df = df[(df["ram"].between(ram * (1 - tolerance), ram * (1 + tolerance))) &
+        df["display_type"] = df["display_type"].str.strip().str.lower()
+        display_type = display_type.strip().lower()
+
+        tolerance = 0.5
+
+        df = df[
+            (df["ram"].between(ram * (1 - tolerance), ram * (1 + tolerance))) &
             (df["storage"].between(storage * (1 - tolerance), storage * (1 + tolerance))) &
             (df["display_size"].between(display_size * (1 - tolerance), display_size * (1 + tolerance))) &
             (df["battery"].between(battery * (1 - tolerance), battery * (1 + tolerance))) &
@@ -194,9 +202,12 @@ def predict_product_xgboost(request):
             (df["display_type"] == display_type)
         ]
 
+        if df.empty:
+            return Response({"error": "No similar product found after filtering."}, status=status.HTTP_404_NOT_FOUND)
 
-        closest_product = df[df["price"] == df["price"].min()].iloc[0]
-        print(closest_product)
+        # Tüm benzer ürünleri döndür
+        similar_products = df.sort_values(by="price").to_dict(orient="records")
+        print("Similar products found:", similar_products)
         return Response(
             {
                 "message": "XGBoost prediction successful",
@@ -212,8 +223,7 @@ def predict_product_xgboost(request):
                         for feat, imp in top_features
                     ],
                 },
-                "closest_product": closest_product["phone_model"],
-                "closest_product_id": closest_product["ProductID"]
+                "similar_products": similar_products
             }
         )
 

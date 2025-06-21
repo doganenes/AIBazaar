@@ -98,11 +98,13 @@ function GeneratePrice() {
     setIsLoading(true);
 
     try {
+      console.log("Submitting form data:", formData);
+      // Send form data to the backend for prediction
       const response = await predict_xgboost(formData);
       console.log("Backend response:", response.data);
-      setPredictedPrice(response.data.price);
-      setClosestProduct(response.data.closest_product);
-      setClosestProductId(response.data.closest_product.id);
+      setPredictedPrice(response.price);
+      setClosestProduct(response.closest_product);
+      setClosestProductId(response.closest_product.id);
     } catch (error) {
       console.error("API request error:", error);
       setPredictedPrice(null);

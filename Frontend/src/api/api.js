@@ -165,7 +165,7 @@ export const predict_xgboost = async (formData) => {
     );
     return response.data;
   } catch (error) {
-    console.error("XGBoost prediction error:", error);
+    console.error("XGBoost prediction error:", error.message);
     throw error;
   }
 };
