@@ -157,6 +157,19 @@ export const predict_lstm = async (productId) => {
   }
 };
 
+export const predict_xgboost = async (formData) => {
+  try {
+    const response = await aiApi.post(
+      "/api/predict_product_xgboost/",
+      formData
+    );
+    return response.data;
+  } catch (error) {
+    console.error("XGBoost prediction error:", error);
+    throw error;
+  }
+};
+
 export const getUserFromId = async (id) => {
   try {
     const response = await api.get(`/api/Auth/getUserFromId?id=${id}`);

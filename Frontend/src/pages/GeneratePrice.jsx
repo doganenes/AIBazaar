@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../css/GeneratePrice.css";
-import { aiApi } from "../api/api";
+import { aiApi, predict_xgboost } from "../api/api";
 
 function GeneratePrice() {
   const [formData, setFormData] = useState({
@@ -90,13 +90,10 @@ function GeneratePrice() {
     setIsLoading(true);
 
     try {
-      const response = await aiApi.post(
-        "/api/predict_product_xgboost/",
-        formData
-      );
+      const response = await predict_xgboost(formData);
       console.log("Backend response:", response.data);
       setPredictedPrice(response.data.price);
-      setClosestProduct(response.data.closest_product || null);
+      setClosestProduct(response.data.closest_product);
     } catch (error) {
       console.error("API request error:", error);
       setPredictedPrice(null);

@@ -42,6 +42,8 @@ def predict_product_xgboost(request):
             r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\notebooks\Product.csv"
         )
 
+        print(df.columns)
+
         df.rename(
         columns={
             "RAM": "ram",
@@ -57,7 +59,7 @@ def predict_product_xgboost(request):
             "Price": "price",
             "5G" : "5g",
             "Model": "phone_model",
-            "Refresh Rate": "refresh_rate"
+            "Refresh Rate": "refresh_rate",
         },
         inplace=True
     )
@@ -75,9 +77,10 @@ def predict_product_xgboost(request):
             "camera",
             "chipset",
             "5g",
-            "refresh_rate"
+            "refresh_rate",
         ]
-        df = df[features + ["price", "phone_model"]]
+
+        df = df[features + ["price", "phone_model","ProductID"]]
 
         os_hierarchy = {
             "Android": 1,
@@ -175,8 +178,25 @@ def predict_product_xgboost(request):
         )[:10]
 
         df["price_diff"] = (df["price"] - prediction_price).abs()        
-        closest_product = df.loc[df["price_diff"].idxmin()]
+        df = df[df["price_diff"] <= prediction_price * 0.1]
 
+        tolerance = 0.3
+
+        df = df[(df["ram"].between(ram * (1 - tolerance), ram * (1 + tolerance))) &
+            (df["storage"].between(storage * (1 - tolerance), storage * (1 + tolerance))) &
+            (df["display_size"].between(display_size * (1 - tolerance), display_size * (1 + tolerance))) &
+            (df["battery"].between(battery * (1 - tolerance), battery * (1 + tolerance))) &
+            (df["quick_charge"] == quick_charge) & 
+            (df["ppi_density"].between(ppi * (1 - tolerance), ppi * (1 + tolerance))) &
+            (df["camera"].between(camera * (1 - tolerance), camera * (1 + tolerance))) &
+            (df["chipset"].between(chipset * (1 - tolerance), chipset * (1 + tolerance))) &
+            (df["os_type"] == os) &
+            (df["display_type"] == display_type)
+        ]
+
+
+        closest_product = df[df["price"] == df["price"].min()].iloc[0]
+        print(closest_product)
         return Response(
             {
                 "message": "XGBoost prediction successful",
@@ -193,13 +213,13 @@ def predict_product_xgboost(request):
                     ],
                 },
                 "closest_product": closest_product["phone_model"],
+                "closest_product_id": closest_product["ProductID"]
             }
         )
 
     except Exception as e:
         print(f"Error in XGBoost prediction: {str(e)}")
         return Response({"error": str(e)}, status=400)
-
 
     
 @api_view(["POST"])
