@@ -12,28 +12,22 @@ from rest_framework import status
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
-from trainers.train_lstm_models import LSTMModelTrainer
-from tensorflow.keras.models import load_model
-from catboost import CatBoostRegressor
+# from trainers.train_lstm_models import LSTMModelTrainer
+# from tensorflow.keras.models import load_models
 import traceback
-model = CatBoostRegressor(iterations=200, learning_rate=0.1, depth=8, verbose=False)
 
-# lstm_trainer = LSTMModelTrainer(
-#    data_path=r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\notebooks\LSTMPriceHistory.csv",
-#    model_dir=r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\models"
-# )
-
-
-# Seçenek 2: Label Encoding + StandardScaler
 from sklearn.preprocessing import LabelEncoder, StandardScaler
-
-
-
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import KFold, cross_val_score
 from sklearn.preprocessing import LabelEncoder
 import numpy as np
 import pandas as pd
+
+
+# lstm_trainer = LSTMModelTrainer(
+#    data_path=r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\notebooks\LSTMPriceHistory.csv",
+#    model_dir=r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\models"
+# )
 
 
 def find_similar_phones(df, predicted_price, user_os, user_specs, top_n=5):
@@ -210,10 +204,10 @@ def predict_product_xgboost(request):
         is_5g = 1 if data.get("5G") == "Yes" else 0
         refresh_rate = int(data.get("Refresh Rate", 60))
         waterproof = int(data.get("Waterproof", 0))  # Default 0 olarak ayarlandı
-        dustproof = int(data.get("Dustproof", 0))  # Default 0 olarak ayarlandı
+        dustproof = int(data.get("Dustproof", 0)) 
 
         df = pd.read_csv(
-            r"C:\Users\pc\Desktop\AIbazaar\AIBazaar\AI\utils\notebooks\Product.csv"
+            r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\notebooks\product_specs_en.csv"
         )
 
      
@@ -413,24 +407,23 @@ def predict_product_xgboost(request):
         return Response({"error": str(e)}, status=400)
 
 
-'''    
-@api_view(["POST"])
-def predict_product_lstm(request):
-    try:
-        product_id = request.data.get("productId")
-        if product_id is None:
-            return Response({"error": "productId is required."}, status=status.HTTP_400_BAD_REQUEST)
 
-        df = lstm_trainer.load_data()
-        product_df = df[df["ProductID"] == int(product_id)]
+# @api_view(["POST"])
+# def predict_product_lstm(request):
+#     try:
+#         product_id = request.data.get("productId")
+#         if product_id is None:
+#             return Response({"error": "productId is required."}, status=status.HTTP_400_BAD_REQUEST)
 
-        if product_df.empty:
-            return Response({"error": "Product not found."}, status=status.HTTP_404_NOT_FOUND)
+#         df = lstm_trainer.load_data()
+#         product_df = df[df["ProductID"] == int(product_id)]
 
-        result = lstm_trainer.predict_price(product_id=product_id, steps=15)
+#         if product_df.empty:
+#             return Response({"error": "Product not found."}, status=status.HTTP_404_NOT_FOUND)
 
-        return Response(result, status=status.HTTP_200_OK)
+#         result = lstm_trainer.predict_price(product_id=product_id, steps=15)
 
-    except Exception as e:
-        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-'''
+#         return Response(result, status=status.HTTP_200_OK)
+
+#     except Exception as e:
+#         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

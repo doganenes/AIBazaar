@@ -11,8 +11,7 @@ function GeneratePrice() {
     RAM: "",
     Storage: "",
     "Display Size": "6.2",
-    "Battery Capacity": "",
-    "Quick Charge": "",
+    "Battery Capacity": "5250",
     "Pixel Density": "375",
     "Operating System": "",
     "Display Technology": "",
@@ -20,6 +19,8 @@ function GeneratePrice() {
     "CPU Manufacturing": "",
     "5G": "",
     "Refresh Rate": "",
+    Waterproof: "6",
+    Dustproof: "6",
   });
 
   const [predictedPrice, setPredictedPrice] = useState(null);
@@ -66,7 +67,6 @@ function GeneratePrice() {
       "Storage",
       "Display Size",
       "Battery Capacity",
-      "Quick Charge",
       "Pixel Density",
       "Operating System",
       "Display Technology",
@@ -74,6 +74,8 @@ function GeneratePrice() {
       "CPU Manufacturing",
       "5G",
       "Refresh Rate",
+      "Waterproof",
+      "Dustproof",
     ];
 
     requiredFields.forEach((field) => {
@@ -123,13 +125,13 @@ function GeneratePrice() {
           <div className="col-lg-8 mt-5">
             <div className="card shadow-lg border-0 h-100">
               <div className="card-header bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4">
-                <h3 className="card-title mb-0 d-flex align-items-center text-dark">
-                  <span className="me-3">⚙️</span>
+                <h3 className="card-title mb-0 d-flex justify-content-center align-items-center text-dark">
+                  <span className="me-2">⚙️</span>
                   Product Specifications
                 </h3>
               </div>
               <div className="card-body p-4">
-                <div className="row g-3">
+                <div className="row g-4">
                   <div className="col-md-6">
                     <label className="form-label fw-semibold text-gray-700">
                       <span className="me-2">💾</span>Storage
@@ -287,16 +289,14 @@ function GeneratePrice() {
                     <label className="form-label fw-semibold text-gray-700">
                       <span className="me-2">🔋</span>Battery Capacity
                     </label>
-                    <select
-                      className={`form-select form-select-lg border-2 ${
-                        formErrors["Battery Capacity"] ? "is-invalid" : ""
+                    <input
+                      type="range"
+                      className={`form-range border-2 w-100 ${
+                        formErrors["Display Size"] ? "is-invalid" : ""
                       }`}
-                      style={{
-                        borderColor: formErrors["Battery Capacity"]
-                          ? "#dc3545"
-                          : "#e5e7eb",
-                        transition: "all 0.3s",
-                      }}
+                      min="3500"
+                      max="7000"
+                      step="250"
                       name="Battery Capacity"
                       value={formData["Battery Capacity"]}
                       onChange={handleChange}
@@ -308,13 +308,22 @@ function GeneratePrice() {
                           ? "#dc3545"
                           : "#e5e7eb")
                       }
+                      style={{
+                        borderColor: formErrors["Battery Capacity"]
+                          ? "#dc3545"
+                          : "#e5e7eb",
+                        transition: "all 0.3s",
+                      }}
                       required
-                    >
-                      <option value="">Select Battery Capacity</option>
-                      <option value="3000">3000 mAh</option>
-                      <option value="4000">4000 mAh</option>
-                      <option value="5000">5000 mAh</option>
-                    </select>
+                    />
+                    <div className="d-flex justify-content-between fs-5 fw-bold">
+                      <small className="text-muted">3500"</small>
+                      <small className="text-muted fs-5">
+                        {formData["Battery Capacity"]}"
+                      </small>
+                      <small className="text-muted">7000"</small>
+                    </div>
+
                     {formErrors["Battery Capacity"] && (
                       <div className="invalid-feedback">
                         {formErrors["Battery Capacity"]}
@@ -595,6 +604,92 @@ function GeneratePrice() {
                     {formErrors["Refresh Rate"] && (
                       <div className="invalid-feedback">
                         {formErrors["Refresh Rate"]}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="col-md-6">
+                    <label className="form-label fw-semibold text-gray-700">
+                      <span className="me-2">💧</span>Waterproof Value
+                    </label>
+                    <input
+                      type="range"
+                      className={`form-range border-2 w-100 ${
+                        formErrors["Waterproof"] ? "is-invalid" : ""
+                      }`}
+                      min="3"
+                      max="9"
+                      step="1"
+                      name="Waterproof"
+                      value={formData["Waterproof"]}
+                      onChange={handleChange}
+                      onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
+                      onBlur={(e) =>
+                        (e.target.style.borderColor = formErrors["Waterproof"]
+                          ? "#dc3545"
+                          : "#e5e7eb")
+                      }
+                      style={{
+                        borderColor: formErrors["Waterproof"]
+                          ? "#dc3545"
+                          : "#e5e7eb",
+                        transition: "all 0.3s",
+                      }}
+                      required
+                    />
+                    <div className="d-flex justify-content-between fs-5 fw-bold">
+                      <small className="text-muted">3</small>
+                      <small className="text-muted fs-5">
+                        IPX{formData["Waterproof"]}
+                      </small>
+                      <small className="text-muted">9</small>
+                    </div>
+                    {formErrors["Waterproof"] && (
+                      <div className="invalid-feedback">
+                        {formErrors["Waterproof"]}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="col-md-6">
+                    <label className="form-label fw-semibold text-gray-700">
+                      <span className="me-2">🏜️</span>DustProof Value
+                    </label>
+                    <input
+                      type="range"
+                      className={`form-range border-2 w-100 ${
+                        formErrors["Dustproof"] ? "is-invalid" : ""
+                      }`}
+                      min="3"
+                      max="9"
+                      step="1"
+                      name="Dustproof"
+                      value={formData["Dustproof"]}
+                      onChange={handleChange}
+                      onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
+                      onBlur={(e) =>
+                        (e.target.style.borderColor = formErrors["Dustproof"]
+                          ? "#dc3545"
+                          : "#e5e7eb")
+                      }
+                      style={{
+                        borderColor: formErrors["Dustproof"]
+                          ? "#dc3545"
+                          : "#e5e7eb",
+                        transition: "all 0.3s",
+                      }}
+                      required
+                    />
+                    <div className="d-flex justify-content-between fs-5 fw-bold">
+                      <small className="text-muted">3</small>
+                      <small className="text-muted fs-5">
+                        IP{formData["Dustproof"]}X
+                      </small>
+                      <small className="text-muted">9</small>
+                    </div>
+                    {formErrors["Dustproof"] && (
+                      <div className="invalid-feedback">
+                        {formErrors["Dustproof"]}
                       </div>
                     )}
                   </div>
