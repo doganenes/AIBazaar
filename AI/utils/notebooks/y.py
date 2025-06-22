@@ -40,9 +40,10 @@ feature_ids = {
     "İşletim Sistemi": "id24",
     "RAM Kapasitesi": "id14",
     "Dahili Hafıza": "id21",
-    "Hızlı Şarj Desteği": "id6104",
     "Ekran Yenileme Hızı": "id6737",
-    "5G":"id5711"
+    "5G":"id5711",
+    "Suya dayanıklılık": "id114",
+    "Toza dayanıklılık": "id113",
 }
 
 all_phones = []
@@ -163,4 +164,4 @@ for page_num in range(1, 12):
     driver.quit()
 
 df = pd.DataFrame(all_phones)
-df.to_csv("LSTMProduct.csv", index=False)
+df.to_csv("LSTMProduct1.csv", index=False)
