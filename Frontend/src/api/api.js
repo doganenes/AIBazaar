@@ -157,10 +157,10 @@ export const predict_lstm = async (productId) => {
   }
 };
 
-export const predict_xgboost = async (formData) => {
+export const predict_rf = async (formData) => {
   try {
     const response = await aiApi.post(
-      "/api/predict_product_xgboost/",
+      "/api/predict_product_rf/",
       formData
     );
     return response.data;

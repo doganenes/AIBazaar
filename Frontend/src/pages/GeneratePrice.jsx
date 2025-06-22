@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../css/GeneratePrice.css";
-import { aiApi, predict_xgboost } from "../api/api";
+import { aiApi, predict_rf } from "../api/api";
 import { useNavigate } from "react-router-dom";
 
 function GeneratePrice() {
   const navigate = useNavigate();
-
   const [formData, setFormData] = useState({
     RAM: "",
     Storage: "",
@@ -101,12 +100,13 @@ function GeneratePrice() {
 
     try {
       console.log("Submitting form data:", formData);
-      // Send form data to the backend for prediction
-      const response = await predict_xgboost(formData);
-      console.log("Backend response:", response.data);
+      const response = await predict_rf(formData);
+      console.log("Backend response:", response);
       setPredictedPrice(response.price);
-      setClosestProduct(response.closest_product);
-      setClosestProductId(response.closest_product_id);
+      setClosestProduct(response.recommendations.similar_phones[0].model);
+      setClosestProductId(
+        response.recommendations.similar_phones[0].product_id
+      );
     } catch (error) {
       console.error("API request error:", error);
       setPredictedPrice(null);
@@ -296,7 +296,7 @@ function GeneratePrice() {
                       }`}
                       min="3500"
                       max="7000"
-                      step="250"
+                      step="5"
                       name="Battery Capacity"
                       value={formData["Battery Capacity"]}
                       onChange={handleChange}
@@ -460,7 +460,7 @@ function GeneratePrice() {
                       }`}
                       min="250"
                       max="500"
-                      step="25"
+                      step="5"
                       name="Pixel Density"
                       value={formData["Pixel Density"]}
                       onChange={handleChange}
@@ -850,10 +850,11 @@ function GeneratePrice() {
                       <h4 className="fw-light mb-2">Closest Match</h4>
                       <div className="fw-bold fs-4">
                         <a
-                          onClick={handleClick(closestProductId)}
+                          onClick={() => handleClick(closestProductId)}
                           className="text-white text-decoration-none"
                           style={{
                             textShadow: "0 2px 4px rgba(0,0,0,0.3)",
+                            cursor: "pointer",
                           }}
                         >
                           {closestProduct}

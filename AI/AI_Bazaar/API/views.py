@@ -12,8 +12,8 @@ from rest_framework import status
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
-# from trainers.train_lstm_models import LSTMModelTrainer
-# from tensorflow.keras.models import load_models
+from trainers.train_lstm_models import LSTMModelTrainer
+from tensorflow.keras.models import load_model
 import traceback
 
 from sklearn.preprocessing import LabelEncoder, StandardScaler
@@ -24,10 +24,10 @@ import numpy as np
 import pandas as pd
 
 
-# lstm_trainer = LSTMModelTrainer(
-#    data_path=r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\notebooks\LSTMPriceHistory.csv",
-#    model_dir=r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\models"
-# )
+lstm_trainer = LSTMModelTrainer(
+   data_path=r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\notebooks\LSTMPriceHistory.csv",
+   model_dir=r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\models"
+)
 
 
 def find_similar_phones(df, predicted_price, user_os, user_specs, top_n=5):
@@ -154,6 +154,7 @@ def find_similar_phones(df, predicted_price, user_os, user_specs, top_n=5):
                 "price_difference": round(
                     ((phone["price"] - predicted_price) / predicted_price) * 100, 1
                 ),
+                "product_id": phone.get("ProductID"),
             }
         )
 
@@ -188,7 +189,7 @@ def feature_engineering(df):
 
 
 @api_view(["POST"])
-def predict_product_xgboost(request):
+def predict_product_rf(request):
     try:
         data = request.data
 
@@ -203,7 +204,7 @@ def predict_product_xgboost(request):
         chipset = int(data.get("CPU Manufacturing"))
         is_5g = 1 if data.get("5G") == "Yes" else 0
         refresh_rate = int(data.get("Refresh Rate", 60))
-        waterproof = int(data.get("Waterproof", 0))  # Default 0 olarak ayarlandı
+        waterproof = int(data.get("Waterproof", 0))  
         dustproof = int(data.get("Dustproof", 0)) 
 
         df = pd.read_csv(
@@ -226,8 +227,8 @@ def predict_product_xgboost(request):
                 "5G": "5g",
                 "Model": "phone_model",
                 "Refresh Rate": "refresh_rate",
-                "Waterproof": "waterproof",  # Yeni sütun
-                "Dustproof": "dustproof",  # Yeni sütun
+                "Waterproof": "waterproof",  
+                "Dustproof": "dustproof", 
             },
             inplace=True,
         )
@@ -264,7 +265,7 @@ def predict_product_xgboost(request):
                
                 df[col] = pd.to_numeric(df[col], errors="coerce")
 
-        df = df.dropna(subset=numeric_columns)
+        # df = df.dropna(subset=numeric_columns)
 
         if len(df) < 10:
             return Response(
@@ -324,7 +325,7 @@ def predict_product_xgboost(request):
                     "5g": is_5g,
                     "refresh_rate": refresh_rate,
                     "waterproof": waterproof, 
-                    "dustproof": dustproof,  
+                    "dustproof": dustproof,
                 }
             ]
         )
@@ -376,6 +377,7 @@ def predict_product_xgboost(request):
             "refresh_rate": refresh_rate
         }
         similar_phones = find_similar_phones(df, prediction, os, user_specs, top_n=1)
+        print("Similar Phones:", similar_phones)
         return Response(
             {
                 "message": "Random Forest prediction successful",
@@ -397,7 +399,7 @@ def predict_product_xgboost(request):
                         "price_range": f"±20% ({round(prediction * 0.8, 2)} - {round(prediction * 1.2, 2)})",
                         "os_restriction": f"Only {os} phones",
                         "flexibility": "RAM/Storage can be ±50%, other specs ±20-40%",
-                    },
+                    }
                 },
             }
         )
@@ -408,22 +410,22 @@ def predict_product_xgboost(request):
 
 
 
-# @api_view(["POST"])
-# def predict_product_lstm(request):
-#     try:
-#         product_id = request.data.get("productId")
-#         if product_id is None:
-#             return Response({"error": "productId is required."}, status=status.HTTP_400_BAD_REQUEST)
+@api_view(["POST"])
+def predict_product_lstm(request):
+    try:
+        product_id = request.data.get("productId")
+        if product_id is None:
+            return Response({"error": "productId is required."}, status=status.HTTP_400_BAD_REQUEST)
 
-#         df = lstm_trainer.load_data()
-#         product_df = df[df["ProductID"] == int(product_id)]
+        df = lstm_trainer.load_data()
+        product_df = df[df["ProductID"] == int(product_id)]
 
-#         if product_df.empty:
-#             return Response({"error": "Product not found."}, status=status.HTTP_404_NOT_FOUND)
+        if product_df.empty:
+            return Response({"error": "Product not found."}, status=status.HTTP_404_NOT_FOUND)
 
-#         result = lstm_trainer.predict_price(product_id=product_id, steps=15)
+        result = lstm_trainer.predict_price(product_id=product_id, steps=15)
 
-#         return Response(result, status=status.HTTP_200_OK)
+        return Response(result, status=status.HTTP_200_OK)
 
-#     except Exception as e:
-#         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
