@@ -56,6 +56,14 @@ def feature_engineering(df):
     ).astype(int)
 
     df["log_battery"] = np.log1p(df["battery"])
+
+    # Yeni özellikler: waterproof ve dustproof için kombinasyonlar
+    if "waterproof" in df.columns and "dustproof" in df.columns:
+        df["protection_score"] = df["waterproof"] + df["dustproof"]  # 0-2 arası skor
+        df["full_protection"] = (
+            (df["waterproof"] == 1) & (df["dustproof"] == 1)
+        ).astype(int)
+
     return df
 
 
@@ -76,6 +84,8 @@ def predict_product_xgboost(request):
         chipset = int(data.get("CPU Manufacturing"))
         is_5g = 1 if data.get("5G") == "Yes" else 0
         refresh_rate = int(data.get("Refresh Rate", 60))
+        waterproof = int(data.get("Waterproof", 0))  # Default 0 olarak ayarlandı
+        dustproof = int(data.get("Dustproof", 0))  # Default 0 olarak ayarlandı
 
         # Veri seti yükle
         df = pd.read_csv(
@@ -98,6 +108,8 @@ def predict_product_xgboost(request):
                 "5G": "5g",
                 "Model": "phone_model",
                 "Refresh Rate": "refresh_rate",
+                "Waterproof": "waterproof",  # Yeni sütun
+                "Dustproof": "dustproof",  # Yeni sütun
             },
             inplace=True,
         )
@@ -108,10 +120,46 @@ def predict_product_xgboost(request):
             df["display_type"].str.strip().str.split(",").str[0].str.title()
         )
 
+        # Eğer CSV'de waterproof/dustproof sütunları yoksa, varsayılan değerler ekle
+        if "waterproof" not in df.columns:
+            df["waterproof"] = 0  # Varsayılan olarak waterproof değil
+        if "dustproof" not in df.columns:
+            df["dustproof"] = 0  # Varsayılan olarak dustproof değil
+
+        # Sayısal sütunlardaki problematik değerleri temizle
+        numeric_columns = [
+            "ram",
+            "storage",
+            "display_size",
+            "battery",
+            "ppi_density",
+            "camera",
+            "chipset",
+            "5g",
+            "refresh_rate",
+            "waterproof",
+            "dustproof",
+            "price",
+        ]
+
+        for col in numeric_columns:
+            if col in df.columns:
+                # String değerleri NaN'a çevir
+                df[col] = pd.to_numeric(df[col], errors="coerce")
+
+        # NaN değerleri olan satırları kaldır
+        df = df.dropna(subset=numeric_columns)
+
+        # Veri setinin yeterli büyüklükte olduğunu kontrol et
+        if len(df) < 10:
+            return Response(
+                {"error": "Insufficient clean data for training"}, status=400
+            )
+
         # Feature engineering uygula
         df = feature_engineering(df)
 
-        # Gerekli sütunlar
+        # Gerekli sütunlar (waterproof ve dustproof eklendi)
         feature_columns = [
             "ram",
             "storage",
@@ -124,7 +172,9 @@ def predict_product_xgboost(request):
             "chipset",
             "5g",
             "refresh_rate",
-            # Yeni özellikler
+            "waterproof",  # Yeni özellik
+            "dustproof",  # Yeni özellik
+            # Mevcut özellikler
             "ram_storage",
             "battery_display_ratio",
             "ppi_refresh",
@@ -133,6 +183,9 @@ def predict_product_xgboost(request):
             "is_ios",
             "is_oled",
             "log_battery",
+            # Yeni kombinasyon özellikleri
+            "protection_score",
+            "full_protection",
         ]
 
         X = df[feature_columns].copy()
@@ -160,6 +213,8 @@ def predict_product_xgboost(request):
                     "chipset": chipset,
                     "5g": is_5g,
                     "refresh_rate": refresh_rate,
+                    "waterproof": waterproof,  # Yeni özellik
+                    "dustproof": dustproof,  # Yeni özellik
                 }
             ]
         )
@@ -167,9 +222,20 @@ def predict_product_xgboost(request):
         # Feature engineering yeni veri için
         new_data = feature_engineering(new_data)
 
-        # Label Encoding yeni veri
-        new_data["os_type"] = le_os.transform(new_data["os_type"])
-        new_data["display_type"] = le_display.transform(new_data["display_type"])
+        # Yeni veri için label encoding - hata kontrolü ile
+        try:
+            new_data["os_type"] = le_os.transform(new_data["os_type"])
+        except ValueError:
+            # Eğer yeni OS tipi training'de yoksa, en yaygın olan ile değiştir
+            most_common_os = df["os_type"].mode()[0]
+            new_data["os_type"] = le_os.transform([most_common_os])
+
+        try:
+            new_data["display_type"] = le_display.transform(new_data["display_type"])
+        except ValueError:
+            # Eğer yeni display tipi training'de yoksa, en yaygın olan ile değiştir
+            most_common_display = df["display_type"].mode()[0]
+            new_data["display_type"] = le_display.transform([most_common_display])
 
         # Model oluştur
         model = RandomForestRegressor(
@@ -200,13 +266,18 @@ def predict_product_xgboost(request):
                     "r2_mean": mean_r2,
                     "r2_std": std_r2,
                 },
+                "features_used": {
+                    "waterproof": waterproof,
+                    "dustproof": dustproof,
+                    "protection_score": waterproof + dustproof,
+                    "full_protection": 1 if (waterproof == 1 and dustproof == 1) else 0,
+                },
             }
         )
-   
+
     except Exception as e:
         traceback.print_exc()
         return Response({"error": str(e)}, status=400)
-
 
 
 '''    
