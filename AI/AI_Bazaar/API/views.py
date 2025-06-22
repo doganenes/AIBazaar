@@ -23,14 +23,10 @@ model = CatBoostRegressor(iterations=200, learning_rate=0.1, depth=8, verbose=Fa
 #    model_dir=r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\models"
 # )
 
-# 1. DAHA İYİ OS ENCODING STRATEJİSİ
-
 
 # Seçenek 2: Label Encoding + StandardScaler
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 
-
-# 2. İYİLEŞTİRİLMİŞ MODEL EĞİTİMİ
 
 
 from sklearn.ensemble import RandomForestRegressor
@@ -40,8 +36,138 @@ import numpy as np
 import pandas as pd
 
 
+def find_similar_phones(df, predicted_price, user_os, user_specs, top_n=5):
+
+    price_tolerance = 0.20
+    min_price = predicted_price * (1 - price_tolerance)
+    max_price = predicted_price * (1 + price_tolerance)
+
+    user_os_clean = user_os.strip().title()
+    if "Android" in user_os_clean:
+        os_filter = df["os_type"].str.contains("Android", case=False, na=False)
+    elif "Ios" in user_os_clean or "iOS" in user_os_clean:
+        os_filter = df["os_type"].str.contains("Ios", case=False, na=False)
+    else:
+        os_filter = pd.Series([True] * len(df))  
+
+  
+    similar_phones = df[
+        (df["price"] >= min_price) & (df["price"] <= max_price) & os_filter
+    ].copy()
+
+    if len(similar_phones) == 0:
+      
+        similar_phones = df[os_filter].copy()
+        if len(similar_phones) == 0:
+            return []
+
+   
+    def calculate_similarity_score(row):
+        score = 0
+
+    
+        ram_diff = abs(row["ram"] - user_specs["ram"]) / user_specs["ram"]
+        if ram_diff <= 0.5:
+            score += 20
+        elif ram_diff <= 1.0:
+            score += 10
+
+     
+        storage_diff = (
+            abs(row["storage"] - user_specs["storage"]) / user_specs["storage"]
+        )
+        if storage_diff <= 0.5:
+            score += 15
+        elif storage_diff <= 1.0:
+            score += 8
+
+        display_diff = (
+            abs(row["display_size"] - user_specs["display_size"])
+            / user_specs["display_size"]
+        )
+        if display_diff <= 0.1:
+            score += 15
+        elif display_diff <= 0.2:
+            score += 10
+
+      
+        battery_diff = (
+            abs(row["battery"] - user_specs["battery"]) / user_specs["battery"]
+        )
+        if battery_diff <= 0.2:
+            score += 15
+        elif battery_diff <= 0.4:
+            score += 8
+
+        
+        camera_diff = abs(row["camera"] - user_specs["camera"]) / user_specs["camera"]
+        if camera_diff <= 0.3:
+            score += 10
+        elif camera_diff <= 0.6:
+            score += 5
+
+      
+        chipset_diff = abs(row["chipset"] - user_specs["chipset"])
+        if chipset_diff <= 1:
+            score += 10
+        elif chipset_diff <= 2:
+            score += 5
+
+       
+        if row["5g"] == user_specs["5g"]:
+            score += 8
+
+    
+        refresh_diff = abs(row["refresh_rate"] - user_specs["refresh_rate"])
+        if refresh_diff <= 30:
+            score += 5
+
+     
+        price_diff = abs(row["price"] - predicted_price) / predicted_price
+        if price_diff <= 0.1:
+            score += 15
+        elif price_diff <= 0.2:
+            score += 10
+
+        return score
+
+    
+    similar_phones["similarity_score"] = similar_phones.apply(
+        calculate_similarity_score, axis=1
+    )
+
+
+    recommended_phones = similar_phones.nlargest(top_n, "similarity_score")
+
+ 
+    recommendations = []
+    for _, phone in recommended_phones.iterrows():
+        recommendations.append(
+            {
+                "model": phone.get("phone_model", "Unknown Model"),
+                "price": round(phone["price"], 2),
+                "ram": int(phone["ram"]),
+                "storage": int(phone["storage"]),
+                "display_size": phone["display_size"],
+                "battery": int(phone["battery"]),
+                "camera": phone["camera"],
+                "os": phone["os_type"],
+                "display_type": phone["display_type"],
+                "chipset": int(phone["chipset"]),
+                "5g": int(phone["5g"]),
+                "refresh_rate": int(phone["refresh_rate"]),
+                "similarity_score": round(phone["similarity_score"], 2),
+                "price_difference": round(
+                    ((phone["price"] - predicted_price) / predicted_price) * 100, 1
+                ),
+            }
+        )
+
+    return recommendations
+
+
 def feature_engineering(df):
-    # Yeni özellikler üret
+  
     df["ram_storage"] = df["ram"] * df["storage"]
     df["battery_display_ratio"] = df["battery"] / df["display_size"]
     df["ppi_refresh"] = df["ppi_density"] * df["refresh_rate"]
@@ -57,9 +183,9 @@ def feature_engineering(df):
 
     df["log_battery"] = np.log1p(df["battery"])
 
-    # Yeni özellikler: waterproof ve dustproof için kombinasyonlar
+   
     if "waterproof" in df.columns and "dustproof" in df.columns:
-        df["protection_score"] = df["waterproof"] + df["dustproof"]  # 0-2 arası skor
+        df["protection_score"] = df["waterproof"] + df["dustproof"] 
         df["full_protection"] = (
             (df["waterproof"] == 1) & (df["dustproof"] == 1)
         ).astype(int)
@@ -72,7 +198,6 @@ def predict_product_xgboost(request):
     try:
         data = request.data
 
-        # Girdi al
         ram = float(data.get("RAM"))
         storage = float(data.get("Storage"))
         display_size = float(data.get("Display Size"))
@@ -87,12 +212,11 @@ def predict_product_xgboost(request):
         waterproof = int(data.get("Waterproof", 0))  # Default 0 olarak ayarlandı
         dustproof = int(data.get("Dustproof", 0))  # Default 0 olarak ayarlandı
 
-        # Veri seti yükle
         df = pd.read_csv(
             r"C:\Users\pc\Desktop\AIbazaar\AIBazaar\AI\utils\notebooks\Product.csv"
         )
 
-        # Kolonları düzelt
+     
         df.rename(
             columns={
                 "RAM": "ram",
@@ -114,19 +238,18 @@ def predict_product_xgboost(request):
             inplace=True,
         )
 
-        # Kategorik temizleme
         df["os_type"] = df["os_type"].str.strip().str.title()
         df["display_type"] = (
             df["display_type"].str.strip().str.split(",").str[0].str.title()
         )
 
-        # Eğer CSV'de waterproof/dustproof sütunları yoksa, varsayılan değerler ekle
+      
         if "waterproof" not in df.columns:
             df["waterproof"] = 0  # Varsayılan olarak waterproof değil
         if "dustproof" not in df.columns:
-            df["dustproof"] = 0  # Varsayılan olarak dustproof değil
+            df["dustproof"] = 0  
 
-        # Sayısal sütunlardaki problematik değerleri temizle
+       
         numeric_columns = [
             "ram",
             "storage",
@@ -144,22 +267,19 @@ def predict_product_xgboost(request):
 
         for col in numeric_columns:
             if col in df.columns:
-                # String değerleri NaN'a çevir
+               
                 df[col] = pd.to_numeric(df[col], errors="coerce")
 
-        # NaN değerleri olan satırları kaldır
         df = df.dropna(subset=numeric_columns)
 
-        # Veri setinin yeterli büyüklükte olduğunu kontrol et
         if len(df) < 10:
             return Response(
                 {"error": "Insufficient clean data for training"}, status=400
             )
 
-        # Feature engineering uygula
+       
         df = feature_engineering(df)
 
-        # Gerekli sütunlar (waterproof ve dustproof eklendi)
         feature_columns = [
             "ram",
             "storage",
@@ -172,9 +292,8 @@ def predict_product_xgboost(request):
             "chipset",
             "5g",
             "refresh_rate",
-            "waterproof",  # Yeni özellik
-            "dustproof",  # Yeni özellik
-            # Mevcut özellikler
+            "waterproof", 
+            "dustproof",        
             "ram_storage",
             "battery_display_ratio",
             "ppi_refresh",
@@ -183,7 +302,6 @@ def predict_product_xgboost(request):
             "is_ios",
             "is_oled",
             "log_battery",
-            # Yeni kombinasyon özellikleri
             "protection_score",
             "full_protection",
         ]
@@ -191,14 +309,12 @@ def predict_product_xgboost(request):
         X = df[feature_columns].copy()
         y = df["price"]
 
-        # Label Encoding kategorik değişkenler
         le_os = LabelEncoder()
         X["os_type"] = le_os.fit_transform(X["os_type"])
 
         le_display = LabelEncoder()
         X["display_type"] = le_display.fit_transform(X["display_type"])
 
-        # Yeni veri
         new_data = pd.DataFrame(
             [
                 {
@@ -213,31 +329,31 @@ def predict_product_xgboost(request):
                     "chipset": chipset,
                     "5g": is_5g,
                     "refresh_rate": refresh_rate,
-                    "waterproof": waterproof,  # Yeni özellik
-                    "dustproof": dustproof,  # Yeni özellik
+                    "waterproof": waterproof, 
+                    "dustproof": dustproof,  
                 }
             ]
         )
 
-        # Feature engineering yeni veri için
+       
         new_data = feature_engineering(new_data)
 
-        # Yeni veri için label encoding - hata kontrolü ile
+      
         try:
             new_data["os_type"] = le_os.transform(new_data["os_type"])
         except ValueError:
-            # Eğer yeni OS tipi training'de yoksa, en yaygın olan ile değiştir
+           
             most_common_os = df["os_type"].mode()[0]
             new_data["os_type"] = le_os.transform([most_common_os])
 
         try:
             new_data["display_type"] = le_display.transform(new_data["display_type"])
         except ValueError:
-            # Eğer yeni display tipi training'de yoksa, en yaygın olan ile değiştir
+           
             most_common_display = df["display_type"].mode()[0]
             new_data["display_type"] = le_display.transform([most_common_display])
 
-        # Model oluştur
+     
         model = RandomForestRegressor(
             n_estimators=200,
             max_depth=15,
@@ -245,19 +361,27 @@ def predict_product_xgboost(request):
             n_jobs=-1,
         )
 
-        # 5-fold CV ile r2 skoru hesapla
+ 
         cv = KFold(n_splits=5, shuffle=True, random_state=42)
         scores = cross_val_score(model, X, y, scoring="r2", cv=cv, n_jobs=-1)
 
         mean_r2 = round(np.mean(scores), 4)
         std_r2 = round(np.std(scores), 4)
-
-        # Modeli tüm veriyle eğit
+   
         model.fit(X, y)
 
-        # Tahmin yap
         prediction = model.predict(new_data)[0]
-
+        user_specs = {
+            "ram": ram,
+            "storage": storage,
+            "display_size": display_size,
+            "battery": battery,
+            "camera": camera,
+            "chipset": chipset,
+            "5g": is_5g,
+            "refresh_rate": refresh_rate
+        }
+        similar_phones = find_similar_phones(df, prediction, os, user_specs, top_n=1)
         return Response(
             {
                 "message": "Random Forest prediction successful",
@@ -271,6 +395,15 @@ def predict_product_xgboost(request):
                     "dustproof": dustproof,
                     "protection_score": waterproof + dustproof,
                     "full_protection": 1 if (waterproof == 1 and dustproof == 1) else 0,
+                },
+                "recommendations": {
+                    "similar_phones": similar_phones,
+                    "recommendation_count": len(similar_phones),
+                    "recommendation_criteria": {
+                        "price_range": f"±20% ({round(prediction * 0.8, 2)} - {round(prediction * 1.2, 2)})",
+                        "os_restriction": f"Only {os} phones",
+                        "flexibility": "RAM/Storage can be ±50%, other specs ±20-40%",
+                    },
                 },
             }
         )
