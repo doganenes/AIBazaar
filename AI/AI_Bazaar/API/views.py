@@ -208,7 +208,7 @@ def predict_product_rf(request):
         dustproof = int(data.get("Dustproof", 0)) 
 
         df = pd.read_csv(
-            r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\notebooks\product_specs_en.csv"
+            r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\notebooks\Product.csv"
         )
 
      

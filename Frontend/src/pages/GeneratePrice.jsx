@@ -296,7 +296,7 @@ function GeneratePrice() {
                       }`}
                       min="3500"
                       max="7000"
-                      step="5"
+                      step="50"
                       name="Battery Capacity"
                       value={formData["Battery Capacity"]}
                       onChange={handleChange}
@@ -317,9 +317,9 @@ function GeneratePrice() {
                       required
                     />
                     <div className="d-flex justify-content-between fs-5 fw-bold">
-                      <small className="text-muted">3500"</small>
+                      <small className="text-muted">3500 mAh</small>
                       <small className="text-muted fs-5">
-                        {formData["Battery Capacity"]}"
+                        {formData["Battery Capacity"]} mAh
                       </small>
                       <small className="text-muted">7000"</small>
                     </div>

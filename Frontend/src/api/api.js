@@ -99,7 +99,7 @@ export const getProductById = async (id) => {
   }
 };
 
-const searchProducts = async (searchDto) => {
+export const searchProducts = async (searchDto) => {
   try {
     const response = await api.post("/api/products/searchProducts", searchDto);
     return response.data;

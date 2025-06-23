@@ -8,6 +8,11 @@ import {
   calculateStats,
 } from "../utils/chartUtils";
 import {
+  translateDescription,
+  formatValue,
+  getDisplayLabel,
+} from "../utils/keyUtils";
+import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
@@ -19,6 +24,7 @@ import {
   Filler,
 } from "chart.js";
 
+import { capitalizeEachWord } from "../utils/detailUtils";
 import { Line } from "react-chartjs-2";
 
 ChartJS.register(
@@ -32,66 +38,8 @@ ChartJS.register(
   Filler
 );
 
-import { capitalizeEachWord } from "../utils/detailUtils";
-
 const DescriptionTable = ({ description }) => {
-  const parseDescription = (desc) => {
-    if (!desc) return [];
-
-    const pairs = desc.split(";");
-    return pairs
-      .map((pair) => {
-        const [key, value] = pair.split(":");
-        return {
-          key: key?.trim(),
-          value: value?.trim(),
-        };
-      })
-      .filter((item) => item.key && item.value);
-  };
-
-  const formatKey = (key) => {
-    const keyMap = {
-      storage: "Storage",
-      ram: "RAM",
-      phone_brand: "Brand",
-      phone_model: "Model",
-      dimensions: "Dimensions",
-      display_size: "Display Size",
-      display_resolution: "Display Resolution",
-      os: "Operating System",
-      battery: "Battery",
-      video: "Video",
-      chipset: "Chipset",
-      cpu: "Processor",
-      gpu: "Graphics Processor",
-      ppi_density: "PPI Density",
-    };
-
-    return (
-      keyMap[key] ||
-      key.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())
-    );
-  };
-
-  const formatValue = (key, value) => {
-    switch (key) {
-      case "storage":
-        return `${value} GB`;
-      case "ram":
-        return `${value} GB`;
-      case "display_size":
-        return `${value}"`;
-      case "battery":
-        return `${value} mAh`;
-      case "ppi_density":
-        return `${value} PPI`;
-      default:
-        return value;
-    }
-  };
-
-  const specs = parseDescription(description);
+  const specs = translateDescription(description);
 
   if (specs.length === 0) {
     return (
@@ -117,12 +65,12 @@ const DescriptionTable = ({ description }) => {
       <div className="card-body p-0">
         <table className="table table-bordered table-hover mb-0">
           <tbody>
-            {specs.map((spec, index) => (
+            {specs.map(({ key, value }, index) => (
               <tr key={index}>
                 <td className="fw-medium text-muted" style={{ width: "40%" }}>
-                  {capitalizeEachWord(formatKey(spec.key))}
+                  {getDisplayLabel(key)}
                 </td>
-                <td className="fw-bold">{formatValue(spec.key, spec.value)}</td>
+                <td className="fw-bold">{formatValue(key, value)}</td>
               </tr>
             ))}
           </tbody>
@@ -249,7 +197,9 @@ function ProductDetail() {
       <div className="row g-4">
         <div className="col-lg-8">
           <div className="bg-white rounded shadow-sm p-4 h-100">
-            <h5 className="fw-semibold mb-3">📈 Price Forecast for {product.productName} in 15 Days</h5>
+            <h5 className="fw-semibold mb-3">
+              📈 Price Forecast for {product.productName} in 15 Days
+            </h5>
 
             {error && <div className="alert alert-danger small">{error}</div>}
 
