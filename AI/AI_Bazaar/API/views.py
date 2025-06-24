@@ -231,14 +231,12 @@ def predict_product_rf(request):
             inplace=True,
         )
  
-        # ↓ predict_product_rf fonksiyonuna eklenmeli (df yüklenip rename edildikten sonra)
  
         if os.lower() == "android":
             df = df[df["os_type"].str.contains("Android", case=False, na=False)]
         elif os.lower() in ["ios", "apple"]:
             df = df[df["os_type"].str.contains("Ios", case=False, na=False)]
  
-        # sonra feature_engineering vs. devam eder...
  
         df["os_type"] = df["os_type"].str.strip().str.title()
         df["display_type"] = (
