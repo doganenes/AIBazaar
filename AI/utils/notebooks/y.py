@@ -30,7 +30,7 @@ user_agents = [
 ]
 
 
-base_url = "https://www.epey.com/akilli-telefonlar/e/YToyOntpOjE4NzA7YTo0OntpOjA7czo3OiIyMDY3MjcxIjtpOjI7czo3OiIyNTE1MDkzIjtpOjM7czo3OiIyMzg2NTQ3IjtpOjQ7czo3OiIyMTk5NDE1Ijt9aToxNDthOjI6e2k6MDtzOjE6IjQiO2k6MTtzOjI6IjI0Ijt9fV9zOjk6InB1YW46REVTQyI7=/"
+base_url = "https://www.epey.com/akilli-telefonlar/e/YToyOntzOjU6Im1hcmthIjthOjE6e2k6MDtzOjE6IjIiO31pOjE4NzA7YTo1OntpOjA7czo3OiIyNTE1MDkzIjtpOjE7czo3OiIyMzg2NTQ3IjtpOjI7czo3OiIyMTk5NDE1IjtpOjM7czo3OiIyMDY3MjcxIjtpOjQ7czo3OiIxOTQyNDY3Ijt9fV9OOw==/"
 
 feature_ids = {
     "Ekran Boyutu": "id1",
@@ -51,7 +51,7 @@ feature_ids = {
 all_phones = []
 productIds = set()
 
-for page_num in range(1, 32):
+for page_num in range(1, 3):
     ua = user_agents[(page_num - 1) % len(user_agents)]
 
     options = uc.ChromeOptions()
@@ -180,5 +180,5 @@ for page_num in range(1, 32):
 
 # Kaydet
 df = pd.DataFrame(all_phones)
-df.to_csv("LSTMProduct1.csv", index=False)
+df.to_csv("LSTMProduct2.csv", index=False)
 print("CSV kaydedildi: LSTMProduct1.csv")
