@@ -137,7 +137,7 @@ async function writeProductsToCsv(products) {
 
 (async () => {
     try {
-        const productsInfo = await readProductsFromCsv('epeyProductListid.csv');
+        const productsInfo = await readProductsFromCsv('epeyProductListid5.csv');
 
        
         const products = await fetchAllProducts(productsInfo);

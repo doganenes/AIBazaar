@@ -26,17 +26,17 @@ user_agents = [
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_2_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Safari/605.1.15",
 ]
 
-base_url = "https://www.epey.com/akilli-telefonlar/e/YTo0OntpOjE4NzA7YTozOntpOjA7czo3OiIyNTE1MDkzIjtpOjE7czo3OiIyMzg2NTQ3IjtpOjI7czo3OiIyMTk5NDE1Ijt9czo3OiJnYXJhbnRpIjthOjE6e2k6MDtzOjE6IjEiO31zOjU6ImZpeWF0IjthOjI6e2k6MDtzOjQ6IjUwMDAiO2k6MTtzOjY6IjExOTAwMCI7fWk6MTQ7YToyOntpOjA7czoxOiI0IjtpOjE7czoyOiIyNCI7fX1fTjs=/"
+base_url = "https://www.epey.com/akilli-telefonlar/e/YToyOntpOjE4NzA7YTo0OntpOjA7czo3OiIyMDY3MjcxIjtpOjI7czo3OiIyNTE1MDkzIjtpOjM7czo3OiIyMzg2NTQ3IjtpOjQ7czo3OiIyMTk5NDE1Ijt9aToxNDthOjI6e2k6MDtzOjE6IjQiO2k6MTtzOjI6IjI0Ijt9fV9zOjk6InB1YW46REVTQyI7=/"
 productIds = []
 
-for page_num in range(1, 12):
+for page_num in range(1, 33):
     ua = user_agents[(page_num - 1) % len(user_agents)]
 
     options = uc.ChromeOptions()
     options.add_argument(f"user-agent={ua}")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-    # options.add_argument("--headless")  # gizli çalıştırmak istersen
+    # options.add_argument("--headless")
 
     driver = uc.Chrome(options=options)
     url = f"{base_url}{page_num}/"
@@ -57,7 +57,7 @@ for page_num in range(1, 12):
                 productImg = ul.find("img")
                 if productImg:
                     productImgLink = productImg.get("src").replace("k_", "b_")
-                    
+
                     if "reklam" in productImgLink:
                         continue
                 else:
@@ -66,13 +66,36 @@ for page_num in range(1, 12):
                 a_tag = ul.find("a", class_="urunadi")
                 if a_tag:
                     productTitle = a_tag.get("title")
-                    print(productTitle)
-                print(productImgLink)
+                    # print(productTitle)
+                # print(productImgLink)
+                # Fiyat bilgisi al
+                price_li = ul.find("li", class_="fiyat cell")
+                if price_li:
+                    a_tag = price_li.find("a")
+                    if a_tag:
+                        span_tag = a_tag.find("span")
+
+                        site_count = fiyat_count = 0
+                        productPrice = a_tag.get_text(strip=True).replace(span_tag.get_text(strip=True), "") if span_tag else a_tag.get_text(strip=True)
+                        productPrice = productPrice.split(",")[0].replace(".", "").strip()
+
+                        if span_tag:
+                            span_text = span_tag.get_text(strip=True)
+                            site_count, fiyat_count = span_text.replace(" site", "").replace(" fiyat", "").split(", ")
+                        else:
+                            site_count = fiyat_count = "?"
+
+                        if productPrice:
+                            productPrice = int(productPrice)
+                            if productPrice <=0:
+                                continue
+                        if ((int)(site_count) < 2) or (int(fiyat_count) < 3):
+                            continue        
                 productImgLink = productImgLink.replace("k_", "b_")
                 productIds.append((ul_id, productImgLink, productTitle))
-                print(ul_id)
+                # print(ul_id)
 
         driver.quit()
 
 df = pd.DataFrame(productIds, columns=["ProductID", "ProductImage", "ProductName"])
-df.to_csv("epeyProductListid.csv", index=False)
+df.to_csv("epeyProductListid5.csv", index=False)

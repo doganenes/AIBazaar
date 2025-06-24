@@ -10,10 +10,10 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import LSTM, Dense
+# from tensorflow.keras.models import Sequential
+# from tensorflow.keras.layers import LSTM, Dense
 from trainers.train_lstm_models import LSTMModelTrainer
-from tensorflow.keras.models import load_model
+# from tensorflow.keras.models import load_model
 import traceback
 
 from sklearn.preprocessing import LabelEncoder, StandardScaler
@@ -24,15 +24,9 @@ import numpy as np
 import pandas as pd
 
 
-lstm_trainer = LSTMModelTrainer(
-   data_path=r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\notebooks\LSTMPriceHistory.csv",
-   model_dir=r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\models"
-)
-
-
 def find_similar_phones(df, predicted_price, user_os, user_specs, top_n=5):
 
-    price_tolerance = 0.20
+    price_tolerance = 0.2
     min_price = predicted_price * (1 - price_tolerance)
     max_price = predicted_price * (1 + price_tolerance)
 
@@ -208,10 +202,9 @@ def predict_product_rf(request):
         dustproof = int(data.get("Dustproof", 0)) 
 
         df = pd.read_csv(
-            r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\notebooks\Product.csv"
+            r"C:\Users\pc\Desktop\AIbazaar\AIBazaar\AI\utils\notebooks\Product.csv"
         )
 
-     
         df.rename(
             columns={
                 "RAM": "ram",
@@ -233,18 +226,25 @@ def predict_product_rf(request):
             inplace=True,
         )
 
+        # ↓ predict_product_rf fonksiyonuna eklenmeli (df yüklenip rename edildikten sonra)
+
+        if os.lower() == "android":
+            df = df[df["os_type"].str.contains("Android", case=False, na=False)]
+        elif os.lower() in ["ios", "apple"]:
+            df = df[df["os_type"].str.contains("Ios", case=False, na=False)]
+
+        # sonra feature_engineering vs. devam eder...
+
         df["os_type"] = df["os_type"].str.strip().str.title()
         df["display_type"] = (
             df["display_type"].str.strip().str.split(",").str[0].str.title()
         )
 
-      
         if "waterproof" not in df.columns:
             df["waterproof"] = 0  # Varsayılan olarak waterproof değil
         if "dustproof" not in df.columns:
             df["dustproof"] = 0  
 
-       
         numeric_columns = [
             "ram",
             "storage",
@@ -262,17 +262,16 @@ def predict_product_rf(request):
 
         for col in numeric_columns:
             if col in df.columns:
-               
+
                 df[col] = pd.to_numeric(df[col], errors="coerce")
 
-        # df = df.dropna(subset=numeric_columns)
+        df = df.dropna(subset=numeric_columns)
 
         if len(df) < 10:
             return Response(
                 {"error": "Insufficient clean data for training"}, status=400
             )
 
-       
         df = feature_engineering(df)
 
         feature_columns = [
@@ -330,25 +329,22 @@ def predict_product_rf(request):
             ]
         )
 
-       
         new_data = feature_engineering(new_data)
 
-      
         try:
             new_data["os_type"] = le_os.transform(new_data["os_type"])
         except ValueError:
-           
+
             most_common_os = df["os_type"].mode()[0]
             new_data["os_type"] = le_os.transform([most_common_os])
 
         try:
             new_data["display_type"] = le_display.transform(new_data["display_type"])
         except ValueError:
-           
+
             most_common_display = df["display_type"].mode()[0]
             new_data["display_type"] = le_display.transform([most_common_display])
 
-     
         model = RandomForestRegressor(
             n_estimators=200,
             max_depth=15,
@@ -356,13 +352,12 @@ def predict_product_rf(request):
             n_jobs=-1,
         )
 
- 
         cv = KFold(n_splits=5, shuffle=True, random_state=42)
         scores = cross_val_score(model, X, y, scoring="r2", cv=cv, n_jobs=-1)
 
         mean_r2 = round(np.mean(scores), 4)
         std_r2 = round(np.std(scores), 4)
-   
+
         model.fit(X, y)
 
         prediction = model.predict(new_data)[0]
@@ -409,7 +404,7 @@ def predict_product_rf(request):
         return Response({"error": str(e)}, status=400)
 
 
-
+'''
 @api_view(["POST"])
 def predict_product_lstm(request):
     try:
@@ -429,3 +424,4 @@ def predict_product_lstm(request):
 
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+'''
