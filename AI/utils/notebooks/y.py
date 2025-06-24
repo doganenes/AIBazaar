@@ -31,7 +31,6 @@ user_agents = [
 
 
 base_url = "https://www.epey.com/akilli-telefonlar/e/YToyOntzOjU6Im1hcmthIjthOjE6e2k6MDtzOjE6IjIiO31pOjE4NzA7YTo1OntpOjA7czo3OiIyNTE1MDkzIjtpOjE7czo3OiIyMzg2NTQ3IjtpOjI7czo3OiIyMTk5NDE1IjtpOjM7czo3OiIyMDY3MjcxIjtpOjQ7czo3OiIxOTQyNDY3Ijt9fV9OOw==/"
-
 feature_ids = {
     "Ekran Boyutu": "id1",
     "Ekran Teknolojisi": "id4",
