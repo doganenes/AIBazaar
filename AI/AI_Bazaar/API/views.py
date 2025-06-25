@@ -15,6 +15,24 @@ from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.model_selection import KFold, cross_val_score
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 import traceback
+import os
+import traceback
+import pandas as pd
+import numpy as np
+from datetime import datetime
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from sklearn.preprocessing import LabelEncoder
+from sklearn.ensemble import (
+    RandomForestRegressor,
+    GradientBoostingRegressor,
+    VotingRegressor,
+)
+from sklearn.model_selection import cross_val_score, KFold
+from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
+import joblib
+import pickle
+from scipy import stats
 from scipy import stats
 import warnings
 import joblib  # Model kaydetmek için eklendi
@@ -229,41 +247,50 @@ def load_model_package(model_path):
             # Pickle ile yükle
             with open(model_path, 'rb') as f:
                 model_package = pickle.load(f)
-        
+
         return model_package
     except Exception as e:
         print(f"Model yükleme hatası: {e}")
         return None
 
+
 @api_view(["POST"])
 def train_and_save_model(request):
     try:
         # Veri yükleme
-        csv_path = request.data.get("csv_path", r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\notebooks\Product.csv")
+        csv_path = request.data.get(
+                "csv_path",
+                r"C:\Users\pc\Desktop\AIbazaar\AIBazaar\AI\utils\notebooks\Product.csv",
+            )
         df = pd.read_csv(csv_path)
 
         # Sütun adlarını yeniden adlandırma
-        df.rename(columns={
-            "RAM": "ram",
-            "Internal Storage": "storage",
-            "Display Size": "display_size",
-            "Battery Capacity": "battery",
-            "Pixel Density": "ppi_density",
-            "Operating System": "os_type",
-            "Display Technology": "display_type",
-            "Camera Resolution": "camera",
-            "CPU Manufacturing": "chipset",
-            "Price": "price",
-            "5G": "5g",
-            "Model": "phone_model",
-            "Refresh Rate": "refresh_rate",
-            "Waterproof": "waterproof",
-            "Dustproof": "dustproof",
-        }, inplace=True)
+        df.rename(
+                columns={
+                    "RAM": "ram",
+                    "Internal Storage": "storage",
+                    "Display Size": "display_size",
+                    "Battery Capacity": "battery",
+                    "Pixel Density": "ppi_density",
+                    "Operating System": "os_type",
+                    "Display Technology": "display_type",
+                    "Camera Resolution": "camera",
+                    "CPU Manufacturing": "chipset",
+                    "Price": "price",
+                    "5G": "5g",
+                    "Model": "phone_model",
+                    "Refresh Rate": "refresh_rate",
+                    "Waterproof": "waterproof",
+                    "Dustproof": "dustproof",
+                },
+                inplace=True,
+            )
 
         # Veri temizleme
         df["os_type"] = df["os_type"].str.strip().str.title()
-        df["display_type"] = df["display_type"].str.strip().str.split(",").str[0].str.title()
+        df["display_type"] = (
+                df["display_type"].str.strip().str.split(",").str[0].str.title()
+            )
 
         # Eksik sütunları ekleme
         if "waterproof" not in df.columns:
@@ -272,8 +299,20 @@ def train_and_save_model(request):
             df["dustproof"] = 0
 
         # Numerik dönüşüm
-        numeric_columns = ["ram", "storage", "display_size", "battery", "ppi_density", 
-                          "camera", "chipset", "5g", "refresh_rate", "waterproof", "dustproof", "price"]
+        numeric_columns = [
+                "ram",
+                "storage",
+                "display_size",
+                "battery",
+                "ppi_density",
+                "camera",
+                "chipset",
+                "5g",
+                "refresh_rate",
+                "waterproof",
+                "dustproof",
+                "price",
+            ]
 
         for col in numeric_columns:
             if col in df.columns:
@@ -283,103 +322,116 @@ def train_and_save_model(request):
         df = df.dropna(subset=numeric_columns)
 
         if len(df) < 10:
-            return Response({"error": "Insufficient clean data for training"}, status=400)
+            return Response(
+                    {"error": "Insufficient clean data for training"}, status=400
+                )
 
         # Aykırı değer temizleme
         outlier_columns = ["price"]
         if len(df) >= 200:
-            df_clean = remove_outliers(df, outlier_columns, method='iqr')
+            df_clean = remove_outliers(df, outlier_columns, method="iqr")
         else:
             df_clean = df.copy()
 
         # Gelişmiş özellik mühendisliği
         df_clean = advanced_feature_engineering(df_clean)
 
-        # Özellik seçimi
-        feature_columns = [
-            # Temel özellikler
-            "ram", "storage", "display_size", "battery", "ppi_density", 
-            "camera", "chipset", "5g", "refresh_rate", "waterproof", "dustproof",
-            
-            # Mühendislik özellikleri
-            "ram_storage", "battery_display_ratio", "ppi_refresh", "chipset_5g",
-            "performance_score", "premium_score", "storage_efficiency", 
-            "display_quality", "battery_efficiency",
-            
-            # Kategorik özellikler
-            "is_android", "is_ios", "is_oled", "is_amoled",
-            
-            # Logaritmik özellikler
-            "log_battery", "log_ram", "log_storage", "log_camera",
-            
-            # Segment özellikleri
-            "flagship_indicator", "budget_indicator", "mid_range_indicator",
-            "tech_generation", "protection_score", "full_protection"
-        ]
+        # OS tipi için fiyat bazlı ordinal encoding
+        os_price_means = df_clean.groupby("os_type")["price"].mean()
+        df_clean["os_encoded"] = df_clean["os_type"].map(os_price_means)
 
-        # OS ve display type encoding
-        le_os = LabelEncoder()
-        df_clean["os_encoded"] = le_os.fit_transform(df_clean["os_type"])
+        # Display tipi için LabelEncoder
         le_display = LabelEncoder()
         df_clean["display_encoded"] = le_display.fit_transform(df_clean["display_type"])
-        
-        feature_columns.extend(["os_encoded", "display_encoded"])
+
+        # Özellik seçimi
+        feature_columns = [
+                # Temel özellikler
+                "ram",
+                "storage",
+                "display_size",
+                "battery",
+                "ppi_density",
+                "camera",
+                "chipset",
+                "5g",
+                "refresh_rate",
+                "waterproof",
+                "dustproof",
+                # Mühendislik özellikleri
+                "ram_storage",
+                "battery_display_ratio",
+                "ppi_refresh",
+                "chipset_5g",
+                "performance_score",
+                "premium_score",
+                "storage_efficiency",
+                "display_quality",
+                "battery_efficiency",
+                # Kategorik özellikler (ordinal olarak os_encoded, label encoded display_encoded)
+                "os_encoded",
+                "display_encoded",
+                # Logaritmik özellikler
+                "log_battery",
+                "log_ram",
+                "log_storage",
+                "log_camera",
+                # Segment özellikleri
+                "flagship_indicator",
+                "budget_indicator",
+                "mid_range_indicator",
+                "tech_generation",
+                "protection_score",
+                "full_protection",
+            ]
 
         X = df_clean[feature_columns].copy()
         y = df_clean["price"]
 
         # Ensemble Model
-        from sklearn.ensemble import VotingRegressor
-        
         rf_model = RandomForestRegressor(
-            n_estimators=500,
-            max_depth=None,
-            min_samples_split=5,
-            min_samples_leaf=2,
-            max_features='sqrt',
-            bootstrap=True,
-            random_state=42,
-            n_jobs=-1
-        )
-        
+                n_estimators=500,
+                max_depth=None,
+                min_samples_split=5,
+                min_samples_leaf=2,
+                max_features="sqrt",
+                bootstrap=True,
+                random_state=42,
+                n_jobs=-1,
+            )
+
         gb_model = GradientBoostingRegressor(
-            n_estimators=400,
-            max_depth=6,
-            learning_rate=0.08,
-            subsample=0.85,
-            min_samples_split=10,
-            min_samples_leaf=5,
-            random_state=42,
-            validation_fraction=0.15,
-            n_iter_no_change=25,
-            tol=1e-4
-        )
-        
-        model = VotingRegressor([
-            ('rf', rf_model),
-            ('gb', gb_model)
-        ], n_jobs=-1)
+                n_estimators=400,
+                max_depth=6,
+                learning_rate=0.08,
+                subsample=0.85,
+                min_samples_split=10,
+                min_samples_leaf=5,
+                random_state=42,
+                validation_fraction=0.15,
+                n_iter_no_change=25,
+                tol=1e-4,
+            )
+
+        model = VotingRegressor([("rf", rf_model), ("gb", gb_model)], n_jobs=-1)
 
         # Cross-validation
         cv_folds = min(10, max(3, len(df_clean) // 15))
         cv = KFold(n_splits=cv_folds, shuffle=True, random_state=42)
-        
-        scoring_metrics = ['r2', 'neg_mean_squared_error', 'neg_mean_absolute_error']
+
+        scoring_metrics = ["r2", "neg_mean_squared_error", "neg_mean_absolute_error"]
         cv_results = {}
-        
+
         for metric in scoring_metrics:
             scores = cross_val_score(model, X, y, scoring=metric, cv=cv, n_jobs=-1)
-            cv_results[metric] = {
-                'mean': np.mean(scores),
-                'std': np.std(scores)
-            }
-        
-        mean_r2 = round(cv_results['r2']['mean'], 4)
-        std_r2 = round(cv_results['r2']['std'], 4)
+            cv_results[metric] = {"mean": np.mean(scores), "std": np.std(scores)}
+
+        mean_r2 = round(cv_results["r2"]["mean"], 4)
+        std_r2 = round(cv_results["r2"]["std"], 4)
 
         # Model eğitimi
         model.fit(X, y)
-        
+
         # Eğitim verisi üzerinde performans
         y_pred_train = model.predict(X)
         train_r2 = r2_score(y, y_pred_train)
@@ -388,46 +440,48 @@ def train_and_save_model(request):
 
         # Model bilgileri
         model_info = {
-            "cv_r2_mean": mean_r2,
-            "cv_r2_std": std_r2,
-            "train_r2": train_r2,
-            "train_mae": train_mae,
-            "train_rmse": train_rmse,
-            "data_samples": len(df_clean),
-            "feature_count": len(feature_columns),
-            "cv_folds": cv_folds
-        }
-
-        # Modeli kaydet
-        joblib_path, pickle_path = save_model_and_preprocessors(
-            model, le_os, le_display, feature_columns, model_info
-        )
-
-        return Response({
-            "message": "Model başarıyla eğitildi ve kaydedildi",
-            "model_paths": {
-                "joblib": joblib_path,
-                "pickle": pickle_path
-            },
-            "model_performance": {
-                "cross_validation_r2": f"{mean_r2:.4f} ± {std_r2:.4f}",
-                "training_r2": f"{train_r2:.4f}",
-                "mae": f"{train_mae:.2f}",
-                "rmse": f"{train_rmse:.2f}"
-            },
-            "data_info": {
-                "original_samples": len(df),
-                "cleaned_samples": len(df_clean),
-                "features_used": len(feature_columns)
+                "cv_r2_mean": mean_r2,
+                "cv_r2_std": std_r2,
+                "train_r2": train_r2,
+                "train_mae": train_mae,
+                "train_rmse": train_rmse,
+                "data_samples": len(df_clean),
+                "feature_count": len(feature_columns),
+                "cv_folds": cv_folds,
+                
             }
-        })
+        joblib_path, pickle_path = save_model_and_preprocessors(
+                model, os_price_means, le_display, feature_columns, model_info
+            )
+        return Response(
+                {
+                    "message": "Model başarıyla eğitildi ve kaydedildi",
+                    "model_paths": {"joblib": joblib_path, "pickle": pickle_path},
+                    "model_performance": {
+                        "cross_validation_r2": f"{mean_r2:.4f} ± {std_r2:.4f}",
+                        "training_r2": f"{train_r2:.4f}",
+                        "mae": f"{train_mae:.2f}",
+                        "rmse": f"{train_rmse:.2f}",
+                    },
+                    "data_info": {
+                        "original_samples": len(df),
+                        "cleaned_samples": len(df_clean),
+                        "features_used": len(feature_columns),
+                       
+                    },
+                }
+            )
 
     except Exception as e:
         traceback.print_exc()
         return Response({"error": str(e)}, status=400)
 
+
 @api_view(["POST"])
-def predict_with_saved_model(request, model_path=r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\models\phone_price_model_20250624_182007.pkl"):
+def predict_with_saved_model(
+    request,
+    model_path=r"C:\Users\pc\Desktop\AIbazaar\AIBazaar\AI\AI_Bazaar\models\phone_price_model_20250624_200303.pkl",
+):
     """Kaydedilmiş modeli kullanarak tahmin yap"""
     try:
         model_path = request.data.get("model_path", model_path)
@@ -440,11 +494,13 @@ def predict_with_saved_model(request, model_path=r"C:\Users\EXCALIBUR\Desktop\pr
             return Response({"error": "Model yüklenemedi"}, status=400)
 
         # Model bileşenlerini çıkar
-        model = model_package['model']
-        le_os = model_package['label_encoder_os']
-        le_display = model_package['label_encoder_display']
-        feature_columns = model_package['feature_columns']
-        model_info = model_package['model_info']
+        model = model_package["model"]
+        os_price_means = model_package[
+            "label_encoder_os"
+        ]  # Burada artık LabelEncoder değil, os fiyat ortalamaları
+        le_display = model_package["label_encoder_display"]
+        feature_columns = model_package["feature_columns"]
+        model_info = model_package["model_info"]
 
         # Kullanıcı verileri
         data = request.data
@@ -457,44 +513,69 @@ def predict_with_saved_model(request, model_path=r"C:\Users\EXCALIBUR\Desktop\pr
         display_type = data.get("Display Technology").strip().split(",")[0].title()
         camera = float(data.get("camera"))
         chipset = int(data.get("CPU Manufacturing"))
-        is_5g = 1 if data.get("5G") == "Yes" else 0
+        is_5g = int(data.get("5G"))
         refresh_rate = int(data.get("Refresh Rate", 60))
         waterproof = int(data.get("Waterproof", 0))
         dustproof = int(data.get("Dustproof", 0))
 
         # Yeni veri hazırlama
-        new_data = pd.DataFrame([{
-            "ram": ram, "storage": storage, "display_size": display_size,
-            "battery": battery, "ppi_density": ppi, "os_type": os_name,
-            "display_type": display_type, "camera": camera, "chipset": chipset,
-            "5g": is_5g, "refresh_rate": refresh_rate, "waterproof": waterproof, 
-            "dustproof": dustproof
-        }])
+        new_data = pd.DataFrame(
+            [
+                {
+                    "ram": ram,
+                    "storage": storage,
+                    "display_size": display_size,
+                    "battery": battery,
+                    "ppi_density": ppi,
+                    "os_type": os_name,
+                    "display_type": display_type,
+                    "camera": camera,
+                    "chipset": chipset,
+                    "5g": is_5g,
+                    "refresh_rate": refresh_rate,
+                    "waterproof": waterproof,
+                    "dustproof": dustproof,
+                }
+            ]
+        )
 
         new_data = advanced_feature_engineering(new_data)
 
-        # Encoding
+        # OS encoding - ortalama fiyatları kullanarak map yapıyoruz
         try:
-            new_data["os_encoded"] = le_os.transform(new_data["os_type"])
-        except ValueError:
-            return Response({"error": f"Bilinmeyen OS türü: {os_name}"}, status=400)
+            new_data["os_encoded"] = new_data["os_type"].map(os_price_means)
+            if new_data["os_encoded"].isnull().any():
+                missing = new_data.loc[
+                    new_data["os_encoded"].isnull(), "os_type"
+                ].unique()
+                return Response(
+                    {"error": f"Bilinmeyen OS türü(leri): {', '.join(missing)}"},
+                    status=400,
+                )
+        except Exception as ex:
+            return Response({"error": f"OS encoding hatası: {str(ex)}"}, status=400)
 
+        # Display encoding (LabelEncoder olduğu için transform kullanıyoruz)
         try:
             new_data["display_encoded"] = le_display.transform(new_data["display_type"])
         except ValueError:
-            return Response({"error": f"Bilinmeyen display türü: {display_type}"}, status=400)
+            return Response(
+                {"error": f"Bilinmeyen display türü: {display_type}"}, status=400
+            )
 
         # Tahmin
         prediction = model.predict(new_data[feature_columns])[0]
 
-        return Response({
-            "message": "Kaydedilmiş model ile tahmin başarılı",
-            "price": round(prediction, 2),
-            "model_info": model_info,
-            "model_path": model_path,
-            "model_version": model_package.get('version', 'Unknown'),
-            "model_timestamp": model_package.get('timestamp', 'Unknown')
-        })
+        return Response(
+            {
+                "message": "Kaydedilmiş model ile tahmin başarılı",
+                "price": round(prediction, 2),
+                "model_info": model_info,
+                "model_path": model_path,
+                "model_version": model_package.get("version", "Unknown"),
+                "model_timestamp": model_package.get("timestamp", "Unknown"),
+            }
+        )
 
     except Exception as e:
         traceback.print_exc()
