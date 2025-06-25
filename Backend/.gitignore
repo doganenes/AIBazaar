@@ -1,0 +1,101 @@
+﻿## .NET Core
+bin/
+obj/
+**/*.user
+**/*.suo
+*.userosscache
+*.sln.docstates
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+build/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+
+bin/
+obj/
+**/bin/
+**/obj/
+# Visual Studio for Mac
+.vscode/
+.idea/
+
+# Rider
+*.sln.iml
+
+# Visual Studio Code
+.vscode/
+
+# Tye
+.tye/
+
+# Paket
+.paket/
+paket-files/
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# DotCover
+*.dotCover
+
+# Logs
+*.log
+
+# Npm / node_modules (eğer frontend varsa)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Dependency directories
+packages/
+.nuget/
+
+# Other files
+*.ncrunch*
+.*crunch*.local.xml
+_ReSharper*/
+*.DotSettings.user
+*.dotsettings.user
+
+# User secrets (if using)
+secrets.json
+
+# LocalDB database
+*.mdf
+*.ldf
+
+# VSCode settings folder
+.vscode/
+
+# Others
+.env
+*.db
+*.sqlite
+*.pdb
+*.cache
+*.bak
+*.tmp
+*.swp
+*.swn
+
+# Publish output
+publish/
+*.vs/
+.env

@@ -1,0 +1,14 @@
+.hover-link:hover {
+  color: #17a2b8 !important;
+  transition: color 0.3s ease;
+}
+
+.btn-outline-info:hover {
+  background-color: #17a2b8;
+  border-color: #17a2b8;
+  color: white !important;
+}
+
+footer {
+  background: linear-gradient(135deg, #212529 0%, #343a40 100%) !important;
+}
