@@ -7,11 +7,16 @@ urlpatterns = [
         views.predict_product_rf,
         name="predict_product_rf",
     ),
+    path(
+        "predict_with_saved_model/",
+        views.predict_with_saved_model,
+        name = "predict_with_saved_model/",
+    ),
 
-    # path(
-    #     "predict_product_lstm/",
-    #     views.predict_product_lstm,
-    #     name="predict_product_lstm",
-    # ),
+    path(
+        "predict_product_lstm/",
+        views.predict_product_lstm,
+        name="predict_product_lstm",
+    ),
    
 ]
