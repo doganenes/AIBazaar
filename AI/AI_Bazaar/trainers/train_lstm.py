@@ -24,10 +24,8 @@ class LSTMModelTrainer:
         set_seeds(self.seed)
 
     def load_and_preprocess_data(self):
-        """Load and clean the data"""
         df = pd.read_csv(self.data_path)
         
-        # Convert and clean data
         df["Price"] = pd.to_numeric(df["Price"], errors="coerce")
         df["RecordDate"] = pd.to_datetime(df["RecordDate"], errors="coerce")
         df["CurrencyRate"] = pd.to_numeric(df["CurrencyRate"], errors="coerce")
@@ -60,29 +58,26 @@ class LSTMModelTrainer:
         return product_df
 
     def prepare_sequences(self, features_scaled):
-        """Prepare input-output sequences for LSTM"""
         X, y = [], []
         for i in range(len(features_scaled) - self.look_back):
             X.append(features_scaled[i:i + self.look_back])
-            y.append(features_scaled[i + self.look_back, 0])  # Only predict next price
+            y.append(features_scaled[i + self.look_back, 0])
         return np.array(X), np.array(y)
 
     def create_model(self, input_shape):
-        """Create LSTM model architecture"""
         model = Sequential([
             LSTM(128, input_shape=input_shape, return_sequences=True,
                  kernel_regularizer=L1L2(l1=1e-5, l2=1e-4)),
             Dropout(0.2),
             LSTM(64, return_sequences=False),
             Dropout(0.2),
-            Dense(1)  # Single output for next price prediction
+            Dense(1)  
         ])
         model.compile(optimizer='adam', loss='mse', metrics=['mae'])
         return model
 
     def train_and_predict(self, product_id, steps=15, min_data_points=30):
         """Main method to train and predict"""
-        # Load and preprocess data
         set_seeds(self.seed)
 
         df = self.load_and_preprocess_data()
