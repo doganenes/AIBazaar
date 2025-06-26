@@ -147,7 +147,7 @@ export const removeFavoriteProduct = async (userId, productId) => {
 export const predict_lstm = async (productId) => {
   try {
     const response = await aiApi.post("/api/predict_product_lstm/", {
-      productId: productId,
+      product_id: productId,
     });
 
     return response.data;

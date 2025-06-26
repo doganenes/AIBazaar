@@ -19,7 +19,7 @@ import os
 import traceback
 import pandas as pd
 import numpy as np
-from datetime import datetime
+from datetime import datetime, timedelta
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from sklearn.preprocessing import LabelEncoder
@@ -38,14 +38,15 @@ import warnings
 import joblib  # Model kaydetmek için eklendi
 import pickle  # Alternatif olarak pickle
 from datetime import datetime
-
+from trainers.train_lstm import LSTMModelTrainer
 warnings.filterwarnings("ignore")
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 import os
 import pandas as pd
 import traceback
-
+from trainers.y import LSTMPredictor
+from trainers.x import LSTMMultiModelTrainer
 
 def advanced_feature_engineering(df):
     """Gelişmiş özellik mühendisliği ile R2 skorunu artırma"""
@@ -1095,208 +1096,276 @@ def predict_product_rf(request):
         traceback.print_exc()
         return Response({"error": str(e)}, status=400)
 
+@api_view(["POST"])
+def predict_with_lstm_model(request):
+    """LSTM modeli kullanarak fiyat tahmini yap"""
+    try:
+        data = request.data
+        product_id = int(data.get("product_id"))
+        model_dir = data.get("model_dir", r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\AI_Bazaar\trainers\product_models")
 
-# Yardımcı endpoint'ler
+        if not product_id:
+            return Response({"error": "product_id parametresi zorunludur"}, status=400)
+
+        model_path = os.path.join(model_dir, f"{product_id}_model.h5")
+        scalers_path = os.path.join(model_dir, f"{product_id}_scalers.pkl")
+
+        if not os.path.exists(model_path):
+            return Response({"error": f"Ürün {product_id} için model bulunamadı"}, status=404)
+        if not os.path.exists(scalers_path):
+            return Response({"error": f"Ürün {product_id} için scaler bulunamadı"}, status=404)
+
+        predictor = LSTMPredictor(model_path, scalers_path)
+        if not predictor.load_model_and_scalers():
+            return Response({"error": "Model veya scaler yüklenemedi"}, status=500)
+
+        data_path = data.get("data_path", r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\notebooks\LSTMPriceHistory.csv")
+        if not os.path.exists(data_path):
+            return Response({"error": "Veri dosyası bulunamadı"}, status=404)
+
+        df = pd.read_csv(data_path, low_memory=False)
+        df["Price"] = pd.to_numeric(df["Price"], errors="coerce")
+        df["CurrencyRate"] = pd.to_numeric(df["CurrencyRate"], errors="coerce")
+        df["RecordDate"] = pd.to_datetime(df["RecordDate"], errors="coerce")
+        df = df.dropna(subset=["RecordDate", "Price", "CurrencyRate"])
+
+        product_df = df[df["ProductID"] == product_id].sort_values("RecordDate")
+        if product_df.empty:
+            return Response({"error": f"Ürün {product_id} için veri bulunamadı"}, status=404)
+
+        if len(product_df) < predictor.look_back:
+            return Response({
+                "error": f"En az {predictor.look_back} günlük veri gerekli, mevcut: {len(product_df)}"
+            }, status=400)
+
+        product_df = predictor.create_features_for_prediction(product_df)
+
+        feature_cols = [
+            "Price", "CurrencyRate", "day_of_week", "is_holiday",
+            "price_lag_1", "price_lag_3", "currency_lag_1",
+            "price_rolling_mean_7", "price_rolling_std_7"
+        ]
+
+        features_scaled = predictor.scale_features_for_prediction(product_df, feature_cols)
+        sequence = predictor.prepare_sequence_for_prediction(features_scaled)
+
+        predicted_prices = predictor.predict_next_15_days(sequence)
+
+        actuals = product_df["Price"].values[-15:]
+        preds = np.array(predicted_prices[:len(actuals)])
+
+        # METRİKLER (varsa önceki 15 gün ile karşılaştırmalı)
+        if len(actuals) == len(preds):
+            mae = float(np.mean(np.abs(preds - actuals)))
+            mape = float(np.mean(np.abs((preds - actuals) / actuals))) * 100
+            rmse = float(np.sqrt(np.mean((preds - actuals) ** 2)))
+            ss_res = np.sum((actuals - preds) ** 2)
+            ss_tot = np.sum((actuals - np.mean(actuals)) ** 2)
+            r2 = float(1 - ss_res / ss_tot) if ss_tot != 0 else 0.0
+        else:
+            mae = mape = rmse = r2 = None
+
+        return Response({
+            "product": product_df['ProductName'].iloc[0],
+            "productId": int(product_id),
+            "steps": 15,
+            "predicted_prices": [round(float(p), 2) for p in predicted_prices],
+            "metrics": {
+                "mae": round(mae, 2) if mae is not None else None,
+                "mape": round(mape, 2) if mape is not None else None,
+                "rmse": round(rmse, 2) if rmse is not None else None,
+            },
+            "features_used": feature_cols
+        })
+
+    except Exception as e:
+        traceback.print_exc()
+        return Response({
+            "error": f"Tahmin sırasında hata oluştu: {str(e)}",
+            "success": False
+        }, status=500)
+
+
+
 @api_view(["GET"])
-def list_saved_models(request):
-    """Kaydedilmiş modelleri listele"""
+def list_available_models(request):
+    """Mevcut LSTM modellerini listele"""
     try:
-        models_dir = "models"
-        if not os.path.exists(models_dir):
-            return Response({"models": [], "message": "Henüz kaydedilmiş model yok"})
-
-        model_files = []
-        for filename in os.listdir(models_dir):
-            if filename.endswith(".pkl"):
-                filepath = os.path.join(models_dir, filename)
-                file_stat = os.stat(filepath)
-
-                # Model bilgilerini yüklemeye çalış
-                try:
-                    model_package = load_model_package(filepath)
-                    model_info = (
-                        model_package.get("model_info", {}) if model_package else {}
-                    )
-                except:
-                    model_info = {}
-
-                model_files.append(
-                    {
-                        "filename": filename,
-                        "filepath": filepath,
-                        "size_mb": round(file_stat.st_size / (1024 * 1024), 2),
-                        "created": datetime.fromtimestamp(file_stat.st_ctime).strftime(
-                            "%Y-%m-%d %H:%M:%S"
-                        ),
-                        "modified": datetime.fromtimestamp(file_stat.st_mtime).strftime(
-                            "%Y-%m-%d %H:%M:%S"
-                        ),
-                        "model_info": model_info,
-                    }
-                )
-
-        # En yeni modelleri önce sırala
-        model_files.sort(key=lambda x: x["modified"], reverse=True)
-
-        return Response({"models": model_files, "total_models": len(model_files)})
-
+        model_dir = request.GET.get("model_dir", "product_models")
+        
+        if not os.path.exists(model_dir):
+            return Response({"models": [], "message": "Model dizini bulunamadı"})
+        
+        # .h5 dosyalarını bul
+        model_files = [f for f in os.listdir(model_dir) if f.endswith('_model.h5')]
+        
+        models_info = []
+        for model_file in model_files:
+            product_id = model_file.replace('_model.h5', '')
+            scalers_file = f"{product_id}_scalers.pkl"
+            
+            model_info = {
+                "product_id": product_id,
+                "model_file": model_file,
+                "scalers_file": scalers_file,
+                "has_scalers": os.path.exists(os.path.join(model_dir, scalers_file)),
+                "model_path": os.path.join(model_dir, model_file),
+                "file_size_mb": round(os.path.getsize(os.path.join(model_dir, model_file)) / (1024*1024), 2)
+            }
+            models_info.append(model_info)
+        
+        return Response({
+            "success": True,
+            "models": models_info,
+            "total_models": len(models_info),
+            "model_directory": model_dir
+        })
+    
     except Exception as e:
-        return Response({"error": str(e)}, status=400)
+        return Response({
+            "error": f"Model listesi alınırken hata oluştu: {str(e)}",
+            "success": False
+        }, status=500)
 
+LSTM_DATA_PATH = r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\notebooks\LSTMPriceHistory.csv"
+LSTM_MODEL_DIR = r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\Newmodels"
 
-@api_view(["DELETE"])
-def delete_saved_model(request):
-    """Kaydedilmiş modeli sil"""
+lstm_trainer = LSTMModelTrainer(LSTM_DATA_PATH)
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+import logging
+
+# Set up logging
+logger = logging.getLogger(__name__)
+
+@api_view(["POST"])
+def predict_product_lstm(request):
     try:
-        model_path = request.data.get("model_path")
-        if not model_path or not os.path.exists(model_path):
-            return Response({"error": "Model dosyası bulunamadı"}, status=400)
-
-        os.remove(model_path)
-        return Response({"message": f"Model başarıyla silindi: {model_path}"})
-
+        # Get input data
+        data = request.data
+        product_id = data.get("productId")
+        steps = data.get("steps", 15)  # Default to 15 steps
+        
+        # Validate input
+        if not product_id:
+            return Response(
+                {"error": "productId is required."}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            product_id = int(product_id)
+            steps = int(steps)
+        except ValueError:
+            return Response(
+                {"error": "productId and steps must be integers."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Validate steps range
+        if steps < 1 or steps > 30:
+            return Response(
+                {"error": "steps must be between 1 and 30."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Train model and make predictions
+        result = lstm_trainer.train_and_predict(
+            product_id=product_id,
+            steps=steps
+        )
+        
+        # Log successful prediction
+        logger.info(
+            f"Successful prediction for product {product_id}. "
+            f"MAPE: {result['metrics']['mape']}%"
+        )
+        
+        return Response(result, status=status.HTTP_200_OK)
+        
+    except ValueError as e:
+        # Expected errors (insufficient data, etc)
+        logger.warning(f"Prediction failed for product {product_id}: {str(e)}")
+        return Response(
+            {"error": str(e)},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+        
     except Exception as e:
-        return Response({"error": str(e)}, status=400)
- 
-# LSTM_DATA_PATH = r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\notebooks\LSTMPriceHistory.csv"
-# LSTM_MODEL_DIR = r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\Newmodels"
-
-# lstm_trainer = LSTMModelTrainer(LSTM_DATA_PATH)
-
-# from rest_framework.decorators import api_view
-# from rest_framework.response import Response
-# from rest_framework import status
-# import logging
-
-# # Set up logging
-# logger = logging.getLogger(__name__)
-
-# @api_view(["POST"])
-# def predict_product_lstm(request):
-#     try:
-#         # Get input data
-#         data = request.data
-#         product_id = data.get("productId")
-#         steps = data.get("steps", 15)  # Default to 15 steps
-        
-#         # Validate input
-#         if not product_id:
-#             return Response(
-#                 {"error": "productId is required."}, 
-#                 status=status.HTTP_400_BAD_REQUEST
-#             )
-        
-#         try:
-#             product_id = int(product_id)
-#             steps = int(steps)
-#         except ValueError:
-#             return Response(
-#                 {"error": "productId and steps must be integers."},
-#                 status=status.HTTP_400_BAD_REQUEST
-#             )
-        
-#         # Validate steps range
-#         if steps < 1 or steps > 30:
-#             return Response(
-#                 {"error": "steps must be between 1 and 30."},
-#                 status=status.HTTP_400_BAD_REQUEST
-#             )
-        
-#         # Train model and make predictions
-#         result = lstm_trainer.train_and_predict(
-#             product_id=product_id,
-#             steps=steps
-#         )
-        
-#         # Log successful prediction
-#         logger.info(
-#             f"Successful prediction for product {product_id}. "
-#             f"MAPE: {result['metrics']['mape']}%"
-#         )
-        
-#         return Response(result, status=status.HTTP_200_OK)
-        
-#     except ValueError as e:
-#         # Expected errors (insufficient data, etc)
-#         logger.warning(f"Prediction failed for product {product_id}: {str(e)}")
-#         return Response(
-#             {"error": str(e)},
-#             status=status.HTTP_400_BAD_REQUEST
-#         )
-        
-#     except Exception as e:
-#         # Unexpected errors
-#         logger.error(
-#             f"Unexpected error during prediction for product {product_id}: {str(e)}",
-#             exc_info=True
-#         )
-#         return Response(
-#             {
-#                 "error": "An unexpected error occurred during prediction.",
-#                 "details": str(e)
-#             },
-#             status=status.HTTP_500_INTERNAL_SERVER_ERROR
-#         )
+        # Unexpected errors
+        logger.error(
+            f"Unexpected error during prediction for product {product_id}: {str(e)}",
+            exc_info=True
+        )
+        return Response(
+            {
+                "error": "An unexpected error occurred during prediction.",
+                "details": str(e)
+            },
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
     
 
 
-# MODELS_DIR = r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\AI_Bazaar\trainers\product_models"  
+MODELS_DIR = r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\AI_Bazaar\trainers\product_models"  
 
 
 
-# from rest_framework.decorators import api_view
-# from rest_framework.response import Response
-# from rest_framework import status
-# import os
-# import pickle
-# import numpy as np
-# from tensorflow.keras.models import load_model
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+import os
+import pickle
+import numpy as np
+from tensorflow.keras.models import load_model
 
-# MODELS_DIR = r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\AI_Bazaar\trainers\product_models"  # Model dosyalarının bulunduğu dizin
+MODELS_DIR = r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\AI_Bazaar\trainers\product_models"  # Model dosyalarının bulunduğu dizin
 
-# @api_view(["POST"])
-# def predict_price(request):
-#     try:
-#         # JSON verisini oku
-#         data = request.data
-#         product_id = int(data.get('productId'))
+@api_view(["POST"])
+def predict_price(request):
+    try:
+        # JSON verisini oku
+        data = request.data
+        product_id = int(data.get('product_id'))
         
-#         if not product_id:
-#             return Response(
-#                 {'error': 'productId gereklidir'},
-#                 status=status.HTTP_400_BAD_REQUEST
-#             )
+        if not product_id:
+            return Response(
+                {'error': 'productId gereklidir'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         
-#         # Model ve scaler dosya yolları
-#         model_path = os.path.join(MODELS_DIR, f"{product_id}_model.h5")
-#         scalers_path = os.path.join(MODELS_DIR, f"{product_id}_scalers.pkl")
+        # Model ve scaler dosya yolları
+        model_path = os.path.join(MODELS_DIR, f"{product_id}_model.h5")
+        scalers_path = os.path.join(MODELS_DIR, f"{product_id}_scalers.pkl")
         
-#         # Dosyaların varlığını kontrol et
-#         if not os.path.exists(model_path) or not os.path.exists(scalers_path):
-#             return Response(
-#                 {'error': 'Model bulunamadı'},
-#                 status=status.HTTP_404_NOT_FOUND
-#             )
+        # Dosyaların varlığını kontrol et
+        if not os.path.exists(model_path) or not os.path.exists(scalers_path):
+            return Response(
+                {'error': 'Model bulunamadı'},
+                status=status.HTTP_404_NOT_FOUND
+            )
         
-#         # Tahmin yapmak için LSTMMultiModelTrainer örneği oluştur
-#         trainer = LSTMMultiModelTrainer()  # Data path gerekmiyor çünkü sadece tahmin yapacağız
+        # Tahmin yapmak için LSTMMultiModelTrainer örneği oluştur
+        trainer = LSTMMultiModelTrainer()  # Data path gerekmiyor çünkü sadece tahmin yapacağız
         
-#         # Modeli ve scaler'ları yükle
-#         model = load_model(model_path)
-#         with open(scalers_path, 'rb') as f:
-#             scalers = pickle.load(f)
+        # Modeli ve scaler'ları yükle
+        model = load_model(model_path)
+        with open(scalers_path, 'rb') as f:
+            scalers = pickle.load(f)
         
-#         # Tahmin yap
-#         predictions = trainer.predict_with_model(model, scalers, 15)
+        # Tahmin yap
+        predictions = trainer.predict_with_model(model, scalers, 15)
         
-#         return Response({
-#             'product_id': product_id,
-#             'steps': 15,
-#             'predictions': predictions
-#         })
+        return Response({
+            'product_id': product_id,
+            'steps': 15,
+            'predictions': predictions
+        })
         
-#     except Exception as e:
-#         return Response(
-#             {'error': str(e)},
-#             status=status.HTTP_500_INTERNAL_SERVER_ERROR
-#         )
+    except Exception as e:
+        return Response(
+            {'error': str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )

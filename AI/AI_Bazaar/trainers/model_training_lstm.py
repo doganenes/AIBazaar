@@ -1,196 +1,172 @@
-import os
 import pickle
-import random
+
+import numpy as np
+from sklearn.metrics import r2_score
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+from sklearn.preprocessing import MinMaxScaler, RobustScaler
+from train_lstm import LSTMModelTrainer  # Assuming your class is in this file
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler, RobustScaler
-import tensorflow as tf
-from tensorflow.keras.models import Sequential, load_model
-from tensorflow.keras.layers import LSTM, Dense, Dropout, Input
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense, Dropout
 from tensorflow.keras.regularizers import L1L2
 import holidays
 from datetime import datetime
+import tensorflow as tf
+import random
 
-class LSTMMultiModelTrainer:
-    def __init__(self, data_path, look_back=7, forecast_horizon=1, seed=42):
+class GeneralLSTMModel:
+    def __init__(self, data_path, seed=42):
         self.data_path = data_path
-        self.look_back = look_back
-        self.forecast_horizon = forecast_horizon
-        self.seed = seed
-        self.set_seeds()
-    
-    def set_seeds(self):
-        np.random.seed(self.seed)
-        tf.random.set_seed(self.seed)
-        random.seed(self.seed)
-    
+        self.trainer = LSTMModelTrainer(data_path, seed)
+        self.model = None
+        self.scalers = None
+        self.feature_cols = None
+        self.look_back = None
+ 
     def load_and_preprocess_data(self):
-        # DtypeWarning için low_memory=False ekledik
-        df = pd.read_csv(self.data_path, low_memory=False)
+        df = pd.read_csv(
+            self.data_path,
+            dtype={'Price': str},
+            parse_dates=['RecordDate'],
+            dayfirst=True,
+            low_memory=False
+        )
         
-        # Sayısal dönüşümler
-        df["Price"] = pd.to_numeric(df["Price"], errors="coerce")
-        df["CurrencyRate"] = pd.to_numeric(df["CurrencyRate"], errors="coerce")
+        # Clean and convert Price
+        df["Price"] = (
+            df["Price"]
+            .str.replace('.', '', regex=False)
+            .str.replace(',', '.', regex=False)
+            .apply(pd.to_numeric, errors='coerce')
+        )
         
-        # Tarih dönüşümü
-        df["RecordDate"] = pd.to_datetime(df["RecordDate"], errors="coerce")
+        # Add price validation
+        def validate_price(price):
+            if pd.isna(price):
+                return False
+            # Set reasonable min/max price bounds
+            return 1000 <= price <= 500000  # Adjust these values based on your domain knowledge
         
-        # NaN değerleri temizleme
-        df = df.dropna(subset=["RecordDate", "Price", "CurrencyRate"])
+        # Filter out invalid prices
+        valid_prices = df['Price'].apply(validate_price)
+        df = df[valid_prices]
         
-        return df.sort_values("RecordDate")
-    
-    def create_features(self, product_df):
-        product_df = product_df.copy()
+        # Clean CurrencyRate
+        df["CurrencyRate"] = (
+            df["CurrencyRate"]
+            .astype(str)
+            .str.replace(',', '.', regex=False)
+            .apply(pd.to_numeric, errors='coerce')
+        )
         
-        # Tarih özellikleri
-        product_df['day_of_week'] = product_df['RecordDate'].dt.dayofweek
-        product_df['day_of_month'] = product_df['RecordDate'].dt.day
-        product_df['month'] = product_df['RecordDate'].dt.month
-        
-        # Tatil bilgisi
-        tr_holidays = holidays.Turkey()
-        product_df['is_holiday'] = product_df['RecordDate'].apply(
-            lambda x: x in tr_holidays).astype(int)
-        
-        # Gecikmeli özellikler
-        for lag in [1, 3, 7]:
-            product_df[f'price_lag_{lag}'] = product_df['Price'].shift(lag)
-            product_df[f'currency_lag_{lag}'] = product_df['CurrencyRate'].shift(lag)
-        
-        # Hareketli ortalamalar
-        product_df['price_rolling_mean_7'] = product_df['Price'].rolling(window=7).mean()
-        product_df['price_rolling_std_7'] = product_df['Price'].rolling(window=7).std()
-        product_df['currency_rolling_mean_7'] = product_df['CurrencyRate'].rolling(window=7).mean()
-        
-        return product_df.dropna()
-    
-    def prepare_sequences(self, features_scaled):
-        X, y = [], []
-        for i in range(len(features_scaled) - self.look_back):
-            X.append(features_scaled[i:i + self.look_back])
-            y.append(features_scaled[i + self.look_back, 0])
-        return np.array(X), np.array(y)
-    
-    def create_model(self, input_shape):
-        model = Sequential([
-            Input(shape=input_shape),  # Input layer eklendi
-            LSTM(128, return_sequences=True,
-                 kernel_regularizer=L1L2(l1=1e-5, l2=1e-4)),
-            Dropout(0.2),
-            LSTM(64, return_sequences=False),
-            Dropout(0.2),
-            Dense(1)
-        ])
-        model.compile(optimizer='adam', loss='mse', metrics=['mae'])
-        return model
-    
-    def scale_features(self, product_df, feature_cols):
-        scalers = {}
-        scaled_features = []
-        
-        for col in feature_cols:
-            if col == 'Price':
-                scaler = RobustScaler()
-                scaled_col = scaler.fit_transform(product_df[[col]])
-                scalers['price'] = scaler
-            elif col == 'CurrencyRate':
-                scaler = RobustScaler()
-                scaled_col = scaler.fit_transform(product_df[[col]])
-                scalers['currency'] = scaler
-            else:
-                scaler = MinMaxScaler()
-                scaled_col = scaler.fit_transform(product_df[[col]])
-                scalers[col] = scaler
-            scaled_features.append(scaled_col)
-        
-        return np.hstack(scaled_features), scalers
-    
-    def save_artifacts(self, model, scalers, product_id, save_dir="product_models"):
-        if not os.path.exists(save_dir):
-            os.makedirs(save_dir)
-        
-        model_path = os.path.join(save_dir, f"{product_id}_model.h5")
-        model.save(model_path)
-        
-        scalers_path = os.path.join(save_dir, f"{product_id}_scalers.pkl")
-        with open(scalers_path, 'wb') as f:
-            pickle.dump(scalers, f)
-        
-        return model_path, scalers_path
-    
-    def train_for_all_products(self, min_data_points=30, epochs=100, batch_size=16):
+        df = df.dropna(subset=["Price", "CurrencyRate"])
+        return df
+
+    def train_general_model(self, min_data_points=20):
+        """Train a general model on all available products"""
         df = self.load_and_preprocess_data()
-        product_ids = df['ProductID'].unique()
-        results = {}
         
-        feature_cols = ['Price', 'CurrencyRate', 'day_of_week', 'is_holiday',
-                      'price_lag_1', 'price_lag_3', 'currency_lag_1',
-                      'price_rolling_mean_7', 'price_rolling_std_7']
+        # Debug: Check data quality
+        print(f"\nData Quality Report:")
+        print(f"Total products: {len(df['ProductID'].unique())}")
+        print(f"Total records: {len(df)}")
+        print(f"Missing Prices: {df['Price'].isnull().sum()}")
+        print(f"Zero Prices: {len(df[df['Price'] == 0])}")
+        print(f"Negative Prices: {len(df[df['Price'] < 0])}\n")
         
+        product_ids = df["ProductID"].unique()
+        
+        # Initialize variables to store combined data
+        all_X = []
+        all_y = []
+        
+        # Process each product and combine the sequences
         for product_id in product_ids:
             try:
-                self.set_seeds()
-                
                 product_df = df[df["ProductID"] == product_id].sort_values("RecordDate")
+                
+                # Skip if not enough data
                 if len(product_df) < min_data_points:
-                    print(f"Ürün {product_id} için yeterli veri yok. Atlanıyor...")
+                    print(f"Skipping product {product_id}: insufficient data points ({len(product_df)} < {min_data_points})")
                     continue
                 
-                product_df = self.create_features(product_df)
-                features_scaled, scalers = self.scale_features(product_df, feature_cols)
+                product_df = self.trainer.create_features(product_df)
                 
-                X, y = self.prepare_sequences(features_scaled)
-                if len(X) == 0:
-                    print(f"Ürün {product_id} için yeterli sequence yok. Atlanıyor...")
-                    continue
+                self.feature_cols = ['Price', 'CurrencyRate', 'day_of_week', 'is_holiday',
+                                'price_lag_1', 'price_lag_3', 'currency_lag_1',
+                                'price_rolling_mean_7', 'price_rolling_std_7']
                 
-                model = self.create_model(input_shape=(self.look_back, len(feature_cols)))
-                history = model.fit(X, y, epochs=epochs, batch_size=batch_size, verbose=0)
+                # Initialize scalers if not already done
+                if self.scalers is None:
+                    self.scalers = {}
+                    scaled_features = []
+                    for col in self.feature_cols:
+                        try:
+                            if col == 'Price':
+                                # Use QuantileTransformer for prices to handle outliers
+                                from sklearn.preprocessing import QuantileTransformer
+                                scaler = QuantileTransformer(output_distribution='normal')
+                                scaled_col = scaler.fit_transform(product_df[[col]].values.reshape(-1, 1))
+                                self.scalers['price'] = scaler
+                            # ... rest of scaler initialization ...
+                        except Exception as e:
+                            print(f"Error scaling column {col}: {str(e)}")
+                            print(f"Values: {product_df[col].describe()}")
+                            raise
+                else:
+                    # Use existing scalers to transform new data
+                    scaled_features = []
+                    for col in self.feature_cols:
+                        try:
+                            scaled_col = self.scalers[col].transform(product_df[[col]].values.reshape(-1, 1))
+                            scaled_features.append(scaled_col)
+                        except Exception as e:
+                            print(f"Error transforming column {col} for product {product_id}: {str(e)}")
+                            print(f"Problematic values: {product_df[col].unique()}")
+                            raise
                 
-                model_path, scalers_path = self.save_artifacts(model, scalers, product_id)
+                features_scaled = np.hstack(scaled_features)
                 
-                results[product_id] = {
-                    'product_name': product_df['ProductName'].iloc[0],
-                    'model_path': model_path,
-                    'scalers_path': scalers_path,
-                    'train_samples': len(X),
-                    'last_loss': history.history['loss'][-1],
-                    'last_mae': history.history['mae'][-1]
-                }
+                # Prepare sequences
+                X, y = self.trainer.prepare_sequences(features_scaled)
                 
-                print(f"Ürün {product_id} için model başarıyla eğitildi ve kaydedildi.")
-                
+                if len(X) > 0:
+                    all_X.append(X)
+                    all_y.append(y)
+                    
             except Exception as e:
-                print(f"Ürün {product_id} için hata oluştu: {str(e)}")
+                print(f"Error processing product {product_id}: {str(e)}")
                 continue
         
-        return results
+        # Rest of your training code...
+    def save_model(self, filepath):
+        """Save the trained model and scalers to a pickle file"""
+        if not self.model or not self.scalers:
+            raise ValueError("Model and scalers must be trained before saving.")
+        
+        save_data = {
+            'model': self.model,
+            'scalers': self.scalers,
+            'feature_cols': self.feature_cols,
+            'look_back': self.look_back
+        }
+        
+        with open(filepath, 'wb') as f:
+            pickle.dump(save_data, f)
+        
+        print(f"Model saved to {filepath}")
 
-
+# Example usage:
 if __name__ == "__main__":
-    # TensorFlow oneDNN uyarılarını devre dışı bırakma
-    os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+    data_path = r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\notebooks\LSTMPriceHistory.csv"  # Replace with your data path
+    model_save_path = "general_lstm_model.pkl"
     
-    # Model eğiticiyi oluştur
-    trainer = LSTMMultiModelTrainer(
-        r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\notebooks\LSTMPriceHistory.csv"
-    )
+    # Create and train the general model
+    general_model = GeneralLSTMModel(data_path)
+    general_model.train_general_model()
     
-    # Tüm ürünler için model eğit
-    training_results = trainer.train_for_all_products(
-        min_data_points=30,
-        epochs=100,
-        batch_size=16
-    )
-    
-    # Sonuçları görüntüle
-    print("\nEğitim Sonuçları:")
-    for product_id, result in training_results.items():
-        print(f"\nÜrün ID: {product_id}")
-        print(f"Ürün Adı: {result['product_name']}")
-        print(f"Eğitim Örnek Sayısı: {result['train_samples']}")
-        print(f"Son Loss Değeri: {result['last_loss']:.4f}")
-        print(f"Son MAE Değeri: {result['last_mae']:.4f}")
-        print(f"Model Yolu: {result['model_path']}")
-        print(f"Scaler Yolu: {result['scalers_path']}")
+    # Save the trained model
+    general_model.save_model(model_save_path)

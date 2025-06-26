@@ -1,169 +1,117 @@
+import pickle
+import holidays
+from datetime import datetime, timedelta
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+import traceback
+
 import os
 import pickle
 import numpy as np
 import pandas as pd
+from sklearn.preprocessing import MinMaxScaler, RobustScaler
 import tensorflow as tf
-from tensorflow.keras.layers import LSTM, Dense, Dropout, InputLayer
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.regularizers import L1L2
-
-MODEL_PATH = r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\AI_Bazaar\trainers\product_models"
-DATA_PATH = r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\notebooks\LSTMPriceHistory.csv"
-
-class LSTMMultiModelTrainer:
-    def __init__(self, look_back=7, forecast_horizon=1, seed=42):
-        self.look_back = look_back
-        self.forecast_horizon = forecast_horizon
-        self.seed = seed
-        tf.random.set_seed(seed)
-        np.random.seed(seed)
-        self.data = self._load_data()
-
-    def _load_data(self):
-        """Veri setini yükler ve ön işleme yapar"""
-        df = pd.read_csv(DATA_PATH)
-        df["Price"] = pd.to_numeric(df["Price"], errors="coerce")
-        df["CurrencyRate"] = pd.to_numeric(df["CurrencyRate"], errors="coerce")
-        df["RecordDate"] = pd.to_datetime(df["RecordDate"], errors="coerce")
-        return df.dropna(subset=["RecordDate", "Price", "CurrencyRate"])
-
-    def _get_product_data(self, product_id):
-        """Belirtilen product_id'ye ait son verileri getirir"""
-        product_data = self.data[self.data["ProductID"] == product_id]
-        if len(product_data) < self.look_back:
-            raise ValueError(f"{product_id} için yeterli veri yok (en az {self.look_back} kayıt gerekli)")
+from tensorflow.keras.models import load_model
+import holidays
+from datetime import datetime, timedelta
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+import traceback
+class LSTMPredictor:
+    def __init__(self, model_path, scalers_path):
+        self.model_path = model_path
+        self.scalers_path = scalers_path
+        self.model = None
+        self.scalers = None
+        self.look_back = 7
         
-        return product_data.sort_values("RecordDate").tail(self.look_back * 2)  # Buffer ile alıyoruz
-
-    def _prepare_input_sequence(self, product_data):
-        """Model için giriş dizisini hazırlar"""
-        # Özellik mühendisliği
-        product_data = product_data.copy()
-        product_data['day_of_week'] = product_data['RecordDate'].dt.dayofweek
-        product_data['day_of_month'] = product_data['RecordDate'].dt.day
-        product_data['month'] = product_data['RecordDate'].dt.month
-        product_data['is_holiday'] = 0  # Basitlik için
+    def load_model_and_scalers(self):
+        """Kaydedilmiş LSTM modelini ve scaler'ları yükle"""
+        try:
+            # Model yükleme
+            self.model = load_model(self.model_path,compile=False)
+            
+            # Scaler'ları yükleme
+            with open(self.scalers_path, 'rb') as f:
+                self.scalers = pickle.load(f)
+                
+            return True
+        except Exception as e:
+            print(f"Model yükleme hatası: {str(e)}")
+            return False
+    
+    def create_features_for_prediction(self, product_df):
+        """Tahmin için özellik mühendisliği"""
+        product_df = product_df.copy()
         
-        # Gecikmeli özellikler
+        # Tarih özellikleri
+        product_df['day_of_week'] = product_df['RecordDate'].dt.dayofweek
+        product_df['day_of_month'] = product_df['RecordDate'].dt.day
+        product_df['month'] = product_df['RecordDate'].dt.month
+        
+        # Tatil bilgisi
+        tr_holidays = holidays.Turkey()
+        product_df['is_holiday'] = product_df['RecordDate'].apply(
+            lambda x: x in tr_holidays).astype(int)
+        
         for lag in [1, 3, 7]:
-            product_data[f'price_lag_{lag}'] = product_data['Price'].shift(lag)
-            product_data[f'currency_lag_{lag}'] = product_data['CurrencyRate'].shift(lag)
+            product_df[f'price_lag_{lag}'] = product_df['Price'].shift(lag).fillna(method='bfill')
+            product_df[f'currency_lag_{lag}'] = product_df['CurrencyRate'].shift(lag).fillna(method='bfill')
+       
+        # Hareketli ortalamalar - min_periods ile NaN kontrolü
+        product_df['price_rolling_mean_7'] = product_df['Price'].rolling(
+            window=7, min_periods=1).mean()
+        product_df['price_rolling_std_7'] = product_df['Price'].rolling(
+            window=7, min_periods=1).std().fillna(0)  # std için 0 doldur
+        product_df['currency_rolling_mean_7'] = product_df['CurrencyRate'].rolling(
+            window=7, min_periods=1).mean()
+        return product_df
+    
+    def scale_features_for_prediction(self, product_df, feature_cols):
+        """Önceden eğitilmiş scaler'ları kullanarak özellikleri ölçeklendir"""
+        scaled_features = []
         
-        # Hareketli ortalamalar
-        product_data['price_rolling_mean_7'] = product_data['Price'].rolling(window=7).mean()
-        product_data['price_rolling_std_7'] = product_data['Price'].rolling(window=7).std()
-        product_data['currency_rolling_mean_7'] = product_data['CurrencyRate'].rolling(window=7).mean()
+        for col in feature_cols:
+            if col == 'Price':
+                scaler = self.scalers['price']
+                scaled_col = scaler.transform(product_df[[col]])
+            elif col == 'CurrencyRate':
+                scaler = self.scalers['currency']
+                scaled_col = scaler.transform(product_df[[col]])
+            else:
+                scaler = self.scalers[col]
+                scaled_col = scaler.transform(product_df[[col]])
+            scaled_features.append(scaled_col)
         
-        # Son look_back kaydı al
-        prepared_data = product_data.dropna().tail(self.look_back)
+        return np.hstack(scaled_features)
+    
+    def prepare_sequence_for_prediction(self, features_scaled):
+        """Son look_back kadar veriyi alarak tahmin için sequence hazırla"""
+        if len(features_scaled) < self.look_back:
+            raise ValueError(f"En az {self.look_back} günlük veri gerekli")
         
-        # Özellik sırası
-        feature_cols = ['Price', 'CurrencyRate', 'day_of_week', 'is_holiday',
-                       'price_lag_1', 'price_lag_3', 'currency_lag_1',
-                       'price_rolling_mean_7', 'price_rolling_std_7']
-        
-        return prepared_data[feature_cols].values
+        # Son look_back kadar veriyi al
+        sequence = features_scaled[-self.look_back:]
+        return np.array([sequence])  # Batch dimension ekle
+    
+    def predict_next_15_days(self, sequence_scaled):
+        """
+        Ölçeklenmiş sequence ile 15 günlük fiyat tahmini yapar.
+        Her tahmin çıktısı bir sonraki giriş dizisine eklenerek ilerlenir (recursive).
+        """
+        predictions_scaled = []
+        current_sequence = sequence_scaled.copy()
 
-    def load_model(self, product_id, models_dir=MODEL_PATH):
-        """Modeli ve scaler'ları yükler"""
-        try:
-            # Scaler'ları yükle
-            scalers_path = os.path.join(models_dir, f"{product_id}_scalers.pkl")
-            if not os.path.exists(scalers_path):
-                raise FileNotFoundError(f"Scalers not found: {scalers_path}")
-            
-            with open(scalers_path, 'rb') as f:
-                scalers = pickle.load(f)
-            
-            # Model yapısını oluştur
-            model = Sequential([
-                InputLayer(input_shape=(self.look_back, 9)),
-                LSTM(128, return_sequences=True, 
-                    kernel_regularizer=L1L2(l1=1e-5, l2=1e-4)),
-                Dropout(0.2),
-                LSTM(64, return_sequences=False),
-                Dropout(0.2),
-                Dense(1)
-            ])
-            
-            # Ağırlıkları yükle
-            weights_path = os.path.join(models_dir, f"{product_id}_model.h5")
-            if not os.path.exists(weights_path):
-                raise FileNotFoundError(f"Model weights not found: {weights_path}")
-            
-            model.load_weights(weights_path)
-            model.compile(optimizer='adam')
-            
-            return model, scalers
-            
-        except Exception as e:
-            raise RuntimeError(f"Model loading failed: {str(e)}")
+        for _ in range(15):
+            next_pred_scaled = self.model.predict(current_sequence, verbose=0)
+            predictions_scaled.append(next_pred_scaled[0, 0])
 
-    def predict_with_model(self, product_id, steps=15):
-        """Tahmin yapmak için ana fonksiyon"""
-        try:
-            # 1. Model ve scaler'ları yükle
-            model, scalers = self.load_model(product_id)
-            
-            # 2. Product verilerini getir
-            product_data = self._get_product_data(product_id)
-            
-            # 3. Giriş dizisini hazırla ve ölçekle
-            input_sequence = self._prepare_input_sequence(product_data)
-            
-            # Özellik sırası
-            feature_cols = ['Price', 'CurrencyRate', 'day_of_week', 'is_holiday',
-                          'price_lag_1', 'price_lag_3', 'currency_lag_1',
-                          'price_rolling_mean_7', 'price_rolling_std_7']
-            
-            # Ölçekleme
-            scaled_sequence = np.zeros_like(input_sequence)
-            for i, col in enumerate(feature_cols):
-                if col in scalers:
-                    scaled_sequence[:, i] = scalers[col].transform(input_sequence[:, i].reshape(-1, 1)).flatten()
-                else:
-                    scaled_sequence[:, i] = input_sequence[:, i]
-            
-            # 4. Tahminleri yap
-            predictions = []
-            current_sequence = scaled_sequence.reshape(1, self.look_back, len(feature_cols))
-            
-            for _ in range(steps):
-                # Tahmin yap
-                pred_scaled = model(current_sequence, training=False).numpy()[0][0]
-                
-                # Ters ölçekleme
-                dummy = np.zeros((1, len(feature_cols)))
-                dummy[0, 0] = pred_scaled
-                for i in range(1, len(feature_cols)):
-                    dummy[0, i] = current_sequence[0, -1, i]
-                
-                pred_price = scalers['price'].inverse_transform(dummy[:, [0]])[0][0]
-                predictions.append(float(round(pred_price, 2)))
-                
-                # Sequence güncelleme
-                new_row = np.zeros((1, 1, len(feature_cols)))
-                new_row[0, 0, 0] = pred_scaled
-                new_row[0, 0, 1:] = current_sequence[0, -1, 1:]
-                current_sequence = np.concatenate([current_sequence[:, 1:, :], new_row], axis=1)
-            
-            return {
-                'product_id': product_id,
-                'product_name': product_data['ProductName'].iloc[0],
-                'last_actual_price': float(product_data['Price'].iloc[-1]),
-                'predictions': predictions
-            }
-            
-        except Exception as e:
-            raise RuntimeError(f"Prediction failed for product {product_id}: {str(e)}")
+            # Yeni tahmini mevcut sequence'e ekle, en eskiyi çıkar
+            next_step = np.append(current_sequence[0, 1:, :], [[next_pred_scaled[0, 0]] + [0] * (current_sequence.shape[2] - 1)], axis=0)
+            current_sequence = np.expand_dims(next_step, axis=0)
 
-# Kullanım örneği
-if __name__ == "__main__":
-    try:
-        trainer = LSTMMultiModelTrainer()
-        result = trainer.predict_with_model(682384, steps=10)
-        print("Product Name:", result['product_name'])
-        print("Last Actual Price:", result['last_actual_price'])
-        print("Predictions:", result['predictions'])
-    except Exception as e:
-        print("Error:", str(e))
+        # Ölçeklenmiş tahminleri orijinale çevir
+        price_scaler = self.scalers['price']
+        predictions_original = price_scaler.inverse_transform(np.array(predictions_scaled).reshape(-1, 1))
+
+        return predictions_original.flatten().tolist()
