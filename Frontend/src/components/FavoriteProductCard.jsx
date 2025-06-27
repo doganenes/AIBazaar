@@ -26,7 +26,7 @@ function FavoriteProductCard({
         <img
           src={imageUrl}
           className="card-img-top"
-          style={{ height: "300px",width:"150px", objectFit: "contain" }}
+          style={{ height: "300px", width: "150px", objectFit: "contain" }}
           alt={title}
         />
 
@@ -42,13 +42,13 @@ function FavoriteProductCard({
             onClick={handleRemoveFavorite}
             className="btn btn-light btn-sm overlay-btn"
           >
-            <i class="fa-solid fa-heart text-danger"></i>
+            <i className="fa-solid fa-heart text-danger"></i>
           </button>
         </div>
       </div>
 
       <div className="card-body d-flex flex-column">
-        <h5 className="card-title fw-bold text-truncate" title={title}>
+        <h5 className="card-title fw-bold product-name">
           {title}
         </h5>
       </div>

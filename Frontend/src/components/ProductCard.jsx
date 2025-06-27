@@ -27,7 +27,7 @@ function ProductCard({ product, onFavoriteAdded }) {
         <img
           src={product.imageUrl}
           className="card-img-top object-fit-fill rounded fs-6"
-          style={{ height: "300px", width:"150px", objectFit: "contain", }}
+          style={{ height: "300px", width: "150px", objectFit: "contain" }}
           alt={product.productName}
         />
 
@@ -49,10 +49,7 @@ function ProductCard({ product, onFavoriteAdded }) {
       </div>
 
       <div className="card-body d-flex flex-column">
-        <h5
-          className="card-title fw-bold text-truncate"
-          title={product.productName}
-        >
+        <h5 className="card-title fw-bold product-name">
           {product.productName}
         </h5>
       </div>
