@@ -515,7 +515,7 @@ def train_and_save_model(request):
 
 
 @api_view(["POST"])
-def predict_with_saved_model(
+def predict_product_rf(
     request,
     model_path=r"C:\Users\EXCALIBUR\Desktop\projects\Okul Ödevler\AIBazaar\AI\utils\models\phone_price_model_20250624_200303.pkl",
 ):
@@ -696,7 +696,6 @@ def predict_with_saved_model(
 
 @api_view(["POST"])
 def predict_with_lstm_model(request):
-    """LSTM modeli kullanarak fiyat tahmini yap"""
     try:
         data = request.data
         product_id = int(data.get("product_id"))
@@ -752,7 +751,6 @@ def predict_with_lstm_model(request):
         actuals = product_df["Price"].values[-15:]
         preds = np.array(predicted_prices[:len(actuals)])
 
-        # METRİKLER (varsa önceki 15 gün ile karşılaştırmalı)
         if len(actuals) == len(preds):
             mae = float(np.mean(np.abs(preds - actuals)))
             mape = float(np.mean(np.abs((preds - actuals) / actuals))) * 100
@@ -782,7 +780,4 @@ def predict_with_lstm_model(request):
             "error": f"Tahmin sırasında hata oluştu: {str(e)}",
             "success": False
         }, status=500)
-
-
-
 
