@@ -128,7 +128,7 @@ const Home = ({ searchTerm }) => {
               {currentItems.map((product, index) => (
                 <div
                   key={product.productID || index}
-                  className="col-lg-3 col-md-4 col-sm-6"
+                  className="col-lg-3 col-md-4 col-sm-6 d-flex justify-content-center"
                   style={{
                     animationDelay: `${index * 100}ms`,
                     animation: "fadeInUp 0.8s ease-out forwards",

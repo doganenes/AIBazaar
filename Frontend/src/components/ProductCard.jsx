@@ -23,7 +23,7 @@ function ProductCard({ product, onFavoriteAdded }) {
 
   return (
     <div className="card h-100 border-0 shadow-sm product-card">
-      <div className="position-relative overflow-hidden ">
+      <div className="position-relative overflow-hidden">
         <img
           src={product.imageUrl}
           className="card-img-top object-fit-fill rounded fs-6"
