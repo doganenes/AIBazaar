@@ -25,17 +25,13 @@ class LSTMMultiModelTrainer:
         random.seed(self.seed)
    
     def load_and_preprocess_data(self):
-        # DtypeWarning için low_memory=False ekledik
         df = pd.read_csv(self.data_path, low_memory=False)
        
-        # Sayısal dönüşümler
         df["Price"] = pd.to_numeric(df["Price"], errors="coerce")
         df["CurrencyRate"] = pd.to_numeric(df["CurrencyRate"], errors="coerce")
        
-        # Tarih dönüşümü
         df["RecordDate"] = pd.to_datetime(df["RecordDate"], errors="coerce")
        
-        # NaN değerleri temizleme
         df = df.dropna(subset=["RecordDate", "Price", "CurrencyRate"])
        
         return df.sort_values("RecordDate")
@@ -43,26 +39,22 @@ class LSTMMultiModelTrainer:
     def create_features(self, product_df:pd.DataFrame):
         product_df = product_df.copy()
        
-        # Tarih özellikleri (hiçbir veri kaybı yok)
         product_df['day_of_week'] = product_df['RecordDate'].dt.dayofweek
         product_df['day_of_month'] = product_df['RecordDate'].dt.day
         product_df['month'] = product_df['RecordDate'].dt.month
        
-        # Tatil bilgisi (hiçbir veri kaybı yok)
         tr_holidays = holidays.Turkey()
         product_df['is_holiday'] = product_df['RecordDate'].apply(
             lambda x: x in tr_holidays).astype(int)
        
-        # Gecikmeli özellikler - NaN'leri doldurma
         for lag in [1, 3, 7]:
             product_df[f'price_lag_{lag}'] = product_df['Price'].shift(lag).fillna(method='bfill')
             product_df[f'currency_lag_{lag}'] = product_df['CurrencyRate'].shift(lag).fillna(method='bfill')
        
-        # Hareketli ortalamalar - min_periods ile NaN kontrolü
         product_df['price_rolling_mean_7'] = product_df['Price'].rolling(
             window=7, min_periods=1).mean()
         product_df['price_rolling_std_7'] = product_df['Price'].rolling(
-            window=7, min_periods=1).std().fillna(0)  # std için 0 doldur
+            window=7, min_periods=1).std().fillna(0) 
         product_df['currency_rolling_mean_7'] = product_df['CurrencyRate'].rolling(
             window=7, min_periods=1).mean()
        
@@ -77,7 +69,7 @@ class LSTMMultiModelTrainer:
    
     def create_model(self, input_shape):
         model = Sequential([
-            Input(shape=input_shape),  # Input layer eklendi
+            Input(shape=input_shape),
             LSTM(128, return_sequences=True,
                  kernel_regularizer=L1L2(l1=1e-5, l2=1e-4)),
             Dropout(0.2),
@@ -172,15 +164,12 @@ class LSTMMultiModelTrainer:
  
  
 if __name__ == "__main__":
-    # TensorFlow oneDNN uyarılarını devre dışı bırakma
     os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
    
-    # Model eğiticiyi oluştur
     trainer = LSTMMultiModelTrainer(
         r"C:\Users\pc\Desktop\AIBazaar2\AIBazaar\AI\utils\notebooks\LSTMPriceHistory.csv"
     )
    
-    # Tüm ürünler için model eğit
     training_results = trainer.train_for_all_products(
         min_data_points=30,
         epochs=100,
@@ -188,7 +177,6 @@ if __name__ == "__main__":
     )
     import json
     output_path = "egitim_sonuclari.json"
-    # Sonuçları görüntüle
     print("\nEğitim Sonuçları:")
     for product_id, result in training_results.items():
         print(f"\nÜrün ID: {product_id}")
@@ -202,6 +190,5 @@ if __name__ == "__main__":
        
 training_results = {str(k): v for k, v in training_results.items()}
  
-# JSON'a kaydet
 with open(output_path, "w", encoding="utf-8") as f:
     json.dump(training_results, f, ensure_ascii=False, indent=4)
