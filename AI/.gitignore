@@ -57,7 +57,9 @@ wheels/
 
 .env
 .env.*
-
+*.rar
+*.h5
+*.pkl
 celerybeat-schedule
 
 staticfiles/
