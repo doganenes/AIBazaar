@@ -41,10 +41,11 @@ from api.services.rf_service import PhonePricePredictor
 def predict_phone_price(request):
     try:
 
-        model_path = request.data.get(
-            "model_path",
-            r"C:\Users\pc\Desktop\AIBazaar2\AIBazaar\AI\AI_Bazaar\models\phone_price_model_20250624_200303.pkl",
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        default_model_path = os.path.join(
+            base_dir, "models", "phone_price_model_20250624_200303.pkl"
         )
+        model_path = request.data.get("model_path", default_model_path)
 
         input_data = {
             "ram": float(request.data.get("RAM")),
@@ -79,9 +80,9 @@ def predict_with_lstm_model(request):
     try:
         data = request.data
         product_id = int(data.get("product_id"))
-        model_dir = data.get(
-            "model_dir", r"C:\Users\pc\Desktop\AIBazaar2\AIBazaar\AI\AI_Bazaar\models"
-        )
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        default_model_dir = os.path.join(base_dir, "models")
+        model_dir = data.get("model_dir", default_model_dir)
 
         if not product_id:
             return Response({"error": "product_id parametresi zorunludur"}, status=400)
