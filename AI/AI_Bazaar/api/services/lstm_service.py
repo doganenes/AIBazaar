@@ -248,32 +248,3 @@ class LSTMMultiModelTrainer:
         return results
  
  
-# if __name__ == "__main__":
-#     os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
-   
-#     trainer = LSTMMultiModelTrainer(
-#         r"C:\Users\pc\Desktop\AIBazaar2\AIBazaar\AI\utils\notebooks\LSTMPriceHistory.csv"
-#     )
-   
-#     training_results = trainer.train_for_all_products(
-#         min_data_points=30,
-#         epochs=100,
-#         batch_size=16
-#     )
-#     import json
-#     output_path = "egitim_sonuclari.json"
-#     print("\nEğitim Sonuçları:")
-#     for product_id, result in training_results.items():
-#         print(f"\nÜrün ID: {product_id}")
-#         print(f"Ürün Adı: {result['product_name']}")
-#         print(f"Eğitim Örnek Sayısı: {result['train_samples']}")
-#         print(f"Son Loss Değeri: {result['last_loss']:.4f}")
-#         print(f"Son MAE Değeri: {result['last_mae']:.4f}")
-#         print(f"Model Yolu: {result['model_path']}")
-#         print(f"Scaler Yolu: {result['scalers_path']}")
-       
-       
-# training_results = {str(k): v for k, v in training_results.items()}
- 
-# with open(output_path, "w", encoding="utf-8") as f:
-#     json.dump(training_results, f, ensure_ascii=False, indent=4)
