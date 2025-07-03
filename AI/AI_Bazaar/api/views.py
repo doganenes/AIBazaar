@@ -41,10 +41,13 @@ from api.services.rf_service import PhonePricePredictor
 def predict_phone_price(request):
     try:
 
+        
         base_dir = os.path.dirname(os.path.abspath(__file__))
+        parent_dir = os.path.dirname(base_dir)
         default_model_path = os.path.join(
-            base_dir, "models", "phone_price_model_20250624_200303.pkl"
+            parent_dir, "models", "phone_price_model_20250630_225022.pkl"
         )
+
         model_path = request.data.get("model_path", default_model_path)
 
         input_data = {
@@ -80,9 +83,12 @@ def predict_with_lstm_model(request):
     try:
         data = request.data
         product_id = int(data.get("product_id"))
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-        default_model_dir = os.path.join(base_dir, "models")
-        model_dir = data.get("model_dir", default_model_dir)
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+
+        parent_dir = os.path.dirname(current_dir)
+
+        model_dir = os.path.join(parent_dir, "trainers", "product_models")
+
 
         if not product_id:
             return Response({"error": "product_id parametresi zorunludur"}, status=400)
@@ -91,17 +97,21 @@ def predict_with_lstm_model(request):
         scalers_path = os.path.join(model_dir, f"{product_id}_scalers.pkl")
 
         if not os.path.exists(model_path):
-            return Response({"error": f"Ürün {product_id} için model bulunamadı"}, status=404)
+            return Response({"error": f"Product {product_id} not found!"}, status=404)
         if not os.path.exists(scalers_path):
-            return Response({"error": f"Ürün {product_id} için scaler bulunamadı"}, status=404)
+            return Response({"error": f"Product {product_id} for scaler not found!"}, status=404)
 
         predictor = LSTMPredictor(model_path, scalers_path)
         if not predictor.load_model_and_scalers():
-            return Response({"error": "Model veya scaler yüklenemedi"}, status=500)
+            return Response({"error": "Model or scaler not load!"}, status=500)
 
-        data_path = data.get("data_path", r"C:\Users\pc\Desktop\AIBazaar2\AIBazaar\AI\utils\notebooks\LSTMPriceHistory.csv")
+        current_dir = os.path.dirname(os.path.abspath(__file__))  
+        ai_bazaar_dir = os.path.dirname(current_dir)             
+        ai_dir = os.path.dirname(ai_bazaar_dir)                   
+
+        data_path = os.path.join(ai_dir, "utils", "notebooks", "LSTMPriceHistory.csv")
         if not os.path.exists(data_path):
-            return Response({"error": "Veri dosyası bulunamadı"}, status=404)
+            return Response({"error": "data path not found!"}, status=404)
 
         df = pd.read_csv(data_path, low_memory=False)
         df["Price"] = pd.to_numeric(df["Price"], errors="coerce")
@@ -111,11 +121,11 @@ def predict_with_lstm_model(request):
 
         product_df = df[df["ProductID"] == product_id].sort_values("RecordDate")
         if product_df.empty:
-            return Response({"error": f"Ürün {product_id} için veri bulunamadı"}, status=404)
+            return Response({"error": f"Product {product_id} for data not found!"}, status=404)
 
         if len(product_df) < predictor.look_back:
             return Response({
-                "error": f"En az {predictor.look_back} günlük veri gerekli, mevcut: {len(product_df)}"
+                "error": f"En az {predictor.look_back} günlük data gerekli, mevcut: {len(product_df)}"
             }, status=400)
 
         product_df = predictor.create_features_for_prediction(product_df)
@@ -161,6 +171,6 @@ def predict_with_lstm_model(request):
     except Exception as e:
         traceback.print_exc()
         return Response({
-            "error": f"Tahmin sırasında hata oluştu: {str(e)}",
+            "error": f"An error occurred while estimation: {str(e)}",
             "success": False
         }, status=500)

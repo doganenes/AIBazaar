@@ -103,10 +103,12 @@ function GeneratePrice() {
       const response = await predict_rf(formData);
       console.log("Backend response:", response);
       setPredictedPrice(response.price);
-      setClosestProduct(response.recommendations.similar_phones[0].model);
+      setClosestProduct(response.recommendations.similar_phones[0].phone_model);
+      console.log(closestProduct)
       setClosestProductId(
-        response.recommendations.similar_phones[0].product_id
+        response.recommendations.similar_phones[0].ProductID
       );
+      console.log(closestProductId)
     } catch (error) {
       console.error("API request error:", error);
       setPredictedPrice(null);

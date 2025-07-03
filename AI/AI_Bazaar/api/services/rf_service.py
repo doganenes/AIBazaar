@@ -83,21 +83,36 @@ class PhonePricePredictor:
 
             prediction = self.model.predict(df_input[self.feature_columns])[0]
 
+            current_dir = os.path.dirname(os.path.abspath(__file__))  
+            api_dir = os.path.dirname(current_dir)                   
+            ai_bazaar_dir = os.path.dirname(api_dir)                 
+            ai_dir = os.path.dirname(ai_bazaar_dir)                  
+
+            data_path = os.path.join(ai_dir, "utils", "notebooks", "Product.csv")
             similar_phones = self.find_similar(
-                input_data, prediction, r"C:\Users\pc\Desktop\AIBazaar2\AIBazaar\AI\utils\notebooks\Product.csv"
+                input_data, prediction, data_path
             )
 
             return {
-                "predicted_price": round(prediction, 2),
-                "similar_phones": similar_phones
+                "message": "Kaydedilmiş model ile tahmin başarılı",
+                "price": round(prediction, 2),
+                "recommendations": {
+                    "similar_phones": similar_phones,
+                    "recommendation_count": len(similar_phones),
+                    "recommendation_criteria": {
+                        "price_range": f"±25% ({round(prediction * 0.75, 2)} - {round(prediction * 1.25, 2)})",
+                        "flexibility": "Weighted similarity scoring with advanced features",
+                    },
+                },
             }
+        
+            
 
         except Exception as e:
             print("Prediction error:", e)
             traceback.print_exc()
-            return {"error": str(e)}
-
-
+            return Response({"error": str(e)}, status=500)
+    
     def find_similar(self, input_data, predicted_price, dataset_path, top_n=5):
         df = pd.read_csv(dataset_path)
         df.rename(
