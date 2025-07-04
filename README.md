@@ -139,8 +139,3 @@ python manage.py runserver 8000
 <p align="center">
   <img src="https://github.com/user-attachments/assets/3137faac-2cea-4d54-9627-7a6651a5cd88" width="100%" />
 </p>
-
-<h2>🗄️ Database Schema</h2>
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/1aa8a92c-f142-41f1-b63c-60767c64bb32" width="100%" />
-</p>
