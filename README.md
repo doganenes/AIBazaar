@@ -2,7 +2,7 @@
 
 <h2>📘 Overview</h2>
 
-<p><strong>AIBazaar</strong> is an advanced, AI-driven platform that revolutionizes consumer behavior by providing intelligent price forecasts and real-time market analytics.</p>
+<p><strong>AIBazaar</strong> is an advanced, AI-driven platform that revolutionizes consumer behavior by providing intelligent price forecasts and market analytics.</p>
 
 <p><strong>AIBazaar</strong> offers actionable insights and predictive intelligence to guide users in making better buying decisions.</p>
 
@@ -36,11 +36,11 @@
 
 <h3>🧩 Frontend</h3>
 <ul>
-  <li>React.js</li>
   <li>Bootstrap 5</li>
-  <li>Axios</li>
-  <li>Chart.js</li>
+  <li>React.js</li>
   <li>React Router DOM</li>
+  <li>Chart.js</li>
+  <li>Axios</li>
 </ul>
 
 <h3>⚙️ Backend</h3>
@@ -82,7 +82,7 @@
 
 <h4>1. Clone the Repository</h4>
 
-<pre><code>git clone https://github.com/your-username/aibazaar.git
+<pre><code>git clone https://github.com/doganenes/AIBazaar.git
 cd AIBazaar
 </code></pre>
 
