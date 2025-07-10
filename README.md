@@ -1,4 +1,4 @@
-<h1>AIBazaar - AI-Based Price Prediction System</h1>
+<h1>AIBazaar - AI Based Price Prediction System</h1>
 
 <h2>📘 Overview</h2>
 
