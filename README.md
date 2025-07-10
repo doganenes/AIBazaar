@@ -1,10 +1,8 @@
-<h1>🚀 AIBazaar - AI-Powered Price Prediction & Market Intelligence Platform</h1>
+<h1>AIBazaar - AI-Based Price Prediction System</h1>
 
 <h2>📘 Overview</h2>
 
-<p><strong>AIBazaar</strong> is an advanced, AI-driven platform that revolutionizes consumer behavior by providing intelligent price forecasts and market analytics.</p>
-
-<p><strong>AIBazaar</strong> offers actionable insights and predictive intelligence to guide users in making better buying decisions.</p>
+<p><strong>AIBazaar</strong> is an advanced, AI-driven platform that revolutionizes consumer behavior by providing intelligent price forecasts and market analytics. It offers actionable insights and predictive intelligence to guide users in making better buying decisions.</p>
 
 <hr />
 
