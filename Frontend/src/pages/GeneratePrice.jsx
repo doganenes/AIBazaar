@@ -323,7 +323,7 @@ function GeneratePrice() {
                       <small className="text-muted fs-5">
                         {formData["Battery Capacity"]} mAh
                       </small>
-                      <small className="text-muted">7000"</small>
+                      <small className="text-muted">7000 mAh</small>
                     </div>
 
                     {formErrors["Battery Capacity"] && (
