@@ -68,7 +68,7 @@ for page_num in range(1, 33):
                     productTitle = a_tag.get("title")
                     # print(productTitle)
                 # print(productImgLink)
-                # Fiyat bilgisi al
+               
                 price_li = ul.find("li", class_="fiyat cell")
                 if price_li:
                     a_tag = price_li.find("a")

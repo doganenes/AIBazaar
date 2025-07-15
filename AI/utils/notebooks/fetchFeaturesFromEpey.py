@@ -122,7 +122,6 @@ for page_num in range(1, 3):
             time.sleep(random.uniform(2, 4))
             detail_soup = BeautifulSoup(driver.page_source, "html.parser")
 
-            # Fiyatı çekme ve dönüştürme
             price_tag = detail_soup.select_one(
                 "#fiyatlar > div.fiyatlar > div.fiyat.fiyat-1 span.urun_fiyat"
             )
@@ -139,7 +138,6 @@ for page_num in range(1, 3):
 
             print(f"Ürün: {phoneModel}, Fiyat: {productPrice} TL")
 
-            # Özellikleri topla
             features = [f"Model: {phoneModel}"]
             for label, id_ in feature_ids.items():
                 li = detail_soup.find("li", id=id_)
@@ -162,7 +160,6 @@ for page_num in range(1, 3):
                 }
             )
 
-            # Önceki sayfaya dön
             driver.back()
             try:
                 WebDriverWait(driver, 10).until(
@@ -177,7 +174,6 @@ for page_num in range(1, 3):
 
     driver.quit()
 
-# Kaydet
 df = pd.DataFrame(all_phones)
 df.to_csv("LSTMProduct2.csv", index=False)
 print("CSV kaydedildi: LSTMProduct1.csv")
